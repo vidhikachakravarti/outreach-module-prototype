@@ -1,0 +1,2298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lillia Outreach Module V3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --purple-primary: #7848FE;
+            --purple-secondary: #9F7BFF;
+            --purple-light: #D3B9F9;
+            --purple-ultralight: #EADEFC;
+            --purple-deep: #280470;
+            --peach-light: #FFD2BB;
+            --peach-lightest: #F9EAE4;
+            --grey-50: #FAFAFA;
+            --grey-100: #F5F5F7;
+            --grey-200: #E8E8ED;
+            --grey-300: #D1D1D6;
+            --grey-400: #AEAEB2;
+            --grey-600: #636366;
+            --grey-700: #48484A;
+            --grey-900: #1C1C1E;
+            --white: #FFFFFF;
+            --success: #34C759;
+            --warning: #FF9500;
+            --error: #FF3B30;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 12px rgba(120, 72, 254, 0.08);
+            --shadow-lg: 0 12px 32px rgba(120, 72, 254, 0.12);
+            --shadow-xl: 0 20px 48px rgba(120, 72, 254, 0.16);
+        }
+
+        body {
+            font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(160deg, #FAFAFA 0%, #F0EDFF 50%, #FAF8FF 100%);
+            color: var(--grey-900);
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--white);
+            border-right: 1px solid var(--grey-200);
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .logo-container {
+            padding: 32px 28px;
+            border-bottom: 1px solid var(--grey-200);
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--purple-primary);
+            text-align: center;
+        }
+
+        .nav-section {
+            padding: 24px 0;
+        }
+
+        .nav-label {
+            padding: 0 28px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--grey-400);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .nav-item {
+            padding: 14px 28px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--grey-700);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: var(--grey-50);
+            color: var(--purple-primary);
+        }
+
+        .nav-item.active {
+            background: var(--purple-ultralight);
+            color: var(--purple-primary);
+            font-weight: 600;
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--purple-primary);
+        }
+
+        .nav-icon {
+            font-size: 18px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--grey-50);
+        }
+
+        /* Header */
+        .header {
+            background: var(--white);
+            padding: 24px 40px;
+            border-bottom: 1px solid var(--grey-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header h2 {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--grey-900);
+            letter-spacing: -0.5px;
+        }
+
+        .header-badge {
+            background: linear-gradient(135deg, var(--purple-primary), var(--purple-secondary));
+            color: var(--white);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--purple-primary), var(--purple-secondary));
+            color: var(--white);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Lato', sans-serif;
+            box-shadow: var(--shadow-md);
+            letter-spacing: 0.2px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--purple-primary);
+            border: 1.5px solid var(--grey-200);
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Lato', sans-serif;
+        }
+
+        .btn-secondary:hover {
+            background: var(--purple-ultralight);
+            border-color: var(--purple-light);
+        }
+
+        /* Views */
+        .view {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        .view-content {
+            padding: 40px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Agent List View */
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-chip {
+            padding: 10px 20px;
+            border-radius: 24px;
+            background: var(--white);
+            border: 1.5px solid var(--grey-200);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--grey-600);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-chip:hover,
+        .filter-chip.active {
+            background: var(--purple-primary);
+            color: var(--white);
+            border-color: var(--purple-primary);
+        }
+
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 28px;
+        }
+
+        .agent-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid var(--grey-200);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .agent-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--purple-primary), var(--purple-secondary));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .agent-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--purple-light);
+        }
+
+        .agent-card:hover::before {
+            opacity: 1;
+        }
+
+        .agent-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .agent-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 6px;
+        }
+
+        .agent-type {
+            font-size: 13px;
+            color: var(--grey-600);
+            font-weight: 500;
+        }
+
+        .agent-status {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .agent-status.active {
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--success);
+        }
+
+        .agent-status.draft {
+            background: rgba(255, 149, 0, 0.1);
+            color: var(--warning);
+        }
+
+        .agent-meta {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+            padding: 16px;
+            background: var(--grey-50);
+            border-radius: 12px;
+        }
+
+        .meta-item {
+            flex: 1;
+        }
+
+        .meta-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--grey-400);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .meta-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--grey-900);
+        }
+
+        .channel-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .channel-badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--purple-ultralight);
+            color: var(--purple-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .role-badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--peach-lightest);
+            color: var(--grey-900);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        /* Config View */
+        .config-container {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .config-header {
+            padding: 32px 40px;
+            border-bottom: 1px solid var(--grey-200);
+            background: linear-gradient(135deg, var(--purple-ultralight), var(--peach-lightest));
+        }
+
+        .config-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 8px;
+        }
+
+        .config-subtitle {
+            font-size: 14px;
+            color: var(--grey-600);
+        }
+
+        .progress-bar {
+            display: flex;
+            padding: 24px 40px;
+            background: var(--white);
+            border-bottom: 1px solid var(--grey-200);
+            gap: 8px;
+            overflow-x: auto;
+        }
+
+        .progress-step {
+            flex: 1;
+            min-width: 100px;
+            padding: 16px;
+            border-radius: 12px;
+            background: var(--grey-50);
+            border: 2px solid var(--grey-200);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .progress-step.active {
+            background: var(--purple-ultralight);
+            border-color: var(--purple-primary);
+        }
+
+        .progress-step.completed {
+            background: var(--success);
+            border-color: var(--success);
+            color: var(--white);
+        }
+
+        .step-number {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--grey-400);
+            margin-bottom: 4px;
+        }
+
+        .progress-step.active .step-number,
+        .progress-step.completed .step-number {
+            color: var(--white);
+        }
+
+        .step-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--grey-700);
+        }
+
+        .progress-step.active .step-label {
+            color: var(--purple-primary);
+        }
+
+        .progress-step.completed .step-label {
+            color: var(--white);
+        }
+
+        .config-content {
+            padding: 40px;
+        }
+
+        .step-container {
+            display: none;
+        }
+
+        .step-container.active {
+            display: block;
+        }
+
+        .step-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 12px;
+        }
+
+        .step-description {
+            font-size: 15px;
+            color: var(--grey-600);
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--grey-900);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid var(--grey-200);
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: 'Lato', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--purple-primary);
+            background: var(--purple-ultralight);
+        }
+
+        .form-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 14px 16px;
+            border: 1.5px solid var(--grey-200);
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: 'Lato', sans-serif;
+            transition: all 0.2s;
+            resize: vertical;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--purple-primary);
+            background: var(--purple-ultralight);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid var(--grey-200);
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: 'Lato', sans-serif;
+            transition: all 0.2s;
+            background: var(--white);
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--purple-primary);
+        }
+
+        /* Channel Selection Cards */
+        .channel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 24px;
+        }
+
+        .channel-option {
+            background: var(--white);
+            border: 2px solid var(--grey-200);
+            border-radius: 16px;
+            padding: 28px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .channel-option:hover {
+            border-color: var(--purple-light);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .channel-option.selected {
+            border-color: var(--purple-primary);
+            background: var(--purple-ultralight);
+        }
+
+        .channel-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .channel-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 8px;
+        }
+
+        .channel-desc {
+            font-size: 13px;
+            color: var(--grey-600);
+            line-height: 1.5;
+        }
+
+        .ai-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            background: var(--purple-primary);
+            color: var(--white);
+            margin-top: 12px;
+        }
+
+        /* Role Selection */
+        .role-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 24px;
+        }
+
+        .role-option {
+            background: var(--white);
+            border: 2px solid var(--grey-200);
+            border-radius: 16px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .role-option:hover {
+            border-color: var(--purple-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .role-option.selected {
+            border-color: var(--purple-primary);
+            background: var(--purple-ultralight);
+        }
+
+        .role-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 8px;
+        }
+
+        .role-desc {
+            font-size: 14px;
+            color: var(--grey-600);
+            line-height: 1.6;
+        }
+
+        /* Knowledge Base Selection */
+        .kb-section {
+            margin-bottom: 32px;
+        }
+
+        .kb-section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .kb-item {
+            background: var(--white);
+            border: 2px solid var(--grey-200);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .kb-item:hover {
+            border-color: var(--purple-light);
+            background: var(--purple-ultralight);
+        }
+
+        .kb-item.selected {
+            border-color: var(--purple-primary);
+            background: var(--purple-ultralight);
+        }
+
+        .kb-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--grey-300);
+            border-radius: 6px;
+            flex-shrink: 0;
+            margin-top: 2px;
+            transition: all 0.2s;
+        }
+
+        .kb-item.selected .kb-checkbox {
+            background: var(--purple-primary);
+            border-color: var(--purple-primary);
+            position: relative;
+        }
+
+        .kb-item.selected .kb-checkbox::after {
+            content: '✓';
+            position: absolute;
+            color: var(--white);
+            font-size: 14px;
+            font-weight: 700;
+            top: -1px;
+            left: 3px;
+        }
+
+        .kb-content {
+            flex: 1;
+        }
+
+        .kb-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 6px;
+        }
+
+        .kb-desc {
+            font-size: 14px;
+            color: var(--grey-600);
+            line-height: 1.5;
+        }
+
+        .kb-priority {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-left: 12px;
+        }
+
+        .priority-highest {
+            background: rgba(255, 59, 48, 0.1);
+            color: var(--error);
+        }
+
+        .priority-medium {
+            background: rgba(255, 149, 0, 0.1);
+            color: var(--warning);
+        }
+
+        .priority-base {
+            background: var(--grey-100);
+            color: var(--grey-600);
+        }
+
+        /* Info Box */
+        .info-box {
+            background: var(--purple-ultralight);
+            border-left: 4px solid var(--purple-primary);
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 24px 0;
+        }
+
+        .info-box-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--purple-primary);
+            margin-bottom: 8px;
+        }
+
+        .info-box-text {
+            font-size: 14px;
+            color: var(--grey-700);
+            line-height: 1.6;
+        }
+
+        .warning-box {
+            background: rgba(255, 149, 0, 0.1);
+            border-left: 4px solid var(--warning);
+        }
+
+        .warning-box .info-box-title {
+            color: var(--warning);
+        }
+
+        /* Gated Feature */
+        .gated-feature {
+            background: var(--grey-100);
+            border: 2px dashed var(--grey-300);
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            opacity: 0.6;
+        }
+
+        .gated-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .gated-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 8px;
+        }
+
+        .gated-text {
+            font-size: 14px;
+            color: var(--grey-600);
+            margin-bottom: 16px;
+        }
+
+        .btn-upsell {
+            background: var(--purple-primary);
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-upsell:hover {
+            background: var(--purple-deep);
+        }
+
+        /* Trigger Mode Selection */
+        .trigger-mode-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 24px 0;
+        }
+
+        .trigger-mode {
+            background: var(--white);
+            border: 2px solid var(--grey-200);
+            border-radius: 12px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .trigger-mode:hover {
+            border-color: var(--purple-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .trigger-mode.selected {
+            border-color: var(--purple-primary);
+            background: var(--purple-ultralight);
+        }
+
+        .trigger-mode-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 8px;
+        }
+
+        .trigger-mode-desc {
+            font-size: 14px;
+            color: var(--grey-600);
+            line-height: 1.5;
+        }
+
+        .trigger-config {
+            display: none;
+            margin-top: 24px;
+            padding: 24px;
+            background: var(--purple-ultralight);
+            border-radius: 12px;
+        }
+
+        .trigger-config.active {
+            display: block;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: var(--grey-900);
+            color: #00FF00;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+
+        /* Review Summary */
+        .review-section {
+            background: var(--white);
+            border: 1px solid var(--grey-200);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .review-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .review-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--grey-100);
+        }
+
+        .review-item:last-child {
+            border-bottom: none;
+        }
+
+        .review-label {
+            font-size: 14px;
+            color: var(--grey-600);
+            font-weight: 600;
+        }
+
+        .review-value {
+            font-size: 14px;
+            color: var(--grey-900);
+            font-weight: 600;
+        }
+
+        /* Validation Status */
+        .validation-checks {
+            margin: 24px 0;
+        }
+
+        .validation-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+        }
+
+        .validation-item.pass {
+            background: rgba(52, 199, 89, 0.1);
+        }
+
+        .validation-item.fail {
+            background: rgba(255, 59, 48, 0.1);
+        }
+
+        .validation-icon {
+            font-size: 20px;
+        }
+
+        .validation-text {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Navigation Buttons */
+        .config-footer {
+            padding: 24px 40px;
+            border-top: 1px solid var(--grey-200);
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .btn-nav {
+            padding: 12px 32px;
+        }
+
+        /* Variable Picker */
+        .variable-picker {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 12px 0 20px;
+        }
+
+        .variable-tag {
+            padding: 6px 12px;
+            background: var(--grey-100);
+            border: 1px solid var(--grey-300);
+            border-radius: 6px;
+            font-size: 12px;
+            font-family: 'Monaco', monospace;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .variable-tag:hover {
+            background: var(--purple-ultralight);
+            border-color: var(--purple-primary);
+        }
+
+        /* Tone Selector */
+        .tone-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .tone-option {
+            background: var(--white);
+            border: 2px solid var(--grey-200);
+            border-radius: 10px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tone-option:hover {
+            border-color: var(--purple-light);
+        }
+
+        .tone-option.selected {
+            border-color: var(--purple-primary);
+            background: var(--purple-ultralight);
+        }
+
+        .tone-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 4px;
+        }
+
+        .tone-desc {
+            font-size: 13px;
+            color: var(--grey-600);
+        }
+
+        /* Toggle Switch */
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .toggle-switch {
+            width: 50px;
+            height: 28px;
+            background: var(--grey-300);
+            border-radius: 14px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: var(--purple-primary);
+        }
+
+        .toggle-knob {
+            width: 22px;
+            height: 22px;
+            background: var(--white);
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: all 0.3s;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .toggle-switch.active .toggle-knob {
+            left: 25px;
+        }
+
+        .toggle-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--grey-700);
+        }
+
+        /* Duplicate Button */
+        .duplicate-btn {
+            position: absolute;
+            top: 28px;
+            right: 28px;
+            background: var(--white);
+            border: 1.5px solid var(--grey-200);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--grey-700);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: none;
+        }
+
+        .agent-card:hover .duplicate-btn {
+            display: block;
+        }
+
+        .duplicate-btn:hover {
+            background: var(--purple-ultralight);
+            border-color: var(--purple-primary);
+            color: var(--purple-primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .agent-grid {
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 240px;
+            }
+
+            .config-content {
+                padding: 24px;
+            }
+
+            .channel-grid,
+            .role-grid,
+            .trigger-mode-selector,
+            .tone-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-container">
+                <div class="logo">lillia</div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-label">Main</div>
+                <div class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">👥</span>
+                    Users
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">🎯</span>
+                    Programs
+                </div>
+                <div class="nav-item active" onclick="showView('agents')">
+                    <span class="nav-icon">🤖</span>
+                    Outreach
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">📈</span>
+                    Analytics
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-label">Settings</div>
+                <div class="nav-item">
+                    <span class="nav-icon">🔔</span>
+                    Channels
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">📚</span>
+                    Knowledge Base
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    Configuration
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Agent List View -->
+            <div id="agents-view" class="view active">
+                <div class="header">
+                    <div class="header-left">
+                        <h2>Outreach Agents</h2>
+                        <div class="header-badge">V3.0</div>
+                    </div>
+                    <button class="btn-primary" onclick="showCreateAgent()">+ Create Agent</button>
+                </div>
+
+                <div class="view-content">
+                    <div class="filter-bar">
+                        <div class="filter-chip active">All Agents</div>
+                        <div class="filter-chip">Active</div>
+                        <div class="filter-chip">Draft</div>
+                        <div class="filter-chip">Voice</div>
+                        <div class="filter-chip">WhatsApp</div>
+                        <div class="filter-chip">SMS</div>
+                        <div class="filter-chip">Email</div>
+                    </div>
+
+                    <div class="agent-grid">
+                        <!-- Sample Agent Card 1 -->
+                        <div class="agent-card" onclick="showAgentConfig('medication-reminder', true)">
+                            <button class="duplicate-btn" onclick="event.stopPropagation(); duplicateAgent('medication-reminder')">⎘ Duplicate</button>
+                            <div class="agent-header">
+                                <div>
+                                    <div class="agent-title">Medication Reminder</div>
+                                    <div class="agent-type">Reminder Agent • Voice</div>
+                                </div>
+                                <div class="agent-status active">ACTIVE</div>
+                            </div>
+                            <div class="agent-meta">
+                                <div class="meta-item">
+                                    <div class="meta-label">Total Runs</div>
+                                    <div class="meta-value">2,847</div>
+                                </div>
+                                <div class="meta-item">
+                                    <div class="meta-label">Success Rate</div>
+                                    <div class="meta-value">94%</div>
+                                </div>
+                            </div>
+                            <div class="channel-badges">
+                                <div class="channel-badge">📞 Voice</div>
+                            </div>
+                            <div class="role-badge">👤 Patients</div>
+                        </div>
+
+                        <!-- Sample Agent Card 2 -->
+                        <div class="agent-card" onclick="showAgentConfig('onboarding-whatsapp', true)">
+                            <button class="duplicate-btn" onclick="event.stopPropagation(); duplicateAgent('onboarding-whatsapp')">⎘ Duplicate</button>
+                            <div class="agent-header">
+                                <div>
+                                    <div class="agent-title">New Patient Onboarding</div>
+                                    <div class="agent-type">Onboarding Agent • WhatsApp</div>
+                                </div>
+                                <div class="agent-status active">ACTIVE</div>
+                            </div>
+                            <div class="agent-meta">
+                                <div class="meta-item">
+                                    <div class="meta-label">Total Runs</div>
+                                    <div class="meta-value">1,523</div>
+                                </div>
+                                <div class="meta-item">
+                                    <div class="meta-label">Success Rate</div>
+                                    <div class="meta-value">88%</div>
+                                </div>
+                            </div>
+                            <div class="channel-badges">
+                                <div class="channel-badge">💬 WhatsApp</div>
+                            </div>
+                            <div class="role-badge">👤 Patients</div>
+                        </div>
+
+                        <!-- Sample Agent Card 3 -->
+                        <div class="agent-card" onclick="showAgentConfig('appointment-sms', true)">
+                            <button class="duplicate-btn" onclick="event.stopPropagation(); duplicateAgent('appointment-sms')">⎘ Duplicate</button>
+                            <div class="agent-header">
+                                <div>
+                                    <div class="agent-title">Appointment Reminder</div>
+                                    <div class="agent-type">Reminder Agent • SMS</div>
+                                </div>
+                                <div class="agent-status active">ACTIVE</div>
+                            </div>
+                            <div class="agent-meta">
+                                <div class="meta-item">
+                                    <div class="meta-label">Total Runs</div>
+                                    <div class="meta-value">5,231</div>
+                                </div>
+                                <div class="meta-item">
+                                    <div class="meta-label">Success Rate</div>
+                                    <div class="meta-value">97%</div>
+                                </div>
+                            </div>
+                            <div class="channel-badges">
+                                <div class="channel-badge">📱 SMS</div>
+                            </div>
+                            <div class="role-badge">👤 Patients</div>
+                        </div>
+
+                        <!-- Sample Agent Card 4 -->
+                        <div class="agent-card">
+                            <button class="duplicate-btn" onclick="event.stopPropagation(); duplicateAgent('provider-alert')">⎘ Duplicate</button>
+                            <div class="agent-header">
+                                <div>
+                                    <div class="agent-title">Provider Alert System</div>
+                                    <div class="agent-type">Alert Agent • Email</div>
+                                </div>
+                                <div class="agent-status draft">DRAFT</div>
+                            </div>
+                            <div class="agent-meta">
+                                <div class="meta-item">
+                                    <div class="meta-label">Total Runs</div>
+                                    <div class="meta-value">0</div>
+                                </div>
+                                <div class="meta-item">
+                                    <div class="meta-label">Success Rate</div>
+                                    <div class="meta-value">—</div>
+                                </div>
+                            </div>
+                            <div class="channel-badges">
+                                <div class="channel-badge">📧 Email</div>
+                            </div>
+                            <div class="role-badge">⚕️ Care Providers</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent Configuration View -->
+            <div id="config-view" class="view">
+                <div class="header">
+                    <div class="header-left">
+                        <button class="btn-secondary" onclick="showView('agents')">← Back to Agents</button>
+                    </div>
+                    <button class="btn-primary" id="activate-btn" onclick="activateAgent()">Activate Agent</button>
+                </div>
+
+                <div class="view-content">
+                    <div class="config-container">
+                        <div class="config-header">
+                            <div class="config-title" id="config-title">Create New Agent</div>
+                            <div class="config-subtitle">Follow the 8-step process to configure your outreach agent</div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="progress-bar">
+                            <div class="progress-step active" onclick="goToStep(1)">
+                                <div class="step-number">STEP 1</div>
+                                <div class="step-label">Channel</div>
+                            </div>
+                            <div class="progress-step" onclick="goToStep(2)">
+                                <div class="step-number">STEP 2</div>
+                                <div class="step-label">Basics</div>
+                            </div>
+                            <div class="progress-step" onclick="goToStep(3)">
+                                <div class="step-number">STEP 3</div>
+                                <div class="step-label">Knowledge</div>
+                            </div>
+                            <div class="progress-step" onclick="goToStep(4)">
+                                <div class="step-number">STEP 4</div>
+                                <div class="step-label">Config</div>
+                            </div>
+                            <div class="progress-step" onclick="goToStep(5)">
+                                <div class="step-number">STEP 5</div>
+                                <div class="step-label">Prompt</div>
+                            </div>
+                            <div class="progress-step" onclick="goToStep(6)">
+                                <div class="step-number">STEP 6</div>
+                                <div class="step-label">Documents</div>
+                            </div>
+                            <div class="progress-step" onclick="goToStep(7)">
+                                <div class="step-number">STEP 7</div>
+                                <div class="step-label">Triggers</div>
+                            </div>
+                            <div class="progress-step" onclick="goToStep(8)">
+                                <div class="step-number">STEP 8</div>
+                                <div class="step-label">Review</div>
+                            </div>
+                        </div>
+
+                        <!-- Step Content -->
+                        <div class="config-content">
+                            <!-- Step 1: Channel Selection -->
+                            <div id="step-1" class="step-container active">
+                                <div class="step-title">Step 1: Select Channel</div>
+                                <div class="step-description">
+                                    Choose ONE communication channel for this agent. For multi-channel outreach, you'll duplicate this agent and change the channel.
+                                </div>
+
+                                <div class="info-box">
+                                    <div class="info-box-title">💡 One Channel Per Agent</div>
+                                    <div class="info-box-text">
+                                        Unlike previous versions, V3 uses a single-channel approach. Each agent operates on one channel to ensure clear configuration and better analytics. Need the same agent on multiple channels? Use the Duplicate feature.
+                                    </div>
+                                </div>
+
+                                <div class="channel-grid">
+                                    <div class="channel-option" onclick="selectChannel('voice')">
+                                        <span class="channel-icon">📞</span>
+                                        <div class="channel-name">Voice Call</div>
+                                        <div class="channel-desc">AI-powered phone conversations via Retell AI</div>
+                                        <span class="ai-badge">AI-ENABLED</span>
+                                    </div>
+                                    <div class="channel-option" onclick="selectChannel('whatsapp')">
+                                        <span class="channel-icon">💬</span>
+                                        <div class="channel-name">WhatsApp</div>
+                                        <div class="channel-desc">Two-way chat via WhatsApp Business API</div>
+                                        <span class="ai-badge">AI-ENABLED</span>
+                                    </div>
+                                    <div class="channel-option" onclick="selectChannel('sms')">
+                                        <span class="channel-icon">📱</span>
+                                        <div class="channel-name">SMS</div>
+                                        <div class="channel-desc">Simple text message delivery</div>
+                                    </div>
+                                    <div class="channel-option" onclick="selectChannel('email')">
+                                        <span class="channel-icon">📧</span>
+                                        <div class="channel-name">Email</div>
+                                        <div class="channel-desc">Email delivery with templates</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Basics -->
+                            <div id="step-2" class="step-container">
+                                <div class="step-title">Step 2: Agent Basics</div>
+                                <div class="step-description">
+                                    Provide basic information and select who this agent will reach out to.
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Agent Name</label>
+                                    <input type="text" class="form-input" id="agent-name" placeholder="e.g., Medication Reminder — Voice">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Agent Description</label>
+                                    <textarea class="form-textarea" id="agent-desc" placeholder="Describe what this agent does..."></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Target Role (Who will receive this outreach?)</label>
+                                    <div class="role-grid">
+                                        <div class="role-option" onclick="selectRole('patients')">
+                                            <div class="role-name">👤 Patients</div>
+                                            <div class="role-desc">Enrolled patients or members. For medication reminders, check-ins, appointments, surveys.</div>
+                                        </div>
+                                        <div class="role-option" onclick="selectRole('caregivers')">
+                                            <div class="role-name">👨‍👩‍👧 Caregivers</div>
+                                            <div class="role-desc">Family members or designated caregivers. For updates, care instructions, coordination.</div>
+                                        </div>
+                                        <div class="role-option" onclick="selectRole('providers')">
+                                            <div class="role-name">⚕️ Care Providers</div>
+                                            <div class="role-desc">Nurses, coaches, care managers. For alerts, reminders, patient status updates.</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Program (Optional)</label>
+                                    <select class="form-select" id="program-select">
+                                        <option value="">No program association</option>
+                                        <option value="diabetes">Diabetes Care Management</option>
+                                        <option value="hypertension">Hypertension Program</option>
+                                        <option value="cardiac">Cardiac Rehab</option>
+                                        <option value="maternity">Maternity Care</option>
+                                    </select>
+                                </div>
+
+                                <div class="info-box">
+                                    <div class="info-box-title">📋 Programs Are Now Optional</div>
+                                    <div class="info-box-text">
+                                        Programs serve as a grouping and filtering mechanism. You can create agents without program association for simpler use cases.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Knowledge Base -->
+                            <div id="step-3" class="step-container">
+                                <div class="step-title">Step 3: Knowledge Base</div>
+                                <div class="step-description" id="kb-description">
+                                    Select pre-built templates and custom knowledge sources to guide your agent's conversations.
+                                </div>
+
+                                <div id="kb-content">
+                                    <div class="kb-section">
+                                        <div class="kb-section-title">
+                                            <span>⭐</span> Pre-Built Templates
+                                        </div>
+
+                                        <div class="kb-item" onclick="toggleKB(this)">
+                                            <div class="kb-checkbox"></div>
+                                            <div class="kb-content">
+                                                <div class="kb-name">
+                                                    Safety Guardrails
+                                                    <span class="kb-priority priority-highest">HIGHEST PRIORITY</span>
+                                                </div>
+                                                <div class="kb-desc">
+                                                    Prohibited statements, emergency protocols, escalation triggers, liability disclaimers. Prevents medical advice, diagnoses, or prescriptions.
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="kb-item" onclick="toggleKB(this)">
+                                            <div class="kb-checkbox"></div>
+                                            <div class="kb-content">
+                                                <div class="kb-name">
+                                                    Healthcare Compliance
+                                                    <span class="kb-priority priority-highest">HIGHEST PRIORITY</span>
+                                                </div>
+                                                <div class="kb-desc">
+                                                    HIPAA-safe language, consent reminders, recording disclosures, geographic regulatory requirements (TCPA, GDPR, TRAI DND).
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="kb-item" onclick="toggleKB(this)">
+                                            <div class="kb-checkbox"></div>
+                                            <div class="kb-content">
+                                                <div class="kb-name">
+                                                    Communication Best Practices
+                                                    <span class="kb-priority priority-base">BASE</span>
+                                                </div>
+                                                <div class="kb-desc">
+                                                    Empathetic language patterns, active listening cues, cultural sensitivity guidelines, handling difficult emotions.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="kb-section">
+                                        <div class="kb-section-title">
+                                            <span>📚</span> Custom Knowledge Bases
+                                        </div>
+
+                                        <div class="kb-item" onclick="toggleKB(this)">
+                                            <div class="kb-checkbox"></div>
+                                            <div class="kb-content">
+                                                <div class="kb-name">
+                                                    Diabetes Clinical Protocols
+                                                    <span class="kb-priority priority-medium">MEDIUM</span>
+                                                </div>
+                                                <div class="kb-desc">
+                                                    Treatment guidelines, medication information, blood glucose management, diet recommendations specific to diabetes care.
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="kb-item" onclick="toggleKB(this)">
+                                            <div class="kb-checkbox"></div>
+                                            <div class="kb-content">
+                                                <div class="kb-name">
+                                                    Partner Terminology & Branding
+                                                    <span class="kb-priority priority-medium">MEDIUM</span>
+                                                </div>
+                                                <div class="kb-desc">
+                                                    Client-specific terminology, branding guidelines, escalation contacts, preferred language and tone.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-box">
+                                        <div class="info-box-title">🎯 Knowledge Priority</div>
+                                        <div class="info-box-text">
+                                            When conflicts arise, higher priority sources always win: Custom Knowledge > Safety Guardrails > Healthcare Compliance > Communication Best Practices. Safety cannot be overridden.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="kb-skip" style="display: none;">
+                                    <div class="info-box">
+                                        <div class="info-box-title">ℹ️ Knowledge Base Not Available</div>
+                                        <div class="info-box-text">
+                                            Knowledge bases are only available for AI-enabled channels (Voice and WhatsApp). Non-AI channels use simple message templates.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 4: Configuration -->
+                            <div id="step-4" class="step-container">
+                                <div class="step-title">Step 4: Agent Configuration</div>
+                                <div class="step-description">
+                                    Configure channel-specific settings and behavior.
+                                </div>
+
+                                <!-- AI Channel Configuration -->
+                                <div id="ai-config">
+                                    <div class="form-group">
+                                        <label class="form-label">Conversation Tone</label>
+                                        <div class="tone-grid">
+                                            <div class="tone-option" onclick="selectTone(this)">
+                                                <div class="tone-name">Friendly & Warm</div>
+                                                <div class="tone-desc">Casual, approachable, conversational</div>
+                                            </div>
+                                            <div class="tone-option" onclick="selectTone(this)">
+                                                <div class="tone-name">Professional</div>
+                                                <div class="tone-desc">Formal, clear, business-appropriate</div>
+                                            </div>
+                                            <div class="tone-option" onclick="selectTone(this)">
+                                                <div class="tone-name">Empathetic & Supportive</div>
+                                                <div class="tone-desc">Gentle, understanding, emotional support</div>
+                                            </div>
+                                            <div class="tone-option" onclick="selectTone(this)">
+                                                <div class="tone-name">Concise & Direct</div>
+                                                <div class="tone-desc">Brief, to-the-point, minimal small talk</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Behavior Settings</label>
+                                        <div class="toggle-group">
+                                            <div class="toggle-switch" onclick="toggleSwitch(this)">
+                                                <div class="toggle-knob"></div>
+                                            </div>
+                                            <span class="toggle-label">Allow interruptions during speech (Voice only)</span>
+                                        </div>
+                                        <div class="toggle-group">
+                                            <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                                                <div class="toggle-knob"></div>
+                                            </div>
+                                            <span class="toggle-label">Enable escalation to human agent</span>
+                                        </div>
+                                        <div class="toggle-group">
+                                            <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                                                <div class="toggle-knob"></div>
+                                            </div>
+                                            <span class="toggle-label">Record conversation for review</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Maximum Conversation Duration (minutes)</label>
+                                        <input type="number" class="form-input" value="10" min="1" max="60">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Silence Timeout (seconds)</label>
+                                        <input type="number" class="form-input" value="5" min="3" max="30">
+                                    </div>
+                                </div>
+
+                                <!-- Non-AI Channel Configuration -->
+                                <div id="non-ai-config" style="display: none;">
+                                    <div class="form-group">
+                                        <label class="form-label">Sender ID / From Address</label>
+                                        <input type="text" class="form-input" placeholder="e.g., Lillia Health, noreply@lillia.com">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Character Limit (SMS only)</label>
+                                        <select class="form-select">
+                                            <option value="single">Single message (160 characters)</option>
+                                            <option value="multi">Multi-part (up to 1600 characters)</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="toggle-group">
+                                        <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                                            <div class="toggle-knob"></div>
+                                        </div>
+                                        <span class="toggle-label">Track delivery status</span>
+                                    </div>
+
+                                    <div class="toggle-group">
+                                        <div class="toggle-switch" onclick="toggleSwitch(this)">
+                                            <div class="toggle-knob"></div>
+                                        </div>
+                                        <span class="toggle-label">Track open/read receipts</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 5: Prompt / Message -->
+                            <div id="step-5" class="step-container">
+                                <div class="step-title">Step 5: Prompt / Message Building</div>
+                                <div class="step-description" id="prompt-description">
+                                    Write instructions that tell your AI agent what to do and how to conduct the conversation.
+                                </div>
+
+                                <div id="prompt-content">
+                                    <div class="form-group">
+                                        <label class="form-label">Agent Instructions / Prompt</label>
+                                        <div class="variable-picker">
+                                            <span style="font-size: 12px; font-weight: 600; color: var(--grey-600); margin-right: 8px;">Insert variables:</span>
+                                            <div class="variable-tag" onclick="insertVariable('{{patient_name}}')">{{patient_name}}</div>
+                                            <div class="variable-tag" onclick="insertVariable('{{program_name}}')">{{program_name}}</div>
+                                            <div class="variable-tag" onclick="insertVariable('{{medication_name}}')">{{medication_name}}</div>
+                                            <div class="variable-tag" onclick="insertVariable('{{appointment_date}}')">{{appointment_date}}</div>
+                                            <div class="variable-tag" onclick="insertVariable('{{coach_name}}')">{{coach_name}}</div>
+                                        </div>
+                                        <textarea class="form-textarea" id="agent-prompt" style="min-height: 250px;" placeholder="You are a medication reminder assistant for {{program_name}}. Your goal is to:
+
+1. Greet the patient warmly using their name ({{patient_name}})
+2. Remind them about their {{medication_name}} scheduled for today
+3. Ask if they have taken it
+4. If not, gently encourage them and ask if there are any barriers
+5. Log their response and thank them
+
+Always be supportive, never judgmental. If they express distress, follow escalation protocol."></textarea>
+                                    </div>
+
+                                    <div class="info-box">
+                                        <div class="info-box-title">💡 Prompt Writing Tips</div>
+                                        <div class="info-box-text">
+                                            • Be specific about the goal and steps<br>
+                                            • Include conversation flow structure<br>
+                                            • Specify what information to collect<br>
+                                            • Define escalation conditions<br>
+                                            • Use variables to personalize content
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="template-content" style="display: none;">
+                                    <div class="form-group">
+                                        <label class="form-label">Message Template</label>
+                                        <div class="variable-picker">
+                                            <span style="font-size: 12px; font-weight: 600; color: var(--grey-600); margin-right: 8px;">Insert variables:</span>
+                                            <div class="variable-tag" onclick="insertVariable('{{patient_name}}', 'message-template')">{{patient_name}}</div>
+                                            <div class="variable-tag" onclick="insertVariable('{{provider_name}}', 'message-template')">{{provider_name}}</div>
+                                            <div class="variable-tag" onclick="insertVariable('{{appointment_date}}', 'message-template')">{{appointment_date}}</div>
+                                            <div class="variable-tag" onclick="insertVariable('{{appointment_time}}', 'message-template')">{{appointment_time}}</div>
+                                        </div>
+                                        <textarea class="form-textarea" id="message-template" placeholder="Hi {{patient_name}}, this is a reminder about your appointment with {{provider_name}} on {{appointment_date}} at {{appointment_time}}. Reply YES to confirm or call us to reschedule."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 6: Document Templates -->
+                            <div id="step-6" class="step-container">
+                                <div class="step-title">Step 6: Document Templates</div>
+                                <div class="step-description">
+                                    Link document templates for structured data capture from conversations.
+                                </div>
+
+                                <!-- Gated Feature Example -->
+                                <div id="documents-gated" style="display: none;">
+                                    <div class="gated-feature">
+                                        <div class="gated-icon">🔒</div>
+                                        <div class="gated-title">Documents Module Required</div>
+                                        <div class="gated-text">
+                                            Document templates are part of the Documents module, which is not included in your current plan. Upgrade to automatically capture and structure data from conversations.
+                                        </div>
+                                        <button class="btn-upsell">Learn More About Documents Module</button>
+                                    </div>
+                                </div>
+
+                                <!-- Available Feature -->
+                                <div id="documents-available">
+                                    <div class="form-group">
+                                        <label class="form-label">Select Document Template (Optional)</label>
+                                        <select class="form-select" id="template-select" onchange="showTemplateFields()">
+                                            <option value="">No template</option>
+                                            <option value="adherence">Medication Adherence Log</option>
+                                            <option value="onboarding">Onboarding Summary</option>
+                                            <option value="followup">Follow-up Notes</option>
+                                            <option value="survey">Survey Response Collection</option>
+                                        </select>
+                                    </div>
+
+                                    <div id="template-fields" style="display: none;">
+                                        <div class="info-box">
+                                            <div class="info-box-title">📝 Template Field Mapping</div>
+                                            <div class="info-box-text">
+                                                The agent will automatically extract and populate these fields from the conversation:
+                                            </div>
+                                        </div>
+
+                                        <div class="review-section" style="margin-top: 20px;">
+                                            <div class="review-item">
+                                                <span class="review-label">adherence_status</span>
+                                                <span class="review-value">→ Did patient take medication?</span>
+                                            </div>
+                                            <div class="review-item">
+                                                <span class="review-label">barriers_mentioned</span>
+                                                <span class="review-value">→ Any obstacles reported?</span>
+                                            </div>
+                                            <div class="review-item">
+                                                <span class="review-label">follow_up_needed</span>
+                                                <span class="review-value">→ Does patient need additional support?</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-box" style="margin-top: 24px;">
+                                        <div class="info-box-title">🤖 Automatic Data Extraction</div>
+                                        <div class="info-box-text">
+                                            When a template is linked, the agent's prompt is automatically enhanced with instructions to collect the required data. The Retell AI integration handles extraction and field population.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 7: Triggers -->
+                            <div id="step-7" class="step-container">
+                                <div class="step-title">Step 7: Trigger Configuration</div>
+                                <div class="step-description">
+                                    Configure how and when this agent should be triggered to run.
+                                </div>
+
+                                <div class="trigger-mode-selector">
+                                    <div class="trigger-mode" onclick="selectTriggerMode(1)">
+                                        <div class="trigger-mode-title">🔌 API / Webhook</div>
+                                        <div class="trigger-mode-desc">
+                                            External systems trigger the agent via API call. Best for EHR, scheduling software, or custom integrations.
+                                        </div>
+                                    </div>
+                                    <div class="trigger-mode" onclick="selectTriggerMode(2)">
+                                        <div class="trigger-mode-title">⚡ Internal Ecosystem</div>
+                                        <div class="trigger-mode-desc">
+                                            Triggered by events within the platform. Patient onboarding, missed check-ins, alerts, etc.
+                                        </div>
+                                    </div>
+                                    <div class="trigger-mode" onclick="selectTriggerMode(3)">
+                                        <div class="trigger-mode-title">🗺️ Journey Task Link</div>
+                                        <div class="trigger-mode-desc">
+                                            Linked to a specific task in Journey Tracker. Runs when journey reaches that task.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Mode 1: API/Webhook Config -->
+                                <div id="trigger-config-1" class="trigger-config">
+                                    <div class="form-group">
+                                        <label class="form-label">API Endpoint</label>
+                                        <div class="code-block">POST https://api.lillia.com/v1/outreach/agents/{agent_id}/trigger</div>
+                                    </div>
+
+                                    <div class="info-box">
+                                        <div class="info-box-title">📡 Integration Instructions</div>
+                                        <div class="info-box-text">
+                                            After agent creation, you'll receive:<br>
+                                            • Agent ID for the endpoint<br>
+                                            • API authentication credentials<br>
+                                            • Sample request payload<br>
+                                            • Webhook response format
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Request Body Example</label>
+                                        <div class="code-block">{
+  "user_id": "usr_67890",
+  "variables": {
+    "medication_name": "Metformin 500mg",
+    "medication_time": "8:00 AM"
+  }
+}</div>
+                                    </div>
+                                </div>
+
+                                <!-- Mode 2: Internal Triggers Config -->
+                                <div id="trigger-config-2" class="trigger-config">
+                                    <div class="form-group">
+                                        <label class="form-label">Select Internal Trigger Event</label>
+                                        <select class="form-select" id="internal-trigger">
+                                            <option value="">Choose an event...</option>
+                                            <optgroup label="Patient Events">
+                                                <option value="patient-onboarded">When a new patient is onboarded</option>
+                                                <option value="missed-checkin">When a patient misses a scheduled check-in</option>
+                                                <option value="glucose-threshold">When a glucose reading exceeds threshold</option>
+                                                <option value="adherence-drop">When medication adherence drops below X%</option>
+                                                <option value="appointment-reminder">X days before/after appointment</option>
+                                            </optgroup>
+                                            <optgroup label="Provider Events">
+                                                <option value="patient-assigned">When a new patient is assigned to them</option>
+                                                <option value="patient-alert">When a patient in their panel has an alert</option>
+                                                <option value="daily-digest">Daily digest of patients needing attention</option>
+                                                <option value="escalation-routed">When an escalation is routed to them</option>
+                                            </optgroup>
+                                        </select>
+                                    </div>
+
+                                    <div class="info-box">
+                                        <div class="info-box-title">⚡ Event-Driven Automation</div>
+                                        <div class="info-box-text">
+                                            Internal triggers automatically respond to platform events. The agent runs immediately when the selected event occurs.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Mode 3: Journey Task Config -->
+                                <div id="trigger-config-3" class="trigger-config">
+                                    <div class="form-group">
+                                        <label class="form-label">Search Journey Tasks</label>
+                                        <input type="text" class="form-input" placeholder="Type to search for a journey task...">
+                                    </div>
+
+                                    <div class="review-section" style="margin-top: 20px;">
+                                        <div class="review-title">Available Tasks</div>
+                                        <div class="review-item" style="cursor: pointer;" onclick="selectJourneyTask(this)">
+                                            <span class="review-label">Day 7: Initial Follow-up Call</span>
+                                            <span class="review-value">Diabetes Care Journey</span>
+                                        </div>
+                                        <div class="review-item" style="cursor: pointer;" onclick="selectJourneyTask(this)">
+                                            <span class="review-label">Day 14: Medication Check</span>
+                                            <span class="review-value">Diabetes Care Journey</span>
+                                        </div>
+                                        <div class="review-item" style="cursor: pointer;" onclick="selectJourneyTask(this)">
+                                            <span class="review-label">Week 1: Onboarding Welcome</span>
+                                            <span class="review-value">Cardiac Rehab Journey</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-box warning-box" style="margin-top: 24px;">
+                                        <div class="info-box-title">🗺️ Journey Tracker Integration</div>
+                                        <div class="info-box-text">
+                                            This agent will inherit timing from the journey and report task completion back to Journey Tracker. Requires Journey Tracker access.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="info-box" style="margin-top: 32px;">
+                                    <div class="info-box-title">🔄 Why Outreach Stays Independent</div>
+                                    <div class="info-box-text">
+                                        The Outreach module operates independently from Journey Tracker. Journey Task Linkage is an integration option, not a requirement. This allows simpler deployments, external system triggers, and standalone outreach products.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 8: Review & Create -->
+                            <div id="step-8" class="step-container">
+                                <div class="step-title">Step 8: Review & Create</div>
+                                <div class="step-description">
+                                    Review your configuration and run validation before activation.
+                                </div>
+
+                                <div class="review-section">
+                                    <div class="review-title">📋 Configuration Summary</div>
+                                    <div class="review-item">
+                                        <span class="review-label">Channel</span>
+                                        <span class="review-value" id="review-channel">—</span>
+                                    </div>
+                                    <div class="review-item">
+                                        <span class="review-label">Agent Name</span>
+                                        <span class="review-value" id="review-name">—</span>
+                                    </div>
+                                    <div class="review-item">
+                                        <span class="review-label">Target Role</span>
+                                        <span class="review-value" id="review-role">—</span>
+                                    </div>
+                                    <div class="review-item">
+                                        <span class="review-label">Program</span>
+                                        <span class="review-value" id="review-program">—</span>
+                                    </div>
+                                    <div class="review-item">
+                                        <span class="review-label">Knowledge Bases</span>
+                                        <span class="review-value" id="review-kb">—</span>
+                                    </div>
+                                    <div class="review-item">
+                                        <span class="review-label">Document Template</span>
+                                        <span class="review-value" id="review-template">—</span>
+                                    </div>
+                                    <div class="review-item">
+                                        <span class="review-label">Trigger Mode</span>
+                                        <span class="review-value" id="review-trigger">—</span>
+                                    </div>
+                                </div>
+
+                                <div class="review-section" style="margin-top: 24px;">
+                                    <div class="review-title">✓ Pre-Activation Validation</div>
+
+                                    <div class="validation-checks">
+                                        <div class="validation-item pass">
+                                            <span class="validation-icon">✓</span>
+                                            <span class="validation-text">Channel configuration complete</span>
+                                        </div>
+                                        <div class="validation-item pass">
+                                            <span class="validation-icon">✓</span>
+                                            <span class="validation-text">Agent basics provided</span>
+                                        </div>
+                                        <div class="validation-item pass">
+                                            <span class="validation-icon">✓</span>
+                                            <span class="validation-text">Knowledge bases active and available</span>
+                                        </div>
+                                        <div class="validation-item pass">
+                                            <span class="validation-icon">✓</span>
+                                            <span class="validation-text">Prompt meets minimum requirements</span>
+                                        </div>
+                                        <div class="validation-item pass">
+                                            <span class="validation-icon">✓</span>
+                                            <span class="validation-text">Trigger configuration valid</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="info-box" style="margin-top: 24px; background: rgba(52, 199, 89, 0.1); border-left-color: var(--success);">
+                                    <div class="info-box-title" style="color: var(--success);">🎉 Ready to Activate!</div>
+                                    <div class="info-box-text">
+                                        All validation checks passed. Your agent is ready to be activated and start reaching out to users.
+                                    </div>
+                                </div>
+
+                                <div class="review-section" style="margin-top: 24px;">
+                                    <div class="review-title">🏗️ Active System Layers</div>
+                                    <div class="validation-checks">
+                                        <div class="validation-item pass">
+                                            <span class="validation-icon">✓</span>
+                                            <span class="validation-text">Agent Framework — Configured</span>
+                                        </div>
+                                        <div class="validation-item pass">
+                                            <span class="validation-icon">✓</span>
+                                            <span class="validation-text">Channel Delivery Layer — Voice configured</span>
+                                        </div>
+                                        <div class="validation-item pass">
+                                            <span class="validation-icon">✓</span>
+                                            <span class="validation-text">Knowledge Base Integration — 2 sources selected</span>
+                                        </div>
+                                        <div class="validation-item pass">
+                                            <span class="validation-icon">✓</span>
+                                            <span class="validation-text">Identity & Profile Resolution — Auto-enabled</span>
+                                        </div>
+                                        <div class="validation-item pass">
+                                            <span class="validation-icon">✓</span>
+                                            <span class="validation-text">Consent Management — Auto-enabled</span>
+                                        </div>
+                                        <div class="validation-item pass">
+                                            <span class="validation-icon">✓</span>
+                                            <span class="validation-text">Rate Limiting — Auto-enabled</span>
+                                        </div>
+                                        <div class="validation-item pass">
+                                            <span class="validation-icon">✓</span>
+                                            <span class="validation-text">Execution Logging & Monitoring — Auto-enabled</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer Navigation -->
+                        <div class="config-footer">
+                            <button class="btn-secondary btn-nav" onclick="previousStep()">← Previous Step</button>
+                            <div style="flex: 1;"></div>
+                            <button class="btn-secondary btn-nav" onclick="saveDraft()">Save as Draft</button>
+                            <button class="btn-primary btn-nav" onclick="nextStep()">Next Step →</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let isEditMode = false;
+        let selectedChannel = '';
+        let selectedRole = '';
+        let selectedTriggerMode = 0;
+        let selectedKBs = [];
+
+        function showView(viewName) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewName + '-view').classList.add('active');
+        }
+
+        function showCreateAgent() {
+            isEditMode = false;
+            currentStep = 1;
+            document.getElementById('config-title').textContent = 'Create New Agent';
+            document.getElementById('activate-btn').textContent = 'Activate Agent';
+            resetForm();
+            goToStep(1);
+            showView('config');
+        }
+
+        function showAgentConfig(agentId, editMode) {
+            isEditMode = editMode;
+            currentStep = 1;
+            if (editMode) {
+                document.getElementById('config-title').textContent = 'Edit Agent Configuration';
+                document.getElementById('activate-btn').textContent = 'Update Agent';
+                loadAgentData(agentId);
+            }
+            goToStep(1);
+            showView('config');
+        }
+
+        function loadAgentData(agentId) {
+            // Mock data loading
+            if (agentId === 'medication-reminder') {
+                selectChannel('voice');
+                document.getElementById('agent-name').value = 'Medication Reminder';
+                selectRole('patients');
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('agent-name').value = '';
+            document.getElementById('agent-desc').value = '';
+            selectedChannel = '';
+            selectedRole = '';
+            selectedKBs = [];
+            document.querySelectorAll('.channel-option, .role-option, .kb-item').forEach(el => {
+                el.classList.remove('selected');
+            });
+        }
+
+        function goToStep(stepNum) {
+            if (stepNum < 1 || stepNum > 8) return;
+
+            currentStep = stepNum;
+
+            // Update step containers
+            document.querySelectorAll('.step-container').forEach(s => s.classList.remove('active'));
+            document.getElementById('step-' + stepNum).classList.add('active');
+
+            // Update progress bar
+            document.querySelectorAll('.progress-step').forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index + 1 < stepNum) {
+                    step.classList.add('completed');
+                } else if (index + 1 === stepNum) {
+                    step.classList.add('active');
+                }
+            });
+
+            // Handle channel-specific content
+            if (stepNum === 3) {
+                updateKBStep();
+            }
+            if (stepNum === 4) {
+                updateConfigStep();
+            }
+            if (stepNum === 5) {
+                updatePromptStep();
+            }
+            if (stepNum === 8) {
+                updateReviewStep();
+            }
+        }
+
+        function nextStep() {
+            if (currentStep < 8) {
+                goToStep(currentStep + 1);
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                goToStep(currentStep - 1);
+            }
+        }
+
+        function selectChannel(channel) {
+            selectedChannel = channel;
+            document.querySelectorAll('.channel-option').forEach(opt => opt.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+        }
+
+        function selectRole(role) {
+            selectedRole = role;
+            document.querySelectorAll('.role-option').forEach(opt => opt.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+        }
+
+        function toggleKB(element) {
+            element.classList.toggle('selected');
+        }
+
+        function selectTone(element) {
+            document.querySelectorAll('.tone-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        function toggleSwitch(element) {
+            element.classList.toggle('active');
+        }
+
+        function insertVariable(variable, targetId = 'agent-prompt') {
+            const textarea = document.getElementById(targetId);
+            const cursorPos = textarea.selectionStart;
+            const textBefore = textarea.value.substring(0, cursorPos);
+            const textAfter = textarea.value.substring(cursorPos);
+            textarea.value = textBefore + variable + textAfter;
+            textarea.focus();
+            textarea.selectionStart = textarea.selectionEnd = cursorPos + variable.length;
+        }
+
+        function showTemplateFields() {
+            const select = document.getElementById('template-select');
+            const fieldsDiv = document.getElementById('template-fields');
+            if (select.value) {
+                fieldsDiv.style.display = 'block';
+            } else {
+                fieldsDiv.style.display = 'none';
+            }
+        }
+
+        function selectTriggerMode(mode) {
+            selectedTriggerMode = mode;
+            document.querySelectorAll('.trigger-mode').forEach(tm => tm.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+
+            document.querySelectorAll('.trigger-config').forEach(tc => tc.classList.remove('active'));
+            document.getElementById('trigger-config-' + mode).classList.add('active');
+        }
+
+        function selectJourneyTask(element) {
+            document.querySelectorAll('.review-section .review-item').forEach(item => {
+                item.style.background = '';
+            });
+            element.style.background = 'var(--purple-ultralight)';
+        }
+
+        function updateKBStep() {
+            const isAI = (selectedChannel === 'voice' || selectedChannel === 'whatsapp');
+            document.getElementById('kb-content').style.display = isAI ? 'block' : 'none';
+            document.getElementById('kb-skip').style.display = isAI ? 'none' : 'block';
+
+            if (isAI) {
+                document.getElementById('kb-description').textContent =
+                    'Select pre-built templates and custom knowledge sources to guide your agent's conversations.';
+            } else {
+                document.getElementById('kb-description').textContent =
+                    'Knowledge bases are only available for AI-enabled channels.';
+            }
+        }
+
+        function updateConfigStep() {
+            const isAI = (selectedChannel === 'voice' || selectedChannel === 'whatsapp');
+            document.getElementById('ai-config').style.display = isAI ? 'block' : 'none';
+            document.getElementById('non-ai-config').style.display = isAI ? 'none' : 'block';
+        }
+
+        function updatePromptStep() {
+            const isAI = (selectedChannel === 'voice' || selectedChannel === 'whatsapp');
+            document.getElementById('prompt-content').style.display = isAI ? 'block' : 'none';
+            document.getElementById('template-content').style.display = isAI ? 'none' : 'block';
+
+            if (isAI) {
+                document.getElementById('prompt-description').textContent =
+                    'Write instructions that tell your AI agent what to do and how to conduct the conversation.';
+            } else {
+                document.getElementById('prompt-description').textContent =
+                    'Write a message template with variable placeholders for personalization.';
+            }
+        }
+
+        function updateReviewStep() {
+            const channelNames = {
+                'voice': '📞 Voice Call',
+                'whatsapp': '💬 WhatsApp',
+                'sms': '📱 SMS',
+                'email': '📧 Email'
+            };
+            const roleNames = {
+                'patients': '👤 Patients',
+                'caregivers': '👨‍👩‍👧 Caregivers',
+                'providers': '⚕️ Care Providers'
+            };
+
+            document.getElementById('review-channel').textContent = channelNames[selectedChannel] || '—';
+            document.getElementById('review-name').textContent = document.getElementById('agent-name').value || '—';
+            document.getElementById('review-role').textContent = roleNames[selectedRole] || '—';
+
+            const programSelect = document.getElementById('program-select');
+            document.getElementById('review-program').textContent =
+                programSelect.options[programSelect.selectedIndex].text || 'None';
+
+            const selectedKBCount = document.querySelectorAll('.kb-item.selected').length;
+            document.getElementById('review-kb').textContent = selectedKBCount + ' selected';
+
+            const templateSelect = document.getElementById('template-select');
+            document.getElementById('review-template').textContent =
+                templateSelect.options[templateSelect.selectedIndex].text || 'None';
+
+            const triggerModes = ['Not configured', 'API/Webhook', 'Internal Ecosystem', 'Journey Task Link'];
+            document.getElementById('review-trigger').textContent = triggerModes[selectedTriggerMode] || '—';
+        }
+
+        function saveDraft() {
+            alert('Agent configuration saved as draft!');
+        }
+
+        function activateAgent() {
+            if (currentStep === 8) {
+                alert('Agent activated successfully! 🎉\n\nYour agent is now live and will start running based on the configured triggers.');
+                showView('agents');
+            } else {
+                alert('Please complete all steps before activating the agent.');
+            }
+        }
+
+        function duplicateAgent(agentId) {
+            alert('Agent duplicated! You can now change the channel or modify other settings.');
+            showCreateAgent();
+        }
+    </script>
+</body>
+</html>

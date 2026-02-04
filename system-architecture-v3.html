@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lillia Outreach Module V3 - System Architecture & Integration Flows</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --purple-primary: #7848FE;
+            --purple-secondary: #9F7BFF;
+            --purple-light: #D3B9F9;
+            --purple-ultralight: #EADEFC;
+            --purple-deep: #280470;
+            --peach-light: #FFD2BB;
+            --peach-lightest: #F9EAE4;
+            --grey-50: #FAFAFA;
+            --grey-100: #F5F5F7;
+            --grey-200: #E8E8ED;
+            --grey-300: #D1D1D6;
+            --grey-600: #636366;
+            --grey-900: #1C1C1E;
+            --white: #FFFFFF;
+            --success: #34C759;
+            --warning: #FF9500;
+            --error: #FF3B30;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background: linear-gradient(160deg, #FAFAFA 0%, #F0EDFF 50%, #FAF8FF 100%);
+            color: var(--grey-900);
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 16px;
+            padding: 48px;
+            box-shadow: 0 20px 60px rgba(120, 72, 254, 0.15);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+            padding-bottom: 32px;
+            border-bottom: 2px solid var(--grey-200);
+        }
+
+        .logo {
+            font-size: 56px;
+            font-weight: 700;
+            color: var(--purple-primary);
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: var(--grey-600);
+            line-height: 1.7;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--purple-primary), var(--purple-secondary));
+            color: var(--white);
+            padding: 8px 20px;
+            border-radius: 24px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-top: 16px;
+        }
+
+        .section {
+            margin-bottom: 64px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-icon {
+            font-size: 32px;
+        }
+
+        .section-description {
+            font-size: 15px;
+            color: var(--grey-600);
+            margin-bottom: 32px;
+            line-height: 1.7;
+        }
+
+        /* Component Grid */
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .component-card {
+            background: var(--white);
+            border: 2px solid var(--grey-200);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .component-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--purple-primary), var(--purple-secondary));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .component-card:hover {
+            border-color: var(--purple-primary);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(120, 72, 254, 0.15);
+        }
+
+        .component-card:hover::before {
+            opacity: 1;
+        }
+
+        .component-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 12px;
+        }
+
+        .component-desc {
+            font-size: 14px;
+            color: var(--grey-600);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .component-type {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .type-ui {
+            background: rgba(120, 72, 254, 0.1);
+            color: var(--purple-primary);
+        }
+
+        .type-core {
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--success);
+        }
+
+        .type-integration {
+            background: rgba(255, 149, 0, 0.1);
+            color: var(--warning);
+        }
+
+        .type-auto {
+            background: rgba(99, 99, 102, 0.1);
+            color: var(--grey-600);
+        }
+
+        /* Flow Diagram */
+        .flow-diagram {
+            background: var(--grey-50);
+            border-radius: 12px;
+            padding: 32px;
+            margin: 32px 0;
+            border: 2px solid var(--grey-200);
+        }
+
+        .flow-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--purple-primary);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .flow-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .flow-step {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 20px 24px;
+            border-left: 4px solid var(--purple-primary);
+            position: relative;
+        }
+
+        .flow-step::after {
+            content: '↓';
+            position: absolute;
+            bottom: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            color: var(--purple-primary);
+        }
+
+        .flow-step:last-child::after {
+            display: none;
+        }
+
+        .flow-step-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 8px;
+        }
+
+        .flow-step-desc {
+            font-size: 14px;
+            color: var(--grey-600);
+            line-height: 1.6;
+        }
+
+        .flow-step-components {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .flow-component-tag {
+            padding: 4px 10px;
+            background: var(--purple-ultralight);
+            border: 1px solid var(--purple-light);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--purple-primary);
+        }
+
+        /* Integration Map */
+        .integration-map {
+            background: linear-gradient(135deg, var(--purple-ultralight), var(--peach-lightest));
+            border-radius: 12px;
+            padding: 40px;
+            margin: 32px 0;
+        }
+
+        .integration-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .integration-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .integration-component {
+            flex: 1;
+            background: var(--white);
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid var(--grey-200);
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .integration-component.primary {
+            border-color: var(--purple-primary);
+            background: var(--purple-ultralight);
+        }
+
+        .integration-arrow {
+            font-size: 28px;
+            color: var(--purple-primary);
+            font-weight: 700;
+        }
+
+        .integration-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 4px;
+        }
+
+        .integration-sublabel {
+            font-size: 12px;
+            color: var(--grey-600);
+        }
+
+        /* Layer Diagram */
+        .layer-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            background: var(--grey-300);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 32px 0;
+        }
+
+        .layer {
+            background: var(--white);
+            padding: 24px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .layer:hover {
+            background: var(--purple-ultralight);
+            transform: translateX(8px);
+        }
+
+        .layer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .layer-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--grey-900);
+        }
+
+        .layer-status {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .status-configured {
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--success);
+        }
+
+        .status-auto {
+            background: rgba(99, 99, 102, 0.1);
+            color: var(--grey-600);
+        }
+
+        .layer-details {
+            font-size: 14px;
+            color: var(--grey-600);
+            line-height: 1.6;
+        }
+
+        /* Data Flow Boxes */
+        .data-flow {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 32px 0;
+        }
+
+        .data-box {
+            background: var(--white);
+            border: 2px solid var(--grey-200);
+            border-radius: 10px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .data-box-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--purple-primary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .data-box-content {
+            font-size: 13px;
+            color: var(--grey-700);
+            line-height: 1.6;
+        }
+
+        /* Code Block */
+        .code-section {
+            background: var(--grey-900);
+            color: #00FF00;
+            padding: 24px;
+            border-radius: 10px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 24px 0;
+            line-height: 1.8;
+        }
+
+        .code-comment {
+            color: #888;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: var(--purple-ultralight);
+            border-left: 4px solid var(--purple-primary);
+            padding: 20px 24px;
+            border-radius: 8px;
+            margin: 24px 0;
+        }
+
+        .info-box-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--purple-primary);
+            margin-bottom: 8px;
+        }
+
+        .info-box-text {
+            font-size: 14px;
+            color: var(--grey-700);
+            line-height: 1.7;
+        }
+
+        /* Changes Box */
+        .changes-box {
+            background: var(--peach-lightest);
+            border: 2px solid var(--peach-light);
+            border-radius: 12px;
+            padding: 28px;
+            margin: 32px 0;
+        }
+
+        .changes-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 20px;
+        }
+
+        .change-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            align-items: flex-start;
+        }
+
+        .change-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .change-text {
+            font-size: 14px;
+            color: var(--grey-700);
+            line-height: 1.6;
+        }
+
+        .change-text strong {
+            color: var(--grey-900);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .component-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+
+            .data-flow {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 32px 24px;
+            }
+
+            .integration-row {
+                flex-direction: column;
+            }
+
+            .integration-arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">lillia</div>
+            <h1>Outreach Module V3.0</h1>
+            <div class="subtitle">
+                System Architecture & Integration Flow Documentation
+            </div>
+            <div class="version-badge">VERSION 3.0 - REVISED ARCHITECTURE</div>
+        </div>
+
+        <!-- Key Changes Section -->
+        <div class="changes-box">
+            <div class="changes-title">🆕 What's New in V3.0</div>
+            <div class="change-item">
+                <span class="change-icon">📌</span>
+                <div class="change-text">
+                    <strong>One Channel Per Agent:</strong> Each agent is configured for a single channel. Multi-channel needs are handled via agent duplication, not multi-channel configuration within a single agent.
+                </div>
+            </div>
+            <div class="change-item">
+                <span class="change-icon">🎯</span>
+                <div class="change-text">
+                    <strong>Role Selection:</strong> Agents now explicitly target Patients, Caregivers, or Care Providers.
+                </div>
+            </div>
+            <div class="change-item">
+                <span class="change-icon">📚</span>
+                <div class="change-text">
+                    <strong>Pre-built Knowledge Base Templates:</strong> Three starter templates (Safety Guardrails, Healthcare Compliance, Communication Best Practices).
+                </div>
+            </div>
+            <div class="change-item">
+                <span class="change-icon">✍️</span>
+                <div class="change-text">
+                    <strong>Prompt Building Step:</strong> Dedicated step for writing agent instructions, which was missing from previous versions.
+                </div>
+            </div>
+            <div class="change-item">
+                <span class="change-icon">🔌</span>
+                <div class="change-text">
+                    <strong>Three Trigger Modes:</strong> API/Webhook, Internal Ecosystem Triggers, and Journey Task Linkage.
+                </div>
+            </div>
+            <div class="change-item">
+                <span class="change-icon">🔒</span>
+                <div class="change-text">
+                    <strong>Product Gating:</strong> Document Templates only available if client has Documents module.
+                </div>
+            </div>
+            <div class="change-item">
+                <span class="change-icon">📋</span>
+                <div class="change-text">
+                    <strong>Programs Optional:</strong> Agents can be created without program association for simpler use cases.
+                </div>
+            </div>
+            <div class="change-item">
+                <span class="change-icon">⎘</span>
+                <div class="change-text">
+                    <strong>Agent Duplication:</strong> First-class feature for creating channel variants of existing agents.
+                </div>
+            </div>
+        </div>
+
+        <!-- Component Overview Section -->
+        <div class="section">
+            <h2 class="section-title">
+                <span class="section-icon">🏗️</span>
+                System Components Overview
+            </h2>
+            <div class="section-description">
+                The Outreach Module V3 consists of several interconnected components that work together to deliver intelligent, multi-channel patient engagement.
+            </div>
+
+            <div class="component-grid">
+                <div class="component-card">
+                    <div class="component-name">Portal UI (Agent CRUD)</div>
+                    <div class="component-desc">
+                        User interface for creating, configuring, and managing outreach agents. 8-step configuration flow with progressive disclosure.
+                    </div>
+                    <span class="component-type type-ui">UI LAYER</span>
+                </div>
+
+                <div class="component-card">
+                    <div class="component-name">Agent Configuration Engine</div>
+                    <div class="component-desc">
+                        Backend service that stores and manages agent configurations, validates settings, and version-locks configurations.
+                    </div>
+                    <span class="component-type type-core">CORE</span>
+                </div>
+
+                <div class="component-card">
+                    <div class="component-name">Knowledge Base Layer</div>
+                    <div class="component-desc">
+                        Priority-based knowledge assembly system. Merges pre-built templates and custom KBs, resolves conflicts by priority.
+                    </div>
+                    <span class="component-type type-core">CORE</span>
+                </div>
+
+                <div class="component-card">
+                    <div class="component-name">Agent Framework (Conversation AI)</div>
+                    <div class="component-desc">
+                        Core conversational AI engine powered by Retell AI. Executes prompts, conducts conversations, extracts structured data.
+                    </div>
+                    <span class="component-type type-core">CORE</span>
+                </div>
+
+                <div class="component-card">
+                    <div class="component-name">Trigger Management System</div>
+                    <div class="component-desc">
+                        Handles three trigger modes: API/Webhook calls, Internal platform events, and Journey Tracker task linkage.
+                    </div>
+                    <span class="component-type type-core">CORE</span>
+                </div>
+
+                <div class="component-card">
+                    <div class="component-name">Identity & Profile Resolution</div>
+                    <div class="component-desc">
+                        Resolves user IDs to profiles, loads contact info for channels, verifies consent before outreach.
+                    </div>
+                    <span class="component-type type-auto">AUTO-ENABLED</span>
+                </div>
+
+                <div class="component-card">
+                    <div class="component-name">Consent Management Engine</div>
+                    <div class="component-desc">
+                        Tracks user consent per channel and program. Blocks outreach if consent not granted. GDPR/TCPA compliant.
+                    </div>
+                    <span class="component-type type-auto">AUTO-ENABLED</span>
+                </div>
+
+                <div class="component-card">
+                    <div class="component-name">Channels Layer</div>
+                    <div class="component-desc">
+                        Delivery infrastructure for Voice (Retell AI), WhatsApp (Business API), SMS (gateway), and Email.
+                    </div>
+                    <span class="component-type type-core">CORE</span>
+                </div>
+
+                <div class="component-card">
+                    <div class="component-name">Rate Limiting Layer</div>
+                    <div class="component-desc">
+                        Enforces rate limits to prevent spam. Channel-specific limits (e.g., max 3 calls per day per user).
+                    </div>
+                    <span class="component-type type-auto">AUTO-ENABLED</span>
+                </div>
+
+                <div class="component-card">
+                    <div class="component-name">Channel Providers</div>
+                    <div class="component-desc">
+                        External integrations: Retell AI for voice, WhatsApp Business API, SMS gateways, SMTP servers.
+                    </div>
+                    <span class="component-type type-integration">INTEGRATION</span>
+                </div>
+
+                <div class="component-card">
+                    <div class="component-name">Escalation System</div>
+                    <div class="component-desc">
+                        Monitors conversations for escalation triggers. Routes to human agents when needed.
+                    </div>
+                    <span class="component-type type-auto">AUTO-ENABLED</span>
+                </div>
+
+                <div class="component-card">
+                    <div class="component-name">Document Templates</div>
+                    <div class="component-desc">
+                        Integration with Documents module. Auto-populates templates with conversation data. Product-gated feature.
+                    </div>
+                    <span class="component-type type-integration">INTEGRATION</span>
+                </div>
+
+                <div class="component-card">
+                    <div class="component-name">Execution Logging Layer</div>
+                    <div class="component-desc">
+                        Logs all executions: transcripts, delivery status, outcomes, audit trail. Powers analytics.
+                    </div>
+                    <span class="component-type type-auto">AUTO-ENABLED</span>
+                </div>
+
+                <div class="component-card">
+                    <div class="component-name">Analytics & Insights Layer</div>
+                    <div class="component-desc">
+                        Generates engagement funnels, channel effectiveness reports, and performance dashboards.
+                    </div>
+                    <span class="component-type type-ui">UI LAYER</span>
+                </div>
+
+                <div class="component-card">
+                    <div class="component-name">Journey Tracker Integration</div>
+                    <div class="component-desc">
+                        Optional integration. Links agents to journey tasks, inherits timing, reports completion back.
+                    </div>
+                    <span class="component-type type-integration">INTEGRATION</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Component Interaction Map -->
+        <div class="section">
+            <h2 class="section-title">
+                <span class="section-icon">🔄</span>
+                Component Interaction Map
+            </h2>
+            <div class="section-description">
+                This diagram shows how all system components connect and interact during agent configuration and execution.
+            </div>
+
+            <div class="integration-map">
+                <div class="integration-row">
+                    <div class="integration-component primary">
+                        <div class="integration-label">PORTAL UI</div>
+                        <div class="integration-sublabel">Agent CRUD</div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; color: var(--purple-primary); font-size: 24px; margin: 20px 0;">↓</div>
+
+                <div class="integration-row">
+                    <div class="integration-component">
+                        <div class="integration-label">Agent Config Engine</div>
+                    </div>
+                    <span class="integration-arrow">↔</span>
+                    <div class="integration-component">
+                        <div class="integration-label">Knowledge Base Layer</div>
+                    </div>
+                    <span class="integration-arrow">↔</span>
+                    <div class="integration-component">
+                        <div class="integration-label">Document Templates</div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; color: var(--purple-primary); font-size: 24px; margin: 20px 0;">↓</div>
+
+                <div class="integration-row">
+                    <div class="integration-component primary">
+                        <div class="integration-label">AGENT FRAMEWORK</div>
+                        <div class="integration-sublabel">Conversation AI</div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; color: var(--purple-primary); font-size: 24px; margin: 20px 0;">↓ ↑</div>
+
+                <div class="integration-row">
+                    <div class="integration-component">
+                        <div class="integration-label">TRIGGER MGMT</div>
+                        <div class="integration-sublabel">API • Internal • Journey</div>
+                    </div>
+                    <span class="integration-arrow">→</span>
+                    <div class="integration-component">
+                        <div class="integration-label">CHANNELS LAYER</div>
+                        <div class="integration-sublabel">Voice • WA • SMS • Email</div>
+                    </div>
+                    <span class="integration-arrow">→</span>
+                    <div class="integration-component">
+                        <div class="integration-label">ESCALATION</div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; color: var(--purple-primary); font-size: 24px; margin: 20px 0;">↓</div>
+
+                <div class="integration-row">
+                    <div class="integration-component">
+                        <div class="integration-label">Rate Limiting</div>
+                    </div>
+                    <span class="integration-arrow">→</span>
+                    <div class="integration-component">
+                        <div class="integration-label">CHANNEL PROVIDERS</div>
+                        <div class="integration-sublabel">Retell AI, WhatsApp API</div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; color: var(--purple-primary); font-size: 24px; margin: 20px 0;">↓</div>
+
+                <div class="integration-row">
+                    <div class="integration-component">
+                        <div class="integration-label">Identity & Profile Resolution</div>
+                    </div>
+                    <span class="integration-arrow">↔</span>
+                    <div class="integration-component">
+                        <div class="integration-label">Consent Management</div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; color: var(--purple-primary); font-size: 24px; margin: 20px 0;">↓</div>
+
+                <div class="integration-row">
+                    <div class="integration-component">
+                        <div class="integration-label">Execution Logging</div>
+                        <div class="integration-sublabel">Transcripts • Status • Audit</div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; color: var(--purple-primary); font-size: 24px; margin: 20px 0;">↓</div>
+
+                <div class="integration-row">
+                    <div class="integration-component">
+                        <div class="integration-label">Analytics & Insights</div>
+                        <div class="integration-sublabel">Dashboards • Reports</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agent Execution Flow -->
+        <div class="section">
+            <h2 class="section-title">
+                <span class="section-icon">⚡</span>
+                Agent Execution Flow
+            </h2>
+            <div class="section-description">
+                Step-by-step flow of how an agent processes a single outreach request from trigger to completion.
+            </div>
+
+            <div class="flow-diagram">
+                <div class="flow-title">Complete Agent Execution Lifecycle</div>
+
+                <div class="flow-steps">
+                    <div class="flow-step">
+                        <div class="flow-step-title">1. Trigger Received</div>
+                        <div class="flow-step-desc">
+                            Agent triggered via API call, internal event, or Journey Tracker task becoming due. Trigger includes user ID and variables.
+                        </div>
+                        <div class="flow-step-components">
+                            <span class="flow-component-tag">Trigger Management System</span>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="flow-step-title">2. Identity Resolution</div>
+                        <div class="flow-step-desc">
+                            Resolve user ID to full profile. Load contact info for channel (phone number, WhatsApp ID, email). Verify consent for this channel.
+                        </div>
+                        <div class="flow-step-components">
+                            <span class="flow-component-tag">Identity & Profile Resolution</span>
+                            <span class="flow-component-tag">Consent Management</span>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="flow-step-title">3. Agent Initialization</div>
+                        <div class="flow-step-desc">
+                            Load agent configuration (version-locked). Assemble knowledge base (priority-merged). Resolve variables in prompt. Inject prompt with resolved values.
+                        </div>
+                        <div class="flow-step-components">
+                            <span class="flow-component-tag">Agent Configuration Engine</span>
+                            <span class="flow-component-tag">Knowledge Base Layer</span>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="flow-step-title">4. Rate Limit Check</div>
+                        <div class="flow-step-desc">
+                            Check if user has reached rate limit for this channel. If exceeded, queue for later retry or abort based on policy.
+                        </div>
+                        <div class="flow-step-components">
+                            <span class="flow-component-tag">Rate Limiting Layer</span>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="flow-step-title">5. Channel Delivery</div>
+                        <div class="flow-step-desc">
+                            Format content for channel (voice script, WhatsApp template, SMS text, email HTML). Send via channel provider. Handle delivery failures with retry policy.
+                        </div>
+                        <div class="flow-step-components">
+                            <span class="flow-component-tag">Channels Layer</span>
+                            <span class="flow-component-tag">Channel Providers</span>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="flow-step-title">6. Conversation Execution (AI channels only)</div>
+                        <div class="flow-step-desc">
+                            Agent conducts conversation per prompt. Collects structured data. Monitors for escalation triggers. Handles timeouts and interruptions.
+                        </div>
+                        <div class="flow-step-components">
+                            <span class="flow-component-tag">Agent Framework</span>
+                            <span class="flow-component-tag">Escalation System</span>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="flow-step-title">7. Post-Conversation Processing</div>
+                        <div class="flow-step-desc">
+                            Populate document template if linked. Update user profile with collected data. Send completion signal to Journey Tracker if linked. Log full execution trace.
+                        </div>
+                        <div class="flow-step-components">
+                            <span class="flow-component-tag">Document Templates</span>
+                            <span class="flow-component-tag">Journey Tracker Integration</span>
+                            <span class="flow-component-tag">Execution Logging</span>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="flow-step-title">8. Execution Complete</div>
+                        <div class="flow-step-desc">
+                            Outcome logged (success, failed, escalated, timeout). Analytics updated. User receives next scheduled outreach based on cadence.
+                        </div>
+                        <div class="flow-step-components">
+                            <span class="flow-component-tag">Analytics & Insights</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Integration Details -->
+        <div class="section">
+            <h2 class="section-title">
+                <span class="section-icon">🔌</span>
+                Second-Level Integration Details
+            </h2>
+            <div class="section-description">
+                Deep dive into how each major integration point works at the technical level.
+            </div>
+
+            <div class="info-box">
+                <div class="info-box-title">🏗️ Retell AI Integration (Voice Channel)</div>
+                <div class="info-box-text">
+                    <strong>How it works:</strong><br>
+                    1. Agent Framework sends prompt + knowledge base + variables to Retell AI API<br>
+                    2. Retell AI initiates voice call to user's phone number<br>
+                    3. Real-time conversation streamed back to Agent Framework<br>
+                    4. Agent Framework monitors for escalation keywords and structured data<br>
+                    5. When conversation ends, Retell AI returns full transcript + extracted entities<br>
+                    6. Document Template Integration Layer maps entities to template fields<br><br>
+
+                    <strong>Data flow:</strong> Agent Framework → Retell AI API → Telephony Provider → User → Retell AI → Agent Framework → Document Templates
+                </div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-box-title">💬 WhatsApp Business API Integration</div>
+                <div class="info-box-text">
+                    <strong>How it works:</strong><br>
+                    1. Agent Framework formats message using approved WhatsApp template<br>
+                    2. Channel Provider sends message via WhatsApp Business API<br>
+                    3. User responds; response webhook hits our Channels Layer<br>
+                    4. Agent Framework processes response and determines next message<br>
+                    5. Two-way conversation continues until goal achieved or timeout<br>
+                    6. Structured data extracted and logged<br><br>
+
+                    <strong>Template requirement:</strong> All initial WhatsApp messages must use pre-approved templates. Follow-up messages in 24-hour window can be freeform.
+                </div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-box-title">🗺️ Journey Tracker Integration</div>
+                <div class="info-box-text">
+                    <strong>How it works:</strong><br>
+                    1. User selects "Journey Task Link" as trigger mode in Step 7<br>
+                    2. Agent Config Engine stores journey task ID as trigger reference<br>
+                    3. Journey Tracker emits event when user reaches that task<br>
+                    4. Trigger Management System receives event, initiates agent<br>
+                    5. After agent completes, Trigger Management sends completion signal back to Journey Tracker<br>
+                    6. Journey Tracker marks task as complete, advances user to next task<br><br>
+
+                    <strong>Independence maintained:</strong> Outreach Module doesn't depend on Journey Tracker. Integration is opt-in via trigger configuration.
+                </div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-box-title">📝 Document Templates Integration</div>
+                <div class="info-box-text">
+                    <strong>How it works:</strong><br>
+                    1. User links document template in Step 6 (if Documents module available)<br>
+                    2. Agent Config Engine augments prompt with field extraction instructions<br>
+                    3. During conversation, Agent Framework extracts values for template fields<br>
+                    4. Post-conversation, Document Template Integration Layer receives extracted data<br>
+                    5. Document API creates new document instance with populated fields<br>
+                    6. Document linked to user profile and conversation transcript<br><br>
+
+                    <strong>Product gating:</strong> If client doesn't have Documents module, Step 6 shows disabled state with upsell message.
+                </div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-box-title">🔐 Consent Management Flow</div>
+                <div class="info-box-text">
+                    <strong>How it works:</strong><br>
+                    1. Before every outreach, Identity Resolution calls Consent Management<br>
+                    2. Consent Management checks: (a) user has consented to this channel, (b) user hasn't opted out<br>
+                    3. If consent missing or opt-out active, execution aborts immediately<br>
+                    4. Abort reason logged: "No consent" or "Opted out"<br>
+                    5. Analytics track consent abort rate per agent<br><br>
+
+                    <strong>Regulatory compliance:</strong> Automatically enforces TCPA (US), GDPR (EU), TRAI DND (India) based on user's country.
+                </div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-box-title">📊 Analytics Data Pipeline</div>
+                <div class="info-box-text">
+                    <strong>How it works:</strong><br>
+                    1. Execution Logging Layer writes every outreach event to time-series database<br>
+                    2. Events include: trigger received, consent check, delivery attempt, conversation outcome<br>
+                    3. Analytics & Insights Layer runs aggregation queries on time windows<br>
+                    4. Generates metrics: engagement rate, channel effectiveness, escalation frequency, document completion rate<br>
+                    5. Dashboards update in real-time as new executions complete<br><br>
+
+                    <strong>Available views:</strong> Per-agent performance, channel comparison, program-level rollups, user engagement funnels.
+                </div>
+            </div>
+        </div>
+
+        <!-- System Layer Stack -->
+        <div class="section">
+            <h2 class="section-title">
+                <span class="section-icon">📚</span>
+                System Layer Stack
+            </h2>
+            <div class="section-description">
+                Visual representation of all system layers and their activation status.
+            </div>
+
+            <div class="layer-stack">
+                <div class="layer">
+                    <div class="layer-header">
+                        <div class="layer-name">1. Portal UI (Agent CRUD)</div>
+                        <span class="layer-status status-configured">CONFIGURED BY USER</span>
+                    </div>
+                    <div class="layer-details">
+                        User creates and configures agents through 8-step flow. All settings stored in Agent Configuration Engine.
+                    </div>
+                </div>
+
+                <div class="layer">
+                    <div class="layer-header">
+                        <div class="layer-name">2. Agent Configuration Engine</div>
+                        <span class="layer-status status-configured">CORE LAYER</span>
+                    </div>
+                    <div class="layer-details">
+                        Stores agent configs, validates settings, version-locks configurations for consistency across executions.
+                    </div>
+                </div>
+
+                <div class="layer">
+                    <div class="layer-header">
+                        <div class="layer-name">3. Knowledge Base Integration</div>
+                        <span class="layer-status status-configured">CONFIGURED BY USER</span>
+                    </div>
+                    <div class="layer-details">
+                        Assembles knowledge from selected templates and custom KBs. Resolves conflicts by priority (Safety > Compliance > Custom > Base).
+                    </div>
+                </div>
+
+                <div class="layer">
+                    <div class="layer-header">
+                        <div class="layer-name">4. Agent Framework (Conversation AI)</div>
+                        <span class="layer-status status-configured">CORE LAYER</span>
+                    </div>
+                    <div class="layer-details">
+                        Executes prompts, conducts conversations, extracts structured data. Powered by Retell AI for voice/chat.
+                    </div>
+                </div>
+
+                <div class="layer">
+                    <div class="layer-header">
+                        <div class="layer-name">5. Trigger Management</div>
+                        <span class="layer-status status-configured">CONFIGURED BY USER</span>
+                    </div>
+                    <div class="layer-details">
+                        Handles API/Webhook, Internal Events, and Journey Task triggers. Initiates agent execution when triggered.
+                    </div>
+                </div>
+
+                <div class="layer">
+                    <div class="layer-header">
+                        <div class="layer-name">6. Identity & Profile Resolution</div>
+                        <span class="layer-status status-auto">AUTO-ENABLED</span>
+                    </div>
+                    <div class="layer-details">
+                        Always active. Resolves user IDs to profiles, loads contact info, verifies user exists before outreach.
+                    </div>
+                </div>
+
+                <div class="layer">
+                    <div class="layer-header">
+                        <div class="layer-name">7. Consent Management</div>
+                        <span class="layer-status status-auto">AUTO-ENABLED</span>
+                    </div>
+                    <div class="layer-details">
+                        Always active. Blocks outreach if user hasn't consented to channel. Ensures regulatory compliance.
+                    </div>
+                </div>
+
+                <div class="layer">
+                    <div class="layer-header">
+                        <div class="layer-name">8. Channels Layer</div>
+                        <span class="layer-status status-configured">CONFIGURED BY USER</span>
+                    </div>
+                    <div class="layer-details">
+                        Delivers messages via selected channel (Voice, WhatsApp, SMS, Email). Handles channel-specific formatting.
+                    </div>
+                </div>
+
+                <div class="layer">
+                    <div class="layer-header">
+                        <div class="layer-name">9. Rate Limiting</div>
+                        <span class="layer-status status-auto">AUTO-ENABLED</span>
+                    </div>
+                    <div class="layer-details">
+                        Always active. Prevents spam by enforcing max messages per user per day per channel.
+                    </div>
+                </div>
+
+                <div class="layer">
+                    <div class="layer-header">
+                        <div class="layer-name">10. Channel Providers (External)</div>
+                        <span class="layer-status status-configured">INTEGRATION</span>
+                    </div>
+                    <div class="layer-details">
+                        External services: Retell AI (voice), WhatsApp Business API, SMS gateways, SMTP servers.
+                    </div>
+                </div>
+
+                <div class="layer">
+                    <div class="layer-header">
+                        <div class="layer-name">11. Escalation System</div>
+                        <span class="layer-status status-auto">AUTO-ENABLED</span>
+                    </div>
+                    <div class="layer-details">
+                        Always active. Monitors conversations for escalation keywords. Routes to human agents when needed.
+                    </div>
+                </div>
+
+                <div class="layer">
+                    <div class="layer-header">
+                        <div class="layer-name">12. Document Templates</div>
+                        <span class="layer-status status-configured">OPTIONAL (GATED)</span>
+                    </div>
+                    <div class="layer-details">
+                        Only available if client has Documents module. Auto-populates templates with conversation data.
+                    </div>
+                </div>
+
+                <div class="layer">
+                    <div class="layer-header">
+                        <div class="layer-name">13. Execution Logging</div>
+                        <span class="layer-status status-auto">AUTO-ENABLED</span>
+                    </div>
+                    <div class="layer-details">
+                        Always active. Logs all executions: transcripts, delivery status, outcomes, timestamps, audit trail.
+                    </div>
+                </div>
+
+                <div class="layer">
+                    <div class="layer-header">
+                        <div class="layer-name">14. Analytics & Insights</div>
+                        <span class="layer-status status-auto">AUTO-ENABLED</span>
+                    </div>
+                    <div class="layer-details">
+                        Always active. Generates engagement funnels, channel effectiveness reports, performance dashboards.
+                    </div>
+                </div>
+
+                <div class="layer">
+                    <div class="layer-header">
+                        <div class="layer-name">15. Journey Tracker Integration</div>
+                        <span class="layer-status status-configured">OPTIONAL</span>
+                    </div>
+                    <div class="layer-details">
+                        Only active if user selects "Journey Task Link" trigger mode. Links agent to journey task, reports completion.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Integration Examples -->
+        <div class="section">
+            <h2 class="section-title">
+                <span class="section-icon">🔌</span>
+                API Integration Examples
+            </h2>
+            <div class="section-description">
+                Sample code for integrating with the Outreach Module via API.
+            </div>
+
+            <h3 style="font-size: 20px; font-weight: 600; margin: 24px 0 16px;">Triggering an Agent via API</h3>
+            <div class="code-section">
+POST https://api.lillia.com/v1/outreach/agents/{agent_id}/trigger
+Content-Type: application/json
+Authorization: Bearer {api_key}
+
+{
+  "user_id": "usr_67890",
+  "variables": {
+    "patient_name": "Rahul Kumar",
+    "medication_name": "Metformin 500mg",
+    "medication_time": "8:00 AM",
+    "program_name": "Diabetes Care Management"
+  },
+  "schedule": {
+    "type": "immediate"  <span class="code-comment">// or "scheduled" with "run_at" timestamp</span>
+  }
+}
+
+<span class="code-comment">// Response</span>
+{
+  "status": "accepted",
+  "execution_id": "exec_abc123",
+  "agent_id": "ag_67890",
+  "user_id": "usr_67890",
+  "scheduled_for": "2026-02-03T08:00:00Z",
+  "message": "Agent execution scheduled successfully"
+}
+            </div>
+
+            <h3 style="font-size: 20px; font-weight: 600; margin: 24px 0 16px;">Checking Execution Status</h3>
+            <div class="code-section">
+GET https://api.lillia.com/v1/outreach/executions/{execution_id}
+Authorization: Bearer {api_key}
+
+<span class="code-comment">// Response</span>
+{
+  "execution_id": "exec_abc123",
+  "agent_id": "ag_67890",
+  "user_id": "usr_67890",
+  "status": "completed",  <span class="code-comment">// pending, in_progress, completed, failed, escalated</span>
+  "channel": "voice",
+  "started_at": "2026-02-03T08:00:15Z",
+  "completed_at": "2026-02-03T08:04:32Z",
+  "outcome": {
+    "success": true,
+    "conversation_duration": 257,
+    "escalated": false,
+    "structured_data": {
+      "adherence_status": "taken",
+      "barriers_mentioned": "none",
+      "follow_up_needed": false
+    }
+  },
+  "transcript_url": "https://api.lillia.com/v1/transcripts/exec_abc123"
+}
+            </div>
+
+            <h3 style="font-size: 20px; font-weight: 600; margin: 24px 0 16px;">Webhook Notifications</h3>
+            <div class="code-section">
+<span class="code-comment">// Configure webhook endpoint in agent settings
+// Lillia will POST to your endpoint when execution completes</span>
+
+POST https://your-app.com/webhooks/outreach
+Content-Type: application/json
+X-Lillia-Signature: {hmac_signature}
+
+{
+  "event": "execution.completed",
+  "execution_id": "exec_abc123",
+  "agent_id": "ag_67890",
+  "user_id": "usr_67890",
+  "status": "completed",
+  "outcome": {
+    "success": true,
+    "structured_data": { ... }
+  },
+  "timestamp": "2026-02-03T08:04:32Z"
+}
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; padding-top: 48px; border-top: 2px solid var(--grey-200); color: var(--grey-600); font-size: 14px;">
+            <p style="font-weight: 600; margin-bottom: 8px;">Lillia Outreach Module V3.0</p>
+            <p>System Architecture & Integration Documentation</p>
+            <p style="margin-top: 16px;">February 2026</p>
+        </div>
+    </div>
+</body>
+</html>

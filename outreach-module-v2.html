@@ -1,0 +1,1846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lillia Outreach Module</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --purple-primary: #6B4EFF;
+            --purple-secondary: #8B7FFF;
+            --purple-light: #B8AEFF;
+            --purple-ultralight: #E8E4FF;
+            --purple-deep: #4A31CC;
+            --grey-50: #FAFAFA;
+            --grey-100: #F5F5F7;
+            --grey-200: #E8E8ED;
+            --grey-300: #D1D1D6;
+            --grey-400: #AEAEB2;
+            --grey-600: #636366;
+            --grey-700: #48484A;
+            --grey-900: #1C1C1E;
+            --white: #FFFFFF;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 12px rgba(107, 78, 255, 0.08);
+            --shadow-lg: 0 12px 32px rgba(107, 78, 255, 0.12);
+            --shadow-xl: 0 20px 48px rgba(107, 78, 255, 0.16);
+        }
+
+        body {
+            font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(160deg, #FAFAFA 0%, #F0EDFF 50%, #FAF8FF 100%);
+            color: var(--grey-900);
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--white);
+            border-right: 1px solid var(--grey-200);
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .logo-container {
+            padding: 32px 28px;
+            border-bottom: 1px solid var(--grey-200);
+        }
+
+        .logo {
+            width: 140px;
+            height: auto;
+        }
+
+        .nav-section {
+            padding: 24px 0;
+        }
+
+        .nav-label {
+            padding: 0 28px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--grey-400);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .nav-item {
+            padding: 14px 28px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--grey-700);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: var(--grey-50);
+            color: var(--purple-primary);
+        }
+
+        .nav-item.active {
+            background: var(--purple-ultralight);
+            color: var(--purple-primary);
+            font-weight: 600;
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--purple-primary);
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            opacity: 0.8;
+        }
+
+        .nav-item.active .nav-icon {
+            opacity: 1;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--grey-50);
+        }
+
+        /* Header */
+        .header {
+            background: var(--white);
+            padding: 24px 40px;
+            border-bottom: 1px solid var(--grey-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header h2 {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--grey-900);
+            letter-spacing: -0.5px;
+        }
+
+        .header-badge {
+            background: linear-gradient(135deg, var(--purple-primary), var(--purple-secondary));
+            color: var(--white);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--purple-primary), var(--purple-secondary));
+            color: var(--white);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Lato', sans-serif;
+            box-shadow: var(--shadow-md);
+            letter-spacing: 0.2px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--purple-primary);
+            border: 1.5px solid var(--grey-200);
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Lato', sans-serif;
+        }
+
+        .btn-secondary:hover {
+            background: var(--purple-ultralight);
+            border-color: var(--purple-light);
+        }
+
+        /* Views */
+        .view {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        .view-content {
+            padding: 40px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Agent List View */
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+            align-items: center;
+        }
+
+        .filter-chip {
+            padding: 10px 20px;
+            border-radius: 24px;
+            background: var(--white);
+            border: 1.5px solid var(--grey-200);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--grey-600);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-chip:hover,
+        .filter-chip.active {
+            background: var(--purple-primary);
+            color: var(--white);
+            border-color: var(--purple-primary);
+        }
+
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 28px;
+        }
+
+        .agent-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid var(--grey-200);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .agent-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--purple-primary), var(--purple-secondary));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .agent-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--purple-light);
+        }
+
+        .agent-card:hover::before {
+            opacity: 1;
+        }
+
+        .agent-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .agent-title {
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 6px;
+            letter-spacing: -0.3px;
+        }
+
+        .agent-type {
+            font-size: 13px;
+            color: var(--grey-600);
+            font-weight: 500;
+        }
+
+        .agent-status {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-active {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: var(--white);
+        }
+
+        .status-draft {
+            background: var(--grey-200);
+            color: var(--grey-600);
+        }
+
+        .agent-programs {
+            margin: 16px 0;
+            padding: 16px;
+            background: var(--grey-50);
+            border-radius: 10px;
+        }
+
+        .programs-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--grey-400);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .program-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .program-tag {
+            background: var(--white);
+            color: var(--purple-primary);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid var(--grey-200);
+        }
+
+        .agent-channels {
+            display: flex;
+            gap: 8px;
+            margin: 16px 0;
+        }
+
+        .channel-badge {
+            background: var(--purple-ultralight);
+            color: var(--purple-primary);
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+
+        .agent-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--grey-200);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--grey-900);
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--grey-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        /* Agent Configuration View */
+        .config-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .config-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--purple-primary);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Lato', sans-serif;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: var(--purple-ultralight);
+        }
+
+        .config-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* Progress Steps */
+        .progress-wrapper {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--grey-200);
+        }
+
+        .progress-steps {
+            display: flex;
+            position: relative;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 20px;
+            left: 40px;
+            right: 40px;
+            height: 2px;
+            background: var(--grey-200);
+            z-index: 0;
+        }
+
+        .progress-line-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--purple-primary), var(--purple-secondary));
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .step {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 15px;
+            background: var(--grey-200);
+            color: var(--grey-600);
+            transition: all 0.3s;
+            border: 3px solid var(--grey-50);
+        }
+
+        .step.active .step-number {
+            background: linear-gradient(135deg, var(--purple-primary), var(--purple-secondary));
+            color: var(--white);
+            box-shadow: var(--shadow-md);
+        }
+
+        .step.completed .step-number {
+            background: var(--purple-light);
+            color: var(--white);
+        }
+
+        .step-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--grey-600);
+            text-align: center;
+        }
+
+        .step.active .step-label {
+            color: var(--purple-primary);
+            font-weight: 700;
+        }
+
+        /* Configuration Panels */
+        .config-panel {
+            display: none;
+            background: var(--white);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--grey-200);
+        }
+
+        .config-panel.active {
+            display: block;
+        }
+
+        .panel-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .panel-description {
+            font-size: 15px;
+            color: var(--grey-600);
+            margin-bottom: 40px;
+            line-height: 1.7;
+        }
+
+        .form-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--grey-200);
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 10px;
+            letter-spacing: 0.1px;
+        }
+
+        .form-label-required::after {
+            content: '*';
+            color: #EF4444;
+            margin-left: 4px;
+        }
+
+        .form-help {
+            display: block;
+            font-size: 13px;
+            color: var(--grey-600);
+            margin-top: 6px;
+            line-height: 1.5;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid var(--grey-200);
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: 'Lato', sans-serif;
+            transition: all 0.2s;
+            background: var(--white);
+            color: var(--grey-900);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--purple-primary);
+            box-shadow: 0 0 0 4px var(--purple-ultralight);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Program Selector */
+        .program-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .program-option {
+            border: 2px solid var(--grey-200);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--white);
+        }
+
+        .program-option:hover {
+            border-color: var(--purple-light);
+            background: var(--purple-ultralight);
+        }
+
+        .program-option.selected {
+            border-color: var(--purple-primary);
+            background: var(--purple-ultralight);
+            box-shadow: var(--shadow-md);
+        }
+
+        .program-checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--grey-300);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            margin-bottom: 12px;
+        }
+
+        .program-option.selected .program-checkbox {
+            background: var(--purple-primary);
+            border-color: var(--purple-primary);
+        }
+
+        .program-option.selected .program-checkbox::after {
+            content: '✓';
+            color: var(--white);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .program-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 4px;
+        }
+
+        .program-desc {
+            font-size: 12px;
+            color: var(--grey-600);
+            line-height: 1.5;
+        }
+
+        /* Program Tabs */
+        .program-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 28px;
+            border-bottom: 2px solid var(--grey-200);
+            overflow-x: auto;
+        }
+
+        .program-tab {
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--grey-600);
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+            font-family: 'Lato', sans-serif;
+            white-space: nowrap;
+        }
+
+        .program-tab:hover {
+            color: var(--purple-primary);
+        }
+
+        .program-tab.active {
+            color: var(--purple-primary);
+            border-bottom-color: var(--purple-primary);
+            font-weight: 700;
+        }
+
+        .program-config {
+            display: none;
+        }
+
+        .program-config.active {
+            display: block;
+        }
+
+        /* Channel Selection */
+        .channel-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .channel-card {
+            border: 2px solid var(--grey-200);
+            border-radius: 14px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+            background: var(--white);
+        }
+
+        .channel-card:hover {
+            border-color: var(--purple-light);
+            background: var(--purple-ultralight);
+            transform: translateY(-2px);
+        }
+
+        .channel-card.selected {
+            border-color: var(--purple-primary);
+            background: var(--purple-ultralight);
+            box-shadow: var(--shadow-md);
+        }
+
+        .channel-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .channel-icon.voice {
+            background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+        }
+
+        .channel-icon.whatsapp {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+        }
+
+        .channel-icon.sms {
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+        }
+
+        .channel-icon.email {
+            background: linear-gradient(135deg, #EC4899, #DB2777);
+        }
+
+        .channel-info {
+            flex: 1;
+        }
+
+        .channel-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 6px;
+        }
+
+        .channel-desc {
+            font-size: 13px;
+            color: var(--grey-600);
+            line-height: 1.5;
+        }
+
+        /* Info Box */
+        .info-box {
+            padding: 20px 24px;
+            background: linear-gradient(135deg, var(--purple-ultralight), #F3F0FF);
+            border-radius: 12px;
+            border-left: 4px solid var(--purple-primary);
+            margin-top: 28px;
+        }
+
+        .info-box-title {
+            font-weight: 700;
+            color: var(--purple-primary);
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .info-box-text {
+            font-size: 13px;
+            color: var(--grey-700);
+            line-height: 1.6;
+        }
+
+        /* Knowledge Base */
+        .kb-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .kb-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .kb-item {
+            border: 2px solid var(--grey-200);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--white);
+        }
+
+        .kb-item:hover {
+            background: var(--purple-ultralight);
+            border-color: var(--purple-light);
+        }
+
+        .kb-item.selected {
+            border-color: var(--purple-primary);
+            background: var(--purple-ultralight);
+        }
+
+        .kb-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--grey-300);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .kb-item.selected .kb-checkbox {
+            background: var(--purple-primary);
+            border-color: var(--purple-primary);
+        }
+
+        .kb-item.selected .kb-checkbox::after {
+            content: '✓';
+            color: var(--white);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .kb-info {
+            flex: 1;
+        }
+
+        .kb-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 4px;
+        }
+
+        .kb-meta {
+            font-size: 12px;
+            color: var(--grey-600);
+        }
+
+        .kb-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .kb-btn {
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
+            border: 1.5px solid var(--grey-200);
+            background: var(--white);
+            color: var(--grey-700);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Lato', sans-serif;
+        }
+
+        .kb-btn:hover {
+            background: var(--grey-50);
+            border-color: var(--grey-300);
+        }
+
+        .kb-priority {
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .priority-high {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .priority-medium {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .priority-low {
+            background: var(--grey-200);
+            color: var(--grey-600);
+        }
+
+        /* Toggle */
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px;
+            background: var(--grey-50);
+            border-radius: 12px;
+            border: 1.5px solid var(--grey-200);
+        }
+
+        .toggle-switch {
+            width: 56px;
+            height: 32px;
+            background: var(--grey-300);
+            border-radius: 16px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: linear-gradient(135deg, var(--purple-primary), var(--purple-secondary));
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            background: var(--white);
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .toggle-switch.active::after {
+            left: 26px;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 32px;
+            border-top: 1px solid var(--grey-200);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--grey-900);
+            margin-bottom: 10px;
+        }
+
+        .modal-desc {
+            font-size: 14px;
+            color: var(--grey-600);
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--grey-300);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+            background: var(--grey-50);
+        }
+
+        .upload-area:hover {
+            border-color: var(--purple-primary);
+            background: var(--purple-ultralight);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .upload-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--grey-900);
+            margin-bottom: 6px;
+        }
+
+        .upload-desc {
+            font-size: 13px;
+            color: var(--grey-600);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 32px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .channel-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .agent-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 240px;
+            }
+
+            .view-content {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-container">
+                <img src="logo.png" alt="Lillia" class="logo">
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-label">Main</div>
+                <div class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    Dashboard
+                </div>
+                <div class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    Users
+                </div>
+                <div class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                    </svg>
+                    Programs
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-label">Engagement</div>
+                <div class="nav-item active">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    Outreach Agents
+                </div>
+                <div class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    Knowledge Base
+                </div>
+                <div class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                    Analytics
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Agent List View -->
+            <div id="agent-list-view" class="view active">
+                <div class="header">
+                    <div class="header-left">
+                        <h2>Outreach Agents</h2>
+                        <span class="header-badge">3 Active</span>
+                    </div>
+                    <button class="btn-primary" onclick="showCreateAgent()">+ Create New Agent</button>
+                </div>
+
+                <div class="view-content">
+                    <div class="filter-bar">
+                        <div class="filter-chip active">All Agents</div>
+                        <div class="filter-chip">Active</div>
+                        <div class="filter-chip">Draft</div>
+                        <div class="filter-chip">Onboarding</div>
+                        <div class="filter-chip">Reminder</div>
+                        <div class="filter-chip">Follow-up</div>
+                    </div>
+
+                    <div class="agent-grid">
+                        <!-- Agent Card 1 -->
+                        <div class="agent-card" onclick="showAgentConfig('onboarding', true)">
+                            <div class="agent-header">
+                                <div>
+                                    <div class="agent-title">Patient Onboarding</div>
+                                    <div class="agent-type">Onboarding Agent</div>
+                                </div>
+                                <div class="agent-status status-active">Active</div>
+                            </div>
+
+                            <div class="agent-programs">
+                                <div class="programs-label">Configured for Programs</div>
+                                <div class="program-tags">
+                                    <span class="program-tag">Diabetes Care</span>
+                                    <span class="program-tag">Hypertension</span>
+                                    <span class="program-tag">Cardiac Rehab</span>
+                                </div>
+                            </div>
+
+                            <div class="agent-channels">
+                                <span class="channel-badge">Voice</span>
+                                <span class="channel-badge">WhatsApp</span>
+                            </div>
+
+                            <div class="agent-stats">
+                                <div class="stat">
+                                    <div class="stat-value">1,247</div>
+                                    <div class="stat-label">Total Runs</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-value">87%</div>
+                                    <div class="stat-label">Success</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-value">3</div>
+                                    <div class="stat-label">Programs</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Agent Card 2 -->
+                        <div class="agent-card" onclick="showAgentConfig('reminder', true)">
+                            <div class="agent-header">
+                                <div>
+                                    <div class="agent-title">Medication Reminder</div>
+                                    <div class="agent-type">Reminder Agent</div>
+                                </div>
+                                <div class="agent-status status-active">Active</div>
+                            </div>
+
+                            <div class="agent-programs">
+                                <div class="programs-label">Configured for Programs</div>
+                                <div class="program-tags">
+                                    <span class="program-tag">Diabetes Care</span>
+                                    <span class="program-tag">Post-Surgical</span>
+                                </div>
+                            </div>
+
+                            <div class="agent-channels">
+                                <span class="channel-badge">WhatsApp</span>
+                                <span class="channel-badge">SMS</span>
+                            </div>
+
+                            <div class="agent-stats">
+                                <div class="stat">
+                                    <div class="stat-value">5,892</div>
+                                    <div class="stat-label">Total Runs</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-value">92%</div>
+                                    <div class="stat-label">Success</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-value">2</div>
+                                    <div class="stat-label">Programs</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Agent Card 3 -->
+                        <div class="agent-card" onclick="showAgentConfig('followup', false)">
+                            <div class="agent-header">
+                                <div>
+                                    <div class="agent-title">Post-Visit Follow-up</div>
+                                    <div class="agent-type">Follow-up Agent</div>
+                                </div>
+                                <div class="agent-status status-draft">Draft</div>
+                            </div>
+
+                            <div class="agent-programs">
+                                <div class="programs-label">Configured for Programs</div>
+                                <div class="program-tags">
+                                    <span class="program-tag">None</span>
+                                </div>
+                            </div>
+
+                            <div class="agent-channels">
+                                <span class="channel-badge">Voice</span>
+                                <span class="channel-badge">Email</span>
+                            </div>
+
+                            <div class="agent-stats">
+                                <div class="stat">
+                                    <div class="stat-value">0</div>
+                                    <div class="stat-label">Total Runs</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-value">--</div>
+                                    <div class="stat-label">Success</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-value">0</div>
+                                    <div class="stat-label">Programs</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent Configuration View -->
+            <div id="agent-config-view" class="view">
+                <div class="header">
+                    <button class="back-btn" onclick="showAgentList()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                        Back to Agents
+                    </button>
+                    <div class="config-actions">
+                        <button class="btn-secondary">Save as Draft</button>
+                        <button class="btn-primary" id="activate-btn">Activate Agent</button>
+                    </div>
+                </div>
+
+                <div class="view-content">
+                    <div class="config-container">
+                        <!-- Progress Steps -->
+                        <div class="progress-wrapper">
+                            <div class="progress-steps">
+                                <div class="progress-line">
+                                    <div class="progress-line-fill" id="progress-fill" style="width: 0%"></div>
+                                </div>
+                                <div class="step active" onclick="showStep(1)">
+                                    <div class="step-number">1</div>
+                                    <div class="step-label">Basic Info</div>
+                                </div>
+                                <div class="step" onclick="showStep(2)">
+                                    <div class="step-number">2</div>
+                                    <div class="step-label">Programs</div>
+                                </div>
+                                <div class="step" onclick="showStep(3)">
+                                    <div class="step-number">3</div>
+                                    <div class="step-label">Channels</div>
+                                </div>
+                                <div class="step" onclick="showStep(4)">
+                                    <div class="step-number">4</div>
+                                    <div class="step-label">Knowledge Base</div>
+                                </div>
+                                <div class="step" onclick="showStep(5)">
+                                    <div class="step-number">5</div>
+                                    <div class="step-label">Templates</div>
+                                </div>
+                                <div class="step" onclick="showStep(6)">
+                                    <div class="step-number">6</div>
+                                    <div class="step-label">Scheduling</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 1: Basic Info -->
+                        <div id="step-1" class="config-panel active">
+                            <h3 class="panel-title">Basic Information</h3>
+                            <p class="panel-description">Define your agent's core identity and purpose. This agent can be customized for multiple programs.</p>
+
+                            <div class="form-group">
+                                <label class="form-label form-label-required">Agent Name</label>
+                                <input type="text" class="form-input" id="agent-name" placeholder="e.g., Patient Onboarding">
+                                <span class="form-help">Choose a descriptive name that reflects the agent's primary function</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label form-label-required">Agent Type</label>
+                                <select class="form-input" id="agent-type">
+                                    <option value="">Select agent type...</option>
+                                    <option value="onboarding">Onboarding Agent</option>
+                                    <option value="reminder">Reminder Agent</option>
+                                    <option value="followup">Follow-up Agent</option>
+                                    <option value="survey">Survey Agent</option>
+                                    <option value="closure">Closure Agent</option>
+                                </select>
+                                <span class="form-help">The agent type determines the base conversation flow and behavior</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-input form-textarea" id="agent-description" placeholder="Describe what this agent does and its key objectives..."></textarea>
+                            </div>
+
+                            <div class="nav-buttons">
+                                <div></div>
+                                <button class="btn-primary" onclick="showStep(2)">Next: Select Programs →</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Program Selection -->
+                        <div id="step-2" class="config-panel">
+                            <h3 class="panel-title">Program Selection & Customization</h3>
+                            <p class="panel-description">Select which programs this agent will serve. You can customize knowledge bases, tone, and variables for each program individually.</p>
+
+                            <div class="form-section">
+                                <div class="section-title">Select Programs</div>
+                                <div class="program-selector">
+                                    <div class="program-option" onclick="toggleProgram(this, 'diabetes')">
+                                        <div class="program-checkbox"></div>
+                                        <div class="program-name">Diabetes Care Program</div>
+                                        <div class="program-desc">Comprehensive diabetes management and education</div>
+                                    </div>
+                                    <div class="program-option" onclick="toggleProgram(this, 'hypertension')">
+                                        <div class="program-checkbox"></div>
+                                        <div class="program-name">Hypertension Management</div>
+                                        <div class="program-desc">Blood pressure monitoring and lifestyle support</div>
+                                    </div>
+                                    <div class="program-option" onclick="toggleProgram(this, 'cardiac')">
+                                        <div class="program-checkbox"></div>
+                                        <div class="program-name">Cardiac Rehabilitation</div>
+                                        <div class="program-desc">Post-cardiac event recovery and prevention</div>
+                                    </div>
+                                    <div class="program-option" onclick="toggleProgram(this, 'postsurgical')">
+                                        <div class="program-checkbox"></div>
+                                        <div class="program-name">Post-Surgical Recovery</div>
+                                        <div class="program-desc">Surgical recovery monitoring and support</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="info-box">
+                                <div class="info-box-title">💡 Multi-Program Customization</div>
+                                <div class="info-box-text">After selecting programs, you'll be able to customize knowledge bases, conversation tone, and variables for each program on the next screens. The core agent structure remains shared while program-specific details can be tailored.</div>
+                            </div>
+
+                            <div class="nav-buttons">
+                                <button class="btn-secondary" onclick="showStep(1)">← Previous</button>
+                                <button class="btn-primary" onclick="showStep(3)">Next: Channels →</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Channels -->
+                        <div id="step-3" class="config-panel">
+                            <h3 class="panel-title">Communication Channels</h3>
+                            <p class="panel-description">Select which channels this agent can use across all programs. Channel preferences apply globally.</p>
+
+                            <div class="channel-grid">
+                                <div class="channel-card" onclick="toggleChannel(this)">
+                                    <div class="channel-icon voice">📞</div>
+                                    <div class="channel-info">
+                                        <div class="channel-name">Voice Call</div>
+                                        <div class="channel-desc">AI-powered phone conversations with natural speech and real-time responses</div>
+                                    </div>
+                                </div>
+
+                                <div class="channel-card" onclick="toggleChannel(this)">
+                                    <div class="channel-icon whatsapp">💬</div>
+                                    <div class="channel-info">
+                                        <div class="channel-name">WhatsApp Business</div>
+                                        <div class="channel-desc">Rich messaging with media, quick replies, and template messages</div>
+                                    </div>
+                                </div>
+
+                                <div class="channel-card" onclick="toggleChannel(this)">
+                                    <div class="channel-icon sms">✉️</div>
+                                    <div class="channel-info">
+                                        <div class="channel-name">SMS</div>
+                                        <div class="channel-desc">Simple text messages for universal reach and reliability</div>
+                                    </div>
+                                </div>
+
+                                <div class="channel-card" onclick="toggleChannel(this)">
+                                    <div class="channel-icon email">📧</div>
+                                    <div class="channel-info">
+                                        <div class="channel-name">Email</div>
+                                        <div class="channel-desc">Detailed messages with formatting, attachments, and rich content</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="info-box">
+                                <div class="info-box-title">🔄 Automatic Channel Fallback</div>
+                                <div class="info-box-text">If the primary channel fails to deliver, the system automatically tries the next selected channel in sequence (Voice → WhatsApp → SMS → Email). This ensures critical healthcare messages always reach patients.</div>
+                            </div>
+
+                            <div class="nav-buttons">
+                                <button class="btn-secondary" onclick="showStep(2)">← Previous</button>
+                                <button class="btn-primary" onclick="showStep(4)">Next: Knowledge Base →</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Knowledge Base -->
+                        <div id="step-4" class="config-panel">
+                            <h3 class="panel-title">Knowledge Base Configuration</h3>
+                            <p class="panel-description">Customize which knowledge sources guide conversations for each program.</p>
+
+                            <div id="program-kb-tabs" class="program-tabs">
+                                <!-- Tabs will be generated dynamically -->
+                            </div>
+
+                            <div id="kb-configs">
+                                <!-- KB selections per program will be generated here -->
+                            </div>
+
+                            <div class="nav-buttons">
+                                <button class="btn-secondary" onclick="showStep(3)">← Previous</button>
+                                <button class="btn-primary" onclick="showStep(5)">Next: Templates →</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 5: Templates -->
+                        <div id="step-5" class="config-panel">
+                            <h3 class="panel-title">Document Templates</h3>
+                            <p class="panel-description">Configure templates to capture structured data from conversations.</p>
+
+                            <div class="form-group">
+                                <label class="form-label">Post-Conversation Template</label>
+                                <select class="form-input">
+                                    <option>Select template...</option>
+                                    <option>Patient Onboarding Summary</option>
+                                    <option>Medication Adherence Report</option>
+                                    <option>Follow-up Call Notes</option>
+                                    <option>Survey Response Collection</option>
+                                </select>
+                                <span class="form-help">This template will be auto-filled with data captured during conversations</span>
+                            </div>
+
+                            <div class="nav-buttons">
+                                <button class="btn-secondary" onclick="showStep(4)">← Previous</button>
+                                <button class="btn-primary" onclick="showStep(6)">Next: Scheduling →</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 6: Scheduling -->
+                        <div id="step-6" class="config-panel">
+                            <h3 class="panel-title">Scheduling & Orchestration</h3>
+                            <p class="panel-description">Configure when and how this agent executes.</p>
+
+                            <div class="form-group">
+                                <div class="toggle-group">
+                                    <div>
+                                        <div style="font-size: 15px; font-weight: 700; color: var(--grey-900); margin-bottom: 4px;">Link to Journey Tracker</div>
+                                        <div style="font-size: 13px; color: var(--grey-600);">Let care journeys control when this agent runs</div>
+                                    </div>
+                                    <div class="toggle-switch" onclick="toggleJourneyMode(this)"></div>
+                                </div>
+                            </div>
+
+                            <div id="independent-schedule">
+                                <div class="section-title">Independent Scheduling</div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Execution Frequency</label>
+                                    <select class="form-input">
+                                        <option>One-time execution</option>
+                                        <option>Daily</option>
+                                        <option>Every 2 days</option>
+                                        <option>Weekly</option>
+                                        <option>Custom schedule</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Execution Window</label>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                        <input type="time" class="form-input" value="09:00">
+                                        <input type="time" class="form-input" value="18:00">
+                                    </div>
+                                    <span class="form-help">Outreach will only occur within this time window (user's local timezone)</span>
+                                </div>
+                            </div>
+
+                            <div class="nav-buttons">
+                                <button class="btn-secondary" onclick="showStep(5)">← Previous</button>
+                                <button class="btn-primary" onclick="completeConfiguration()">Complete Setup →</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KB Management Modal -->
+    <div id="kb-modal" class="modal-overlay">
+        <div class="modal">
+            <h3 class="modal-title">Manage Knowledge Base</h3>
+            <p class="modal-desc">Upload documents, add URLs, or connect data sources to build your knowledge base.</p>
+
+            <div class="upload-area">
+                <div class="upload-icon">📤</div>
+                <div class="upload-title">Upload Files</div>
+                <div class="upload-desc">Drag and drop files here or click to browse<br>Supports: PDF, DOCX, TXT, CSV</div>
+            </div>
+
+            <div class="form-group" style="margin-top: 24px;">
+                <label class="form-label">Or Add URL</label>
+                <input type="text" class="form-input" placeholder="https://example.com/documentation">
+                <span class="form-help">Add web pages or documentation URLs to include in the knowledge base</span>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeKBModal()">Cancel</button>
+                <button class="btn-primary">Add to Knowledge Base</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let isEditMode = false;
+        let selectedPrograms = [];
+        const totalSteps = 6;
+
+        // Mock data for existing agents
+        const agentData = {
+            'onboarding': {
+                name: 'Patient Onboarding',
+                type: 'onboarding',
+                description: 'Comprehensive patient onboarding across multiple chronic care programs',
+                programs: ['diabetes', 'hypertension', 'cardiac'],
+                channels: ['voice', 'whatsapp']
+            },
+            'reminder': {
+                name: 'Medication Reminder',
+                type: 'reminder',
+                description: 'Daily medication adherence reminders and tracking',
+                programs: ['diabetes', 'postsurgical'],
+                channels: ['whatsapp', 'sms']
+            }
+        };
+
+        function showAgentList() {
+            document.getElementById('agent-list-view').classList.add('active');
+            document.getElementById('agent-config-view').classList.remove('active');
+            resetConfiguration();
+        }
+
+        function showCreateAgent() {
+            isEditMode = false;
+            document.getElementById('activate-btn').textContent = 'Activate Agent';
+            showAgentConfig('new', false);
+        }
+
+        function showAgentConfig(agentType, editMode) {
+            isEditMode = editMode;
+            document.getElementById('agent-list-view').classList.remove('active');
+            document.getElementById('agent-config-view').classList.add('active');
+
+            if (editMode && agentData[agentType]) {
+                // Pre-populate with existing data
+                document.getElementById('activate-btn').textContent = 'Update Agent';
+                const data = agentData[agentType];
+
+                setTimeout(() => {
+                    document.getElementById('agent-name').value = data.name;
+                    document.getElementById('agent-type').value = data.type;
+                    document.getElementById('agent-description').value = data.description;
+
+                    // Pre-select programs
+                    data.programs.forEach(programId => {
+                        const programOption = document.querySelector(`[onclick*="${programId}"]`);
+                        if (programOption) {
+                            programOption.click();
+                        }
+                    });
+                }, 100);
+            } else {
+                // Clear all fields for new agent
+                resetConfiguration();
+            }
+
+            showStep(1);
+        }
+
+        function resetConfiguration() {
+            document.getElementById('agent-name').value = '';
+            document.getElementById('agent-type').value = '';
+            document.getElementById('agent-description').value = '';
+            selectedPrograms = [];
+
+            // Deselect all programs
+            document.querySelectorAll('.program-option.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
+
+            // Deselect all channels
+            document.querySelectorAll('.channel-card.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
+        }
+
+        function showStep(stepNumber) {
+            // Update step indicators
+            const steps = document.querySelectorAll('.step');
+            steps.forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index + 1 === stepNumber) {
+                    step.classList.add('active');
+                } else if (index + 1 < stepNumber) {
+                    step.classList.add('completed');
+                }
+            });
+
+            // Update progress bar
+            const progress = ((stepNumber - 1) / (totalSteps - 1)) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
+
+            // Update panels
+            document.querySelectorAll('.config-panel').forEach(panel => panel.classList.remove('active'));
+            document.getElementById(`step-${stepNumber}`).classList.add('active');
+
+            currentStep = stepNumber;
+
+            // Generate program-specific KB tabs if on step 4
+            if (stepNumber === 4) {
+                generateProgramKBTabs();
+            }
+        }
+
+        function toggleProgram(element, programId) {
+            element.classList.toggle('selected');
+
+            if (element.classList.contains('selected')) {
+                if (!selectedPrograms.includes(programId)) {
+                    selectedPrograms.push(programId);
+                }
+            } else {
+                selectedPrograms = selectedPrograms.filter(p => p !== programId);
+            }
+        }
+
+        function generateProgramKBTabs() {
+            const tabsContainer = document.getElementById('program-kb-tabs');
+            const configsContainer = document.getElementById('kb-configs');
+
+            tabsContainer.innerHTML = '';
+            configsContainer.innerHTML = '';
+
+            if (selectedPrograms.length === 0) {
+                configsContainer.innerHTML = '<p style="text-align: center; color: var(--grey-600); padding: 40px;">Please select at least one program in Step 2 to configure knowledge bases.</p>';
+                return;
+            }
+
+            const programNames = {
+                'diabetes': 'Diabetes Care',
+                'hypertension': 'Hypertension',
+                'cardiac': 'Cardiac Rehab',
+                'postsurgical': 'Post-Surgical'
+            };
+
+            selectedPrograms.forEach((programId, index) => {
+                // Create tab
+                const tab = document.createElement('button');
+                tab.className = 'program-tab' + (index === 0 ? ' active' : '');
+                tab.textContent = programNames[programId];
+                tab.onclick = () => switchProgramTab(programId);
+                tabsContainer.appendChild(tab);
+
+                // Create KB config section
+                const configSection = document.createElement('div');
+                configSection.className = 'program-config' + (index === 0 ? ' active' : '');
+                configSection.id = `kb-config-${programId}`;
+                configSection.innerHTML = `
+                    <div class="kb-header">
+                        <div style="font-size: 16px; font-weight: 700; color: var(--grey-900);">Knowledge Bases for ${programNames[programId]}</div>
+                        <button class="btn-secondary" onclick="openKBModal()">+ Add New KB</button>
+                    </div>
+                    <div class="kb-list">
+                        <div class="kb-item" onclick="toggleKB(this)">
+                            <div class="kb-checkbox"></div>
+                            <div class="kb-info">
+                                <div class="kb-name">Compliance & Safety Guardrails</div>
+                                <div class="kb-meta">HIPAA requirements, safety protocols, prohibited statements</div>
+                            </div>
+                            <div class="kb-priority priority-high">Highest Priority</div>
+                            <div class="kb-actions">
+                                <button class="kb-btn" onclick="event.stopPropagation(); openKBModal()">Manage</button>
+                            </div>
+                        </div>
+                        <div class="kb-item" onclick="toggleKB(this)">
+                            <div class="kb-checkbox"></div>
+                            <div class="kb-info">
+                                <div class="kb-name">${programNames[programId]} Clinical Protocols</div>
+                                <div class="kb-meta">Treatment guidelines, medication info, lifestyle recommendations</div>
+                            </div>
+                            <div class="kb-priority priority-medium">Medium Priority</div>
+                            <div class="kb-actions">
+                                <button class="kb-btn" onclick="event.stopPropagation(); openKBModal()">Manage</button>
+                            </div>
+                        </div>
+                        <div class="kb-item" onclick="toggleKB(this)">
+                            <div class="kb-checkbox"></div>
+                            <div class="kb-info">
+                                <div class="kb-name">Partner-Specific Terminology</div>
+                                <div class="kb-meta">Branding, terminology, escalation contacts</div>
+                            </div>
+                            <div class="kb-priority priority-medium">Medium Priority</div>
+                            <div class="kb-actions">
+                                <button class="kb-btn" onclick="event.stopPropagation(); openKBModal()">Manage</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                configsContainer.appendChild(configSection);
+            });
+        }
+
+        function switchProgramTab(programId) {
+            // Update tabs
+            document.querySelectorAll('.program-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update config sections
+            document.querySelectorAll('.program-config').forEach(config => config.classList.remove('active'));
+            document.getElementById(`kb-config-${programId}`).classList.add('active');
+        }
+
+        function toggleChannel(element) {
+            element.classList.toggle('selected');
+        }
+
+        function toggleKB(element) {
+            element.classList.toggle('selected');
+        }
+
+        function toggleJourneyMode(element) {
+            element.classList.toggle('active');
+            const scheduleDiv = document.getElementById('independent-schedule');
+            scheduleDiv.style.display = element.classList.contains('active') ? 'none' : 'block';
+        }
+
+        function openKBModal() {
+            document.getElementById('kb-modal').classList.add('active');
+        }
+
+        function closeKBModal() {
+            document.getElementById('kb-modal').classList.remove('active');
+        }
+
+        function completeConfiguration() {
+            alert('Agent configuration complete! In a production system, this would save all settings and activate the agent.');
+            showAgentList();
+        }
+
+        // Close modal on overlay click
+        document.getElementById('kb-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeKBModal();
+            }
+        });
+    </script>
+</body>
+</html>

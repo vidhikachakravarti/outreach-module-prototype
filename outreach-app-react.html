@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outreach Module - Interactive Prototype</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .channel-voice { color: #3B82F6; background-color: rgba(59, 130, 246, 0.1); }
+        .channel-whatsapp { color: #22C55E; background-color: rgba(34, 197, 94, 0.1); }
+        .channel-sms { color: #8B5CF6; background-color: rgba(139, 92, 246, 0.1); }
+        .channel-email { color: #F97316; background-color: rgba(249, 115, 22, 0.1); }
+
+        .channel-border-voice { border-left: 4px solid #3B82F6; }
+        .channel-border-whatsapp { border-left: 4px solid #22C55E; }
+        .channel-border-sms { border-left: 4px solid #8B5CF6; }
+        .channel-border-email { border-left: 4px solid #F97316; }
+
+        .step-indicator {
+            position: relative;
+        }
+
+        .step-indicator::after {
+            content: '';
+            position: absolute;
+            left: 16px;
+            top: 32px;
+            width: 2px;
+            height: calc(100% - 32px);
+            background: #E5E7EB;
+        }
+
+        .step-indicator.completed::after {
+            background: #2E86AB;
+        }
+
+        textarea {
+            font-family: 'Monaco', 'Courier New', monospace;
+        }
+
+        .variable-chip {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .variable-chip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: '#1B3A5C',
+                        blue: '#2E86AB',
+                        amber: '#E8A838',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, createContext, useContext, useCallback } = React;
+
+        // Icons (simplified SVG components)
+        const Icon = ({ name, className = "w-5 h-5" }) => {
+            const icons = {
+                phone: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>,
+                message: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>,
+                send: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>,
+                mail: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>,
+                plus: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>,
+                check: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>,
+                x: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>,
+                chevronRight: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>,
+                chevronLeft: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>,
+                users: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>,
+                calendar: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>,
+                settings: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+                shield: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>,
+                alert: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>,
+                copy: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>,
+                dots: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" /></svg>,
+                file: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
+                zap: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>,
+                lock: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>,
+                search: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>,
+                filter: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>,
+                upload: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>,
+            };
+            return icons[name] || null;
+        };
+
+        // Sample Data
+        const sampleAgents = [
+            {
+                id: 'ag_001',
+                name: 'Medication Reminder - Voice',
+                channel: 'voice',
+                status: 'active',
+                lastRunAt: '2 hours ago',
+                userSelection: { method: 'cohort', matchingCount: 147 },
+                stats: { totalExecutions: 1247, successRate: 89, avgDuration: 234 }
+            },
+            {
+                id: 'ag_002',
+                name: 'Onboarding Call - New Patients',
+                channel: 'voice',
+                status: 'active',
+                lastRunAt: '1 day ago',
+                userSelection: { method: 'cohort', matchingCount: 56 },
+                stats: { totalExecutions: 456, successRate: 94, avgDuration: 412 }
+            },
+            {
+                id: 'ag_003',
+                name: 'Appointment Reminder - SMS',
+                channel: 'sms',
+                status: 'paused',
+                lastRunAt: '3 days ago',
+                userSelection: { method: 'cohort', matchingCount: 892 },
+                stats: { totalExecutions: 2341, successRate: 97, avgDuration: 0 }
+            },
+            {
+                id: 'ag_004',
+                name: 'Weekly Check-in - WhatsApp',
+                channel: 'whatsapp',
+                status: 'draft',
+                lastRunAt: null,
+                userSelection: { method: 'cohort', matchingCount: 0 },
+                stats: { totalExecutions: 0, successRate: 0, avgDuration: 0 }
+            }
+        ];
+
+        const filterFields = [
+            { value: 'program', label: 'Program', type: 'select', options: ['Diabetes Management', 'Cardiac Care', 'Mental Health', 'Weight Management'] },
+            { value: 'enrollment_date', label: 'Enrollment Date', type: 'date' },
+            { value: 'last_contact', label: 'Last Contact', type: 'relative-date' },
+            { value: 'missed_checkins', label: 'Missed Check-ins', type: 'number' },
+            { value: 'adherence_pct', label: 'Adherence %', type: 'number' },
+            { value: 'age', label: 'Age', type: 'number' },
+            { value: 'language', label: 'Language', type: 'select', options: ['English', 'Hindi', 'Spanish', 'Arabic'] },
+            { value: 'risk_level', label: 'Risk Level', type: 'select', options: ['Low', 'Medium', 'High', 'Critical'] }
+        ];
+
+        const operators = [
+            { value: 'equals', label: 'equals' },
+            { value: 'not_equals', label: 'does not equal' },
+            { value: 'greater_than', label: 'greater than' },
+            { value: 'less_than', label: 'less than' },
+            { value: 'contains', label: 'contains' },
+            { value: 'days_ago_more_than', label: 'more than X days ago' },
+            { value: 'days_ago_less_than', label: 'less than X days ago' }
+        ];
+
+        const promptTemplates = {
+            medication: `You are a medication reminder assistant for {{program_name}}. Your goal is to:
+1. Greet the patient warmly using their name ({{patient_name}})
+2. Remind them about their {{medication_name}} scheduled for {{medication_time}}
+3. Ask if they have taken it today
+4. If not, gently encourage them and ask if there are any barriers
+5. Log their response and thank them
+
+Always be supportive, never judgmental. If they express distress, follow escalation protocol.`,
+            onboarding: `You are an onboarding specialist for {{program_name}}. Your role is to:
+1. Welcome {{patient_name}} to the program
+2. Explain what to expect over the next few weeks
+3. Collect their preferred contact time
+4. Answer any initial questions
+5. Confirm their emergency contact information
+
+Be warm and reassuring. This is their first interaction with our program.`,
+            followup: `You are conducting a follow-up call for {{program_name}}. Your objectives:
+1. Greet {{patient_name}} and ask how they've been
+2. Review their progress since last contact
+3. Address any concerns or questions they have
+4. Provide encouragement and positive reinforcement
+5. Schedule next check-in if appropriate
+
+Be empathetic and actively listen to their responses.`,
+            survey: `You are collecting feedback for {{program_name}}. Please:
+1. Thank {{patient_name}} for their participation
+2. Ask the survey questions one at a time
+3. Record their responses accurately
+4. Allow them to skip questions if uncomfortable
+5. Thank them for their time and feedback
+
+Keep the tone conversational and appreciative.`
+        };
+
+        // Context for State Management
+        const AppContext = createContext();
+
+        const AppProvider = ({ children }) => {
+            const [view, setView] = useState('list'); // 'list' | 'wizard' | 'detail'
+            const [agents, setAgents] = useState(() => {
+                const saved = localStorage.getItem('outreach_agents');
+                return saved ? JSON.parse(saved) : sampleAgents;
+            });
+            const [currentAgent, setCurrentAgent] = useState(null);
+            const [wizardStep, setWizardStep] = useState(0);
+            const [settings, setSettings] = useState({
+                hasDocumentsModule: true,
+                hasJourneyTracker: true,
+                retellConfigured: true
+            });
+
+            useEffect(() => {
+                localStorage.setItem('outreach_agents', JSON.stringify(agents));
+            }, [agents]);
+
+            const saveAgent = (agent) => {
+                const existing = agents.find(a => a.id === agent.id);
+                if (existing) {
+                    setAgents(agents.map(a => a.id === agent.id ? agent : a));
+                } else {
+                    setAgents([...agents, agent]);
+                }
+            };
+
+            const deleteAgent = (id) => {
+                setAgents(agents.filter(a => a.id !== id));
+            };
+
+            const duplicateAgent = (sourceAgent, newName, newChannel) => {
+                const newAgent = {
+                    ...sourceAgent,
+                    id: `ag_${Math.random().toString(36).substr(2, 9)}`,
+                    name: newName,
+                    channel: newChannel || sourceAgent.channel,
+                    status: 'draft',
+                    lastRunAt: null,
+                    stats: { totalExecutions: 0, successRate: 0, avgDuration: 0 },
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                setAgents([...agents, newAgent]);
+                return newAgent;
+            };
+
+            return (
+                <AppContext.Provider value={{
+                    view, setView,
+                    agents, setAgents, saveAgent, deleteAgent, duplicateAgent,
+                    currentAgent, setCurrentAgent,
+                    wizardStep, setWizardStep,
+                    settings, setSettings
+                }}>
+                    {children}
+                </AppContext.Provider>
+            );
+        };
+
+        const useApp = () => useContext(AppContext);
+
+        // Main App Component
+        const App = () => {
+            const { view } = useApp();
+
+            return (
+                <div className="min-h-screen bg-gray-50">
+                    <Header />
+                    <main>
+                        {view === 'list' && <AgentListView />}
+                        {view === 'wizard' && <AgentWizard />}
+                        {view === 'detail' && <AgentDetailView />}
+                    </main>
+                </div>
+            );
+        };
+
+        // Header Component
+        const Header = () => {
+            const { view, setView, setCurrentAgent, setWizardStep } = useApp();
+
+            return (
+                <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex justify-between items-center h-16">
+                            <div className="flex items-center gap-4">
+                                <button
+                                    onClick={() => {
+                                        setView('list');
+                                        setCurrentAgent(null);
+                                        setWizardStep(0);
+                                    }}
+                                    className="text-2xl font-bold text-navy cursor-pointer hover:text-blue transition"
+                                >
+                                    Outreach Module
+                                </button>
+                                {view !== 'list' && (
+                                    <span className="text-gray-400">/</span>
+                                )}
+                                {view === 'wizard' && (
+                                    <span className="text-gray-600">Create Agent</span>
+                                )}
+                                {view === 'detail' && (
+                                    <span className="text-gray-600">Agent Details</span>
+                                )}
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <button className="p-2 text-gray-600 hover:text-navy transition">
+                                    <Icon name="settings" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+            );
+        };
+
+        // Agent List View
+        const AgentListView = () => {
+            const { agents, setView, setCurrentAgent, setWizardStep } = useApp();
+            const [searchTerm, setSearchTerm] = useState('');
+            const [channelFilter, setChannelFilter] = useState('all');
+            const [statusFilter, setStatusFilter] = useState('all');
+
+            const filteredAgents = agents.filter(agent => {
+                const matchesSearch = agent.name.toLowerCase().includes(searchTerm.toLowerCase());
+                const matchesChannel = channelFilter === 'all' || agent.channel === channelFilter;
+                const matchesStatus = statusFilter === 'all' || agent.status === statusFilter;
+                return matchesSearch && matchesChannel && matchesStatus;
+            });
+
+            const handleCreateNew = () => {
+                setCurrentAgent({
+                    id: `ag_${Math.random().toString(36).substr(2, 9)}`,
+                    name: '',
+                    channel: '',
+                    status: 'draft',
+                    userSelection: { method: 'cohort', cohortFilters: [] },
+                    knowledgeBases: { templates: [], custom: [] },
+                    config: {},
+                    prompt: '',
+                    documentTemplateId: null,
+                    trigger: { type: 'scheduled' },
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    lastRunAt: null,
+                    stats: { totalExecutions: 0, successRate: 0, avgDuration: 0 }
+                });
+                setWizardStep(0);
+                setView('wizard');
+            };
+
+            return (
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    {/* Header */}
+                    <div className="flex justify-between items-center mb-8">
+                        <div>
+                            <h1 className="text-3xl font-bold text-gray-900">Outreach Agents</h1>
+                            <p className="text-gray-600 mt-1">Manage your automated outreach campaigns</p>
+                        </div>
+                        <button
+                            onClick={handleCreateNew}
+                            className="bg-blue text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 hover:bg-navy transition shadow-lg"
+                        >
+                            <Icon name="plus" className="w-5 h-5" />
+                            Create Agent
+                        </button>
+                    </div>
+
+                    {/* Filters */}
+                    <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+                        <div className="flex flex-col lg:flex-row gap-4">
+                            <div className="flex-1">
+                                <div className="relative">
+                                    <Icon name="search" className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                                    <input
+                                        type="text"
+                                        placeholder="Search agents..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent"
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex gap-2 flex-wrap">
+                                {['all', 'voice', 'whatsapp', 'sms', 'email'].map(channel => (
+                                    <button
+                                        key={channel}
+                                        onClick={() => setChannelFilter(channel)}
+                                        className={`px-4 py-2 rounded-lg font-medium transition ${
+                                            channelFilter === channel
+                                                ? 'bg-blue text-white'
+                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        }`}
+                                    >
+                                        {channel === 'all' ? 'All Channels' : channel.charAt(0).toUpperCase() + channel.slice(1)}
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="flex gap-2">
+                                {['all', 'active', 'paused', 'draft'].map(status => (
+                                    <button
+                                        key={status}
+                                        onClick={() => setStatusFilter(status)}
+                                        className={`px-4 py-2 rounded-lg font-medium transition ${
+                                            statusFilter === status
+                                                ? 'bg-blue text-white'
+                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        }`}
+                                    >
+                                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Agent Cards */}
+                    {filteredAgents.length === 0 ? (
+                        <div className="text-center py-16">
+                            <div className="inline-block p-6 bg-gray-100 rounded-full mb-4">
+                                <Icon name="users" className="w-12 h-12 text-gray-400" />
+                            </div>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-2">No agents found</h3>
+                            <p className="text-gray-600 mb-6">
+                                {searchTerm || channelFilter !== 'all' || statusFilter !== 'all'
+                                    ? 'Try adjusting your filters'
+                                    : 'Create your first agent to start reaching your patients'}
+                            </p>
+                            {!searchTerm && channelFilter === 'all' && statusFilter === 'all' && (
+                                <button
+                                    onClick={handleCreateNew}
+                                    className="bg-blue text-white px-6 py-3 rounded-lg font-semibold hover:bg-navy transition"
+                                >
+                                    Create Agent
+                                </button>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {filteredAgents.map(agent => (
+                                <AgentCard key={agent.id} agent={agent} />
+                            ))}
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // Agent Card Component
+        const AgentCard = ({ agent }) => {
+            const { setView, setCurrentAgent, setWizardStep, duplicateAgent } = useApp();
+            const [showMenu, setShowMenu] = useState(false);
+            const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+
+            const getChannelIcon = (channel) => {
+                const icons = { voice: 'phone', whatsapp: 'message', sms: 'send', email: 'mail' };
+                return icons[channel];
+            };
+
+            const getStatusColor = (status) => {
+                const colors = {
+                    active: 'bg-green-100 text-green-800',
+                    paused: 'bg-yellow-100 text-yellow-800',
+                    draft: 'bg-gray-100 text-gray-800'
+                };
+                return colors[status];
+            };
+
+            const handleEdit = () => {
+                setCurrentAgent(agent);
+                setWizardStep(0);
+                setView('wizard');
+            };
+
+            const handleDuplicate = () => {
+                setShowDuplicateModal(true);
+            };
+
+            return (
+                <>
+                    <div className={`bg-white rounded-lg shadow-sm hover:shadow-md transition cursor-pointer channel-border-${agent.channel}`}>
+                        <div className="p-6">
+                            <div className="flex items-start justify-between mb-4">
+                                <div className={`p-3 rounded-lg channel-${agent.channel}`}>
+                                    <Icon name={getChannelIcon(agent.channel)} className="w-6 h-6" />
+                                </div>
+                                <div className="relative">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setShowMenu(!showMenu);
+                                        }}
+                                        className="p-2 hover:bg-gray-100 rounded-lg transition"
+                                    >
+                                        <Icon name="dots" className="w-5 h-5 text-gray-600" />
+                                    </button>
+                                    {showMenu && (
+                                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleEdit();
+                                                    setShowMenu(false);
+                                                }}
+                                                className="w-full text-left px-4 py-2 hover:bg-gray-50 transition"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDuplicate();
+                                                    setShowMenu(false);
+                                                }}
+                                                className="w-full text-left px-4 py-2 hover:bg-gray-50 transition"
+                                            >
+                                                Duplicate
+                                            </button>
+                                            <button className="w-full text-left px-4 py-2 hover:bg-gray-50 transition">
+                                                {agent.status === 'active' ? 'Pause' : 'Resume'}
+                                            </button>
+                                            <button className="w-full text-left px-4 py-2 hover:bg-gray-50 text-red-600 transition">
+                                                Archive
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div onClick={handleEdit}>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2">{agent.name}</h3>
+                                <div className="flex items-center gap-2 mb-4">
+                                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(agent.status)}`}>
+                                        {agent.status.toUpperCase()}
+                                    </span>
+                                    <span className="text-sm text-gray-600">
+                                        {agent.lastRunAt ? `Last run: ${agent.lastRunAt}` : 'Never run'}
+                                    </span>
+                                </div>
+
+                                <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                                    <Icon name="users" className="w-4 h-4" />
+                                    <span>{agent.userSelection?.matchingCount || 0} users</span>
+                                </div>
+
+                                {agent.status !== 'draft' && (
+                                    <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-100">
+                                        <div>
+                                            <div className="text-2xl font-bold text-navy">{agent.stats.totalExecutions}</div>
+                                            <div className="text-xs text-gray-600">Total Runs</div>
+                                        </div>
+                                        <div>
+                                            <div className="text-2xl font-bold text-green-600">{agent.stats.successRate}%</div>
+                                            <div className="text-xs text-gray-600">Success Rate</div>
+                                        </div>
+                                        <div>
+                                            <div className="text-2xl font-bold text-blue">{agent.stats.avgDuration}s</div>
+                                            <div className="text-xs text-gray-600">Avg Duration</div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {showDuplicateModal && (
+                        <DuplicateModal
+                            agent={agent}
+                            onClose={() => setShowDuplicateModal(false)}
+                        />
+                    )}
+                </>
+            );
+        };
+
+        // Duplicate Modal Component
+        const DuplicateModal = ({ agent, onClose }) => {
+            const { duplicateAgent, setCurrentAgent, setWizardStep, setView } = useApp();
+            const [newName, setNewName] = useState(`${agent.name} (Copy)`);
+            const [newChannel, setNewChannel] = useState(agent.channel);
+
+            const handleDuplicate = () => {
+                const duplicated = duplicateAgent(agent, newName, newChannel);
+                setCurrentAgent(duplicated);
+                setWizardStep(0);
+                setView('wizard');
+                onClose();
+            };
+
+            return (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="p-6">
+                            <h2 className="text-2xl font-bold text-gray-900 mb-4">Duplicate Agent</h2>
+
+                            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                                <div className="text-sm text-gray-600 mb-1">Duplicating from:</div>
+                                <div className="font-semibold text-gray-900">{agent.name}</div>
+                                <div className="text-sm text-gray-600">Channel: {agent.channel}</div>
+                            </div>
+
+                            <div className="mb-6">
+                                <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                    New Agent Name
+                                </label>
+                                <input
+                                    type="text"
+                                    value={newName}
+                                    onChange={(e) => setNewName(e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent"
+                                    placeholder="Enter new agent name"
+                                />
+                            </div>
+
+                            <div className="mb-6">
+                                <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                    Change Channel (Optional)
+                                </label>
+                                <select
+                                    value={newChannel}
+                                    onChange={(e) => setNewChannel(e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent"
+                                >
+                                    <option value={agent.channel}>Same as original ({agent.channel})</option>
+                                    <option value="voice">Voice</option>
+                                    <option value="whatsapp">WhatsApp</option>
+                                    <option value="sms">SMS</option>
+                                    <option value="email">Email</option>
+                                </select>
+                                {newChannel !== agent.channel && (
+                                    <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                        <div className="text-sm text-yellow-800">
+                                            ⚠️ Changing channels may require you to review and adjust some settings
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+                                <div className="text-sm font-semibold text-gray-900 mb-2">What gets copied:</div>
+                                <div className="space-y-1 text-sm text-gray-700">
+                                    <div>✓ User Selection</div>
+                                    <div>✓ Knowledge Bases (if compatible)</div>
+                                    <div>✓ Configuration (if compatible)</div>
+                                    <div>✓ Prompt (flagged for review if channel changed)</div>
+                                    <div>✓ Document Template</div>
+                                    <div className="text-red-600">✗ Triggers (you'll configure these)</div>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={onClose}
+                                    className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleDuplicate}
+                                    disabled={!newName.trim()}
+                                    className="flex-1 px-6 py-3 bg-blue text-white rounded-lg font-semibold hover:bg-navy transition disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                >
+                                    Create Duplicate
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Agent Wizard Component
+        const AgentWizard = () => {
+            const { wizardStep } = useApp();
+
+            return (
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div className="flex gap-8">
+                        <WizardSidebar />
+                        <div className="flex-1">
+                            <WizardContent />
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Wizard Sidebar Component
+        const WizardSidebar = () => {
+            const { wizardStep, setWizardStep, currentAgent } = useApp();
+
+            const steps = [
+                { id: 0, title: 'Outreach Tool', icon: 'settings' },
+                { id: 1, title: 'Agent Creation', icon: 'file' },
+                { id: 2, title: 'User Selection', icon: 'users' },
+                { id: 3, title: 'Knowledge Base', icon: 'shield' },
+                { id: 4, title: 'Configuration', icon: 'settings' },
+                { id: 5, title: 'Prompt Building', icon: 'message' },
+                { id: 6, title: 'Document Templates', icon: 'file' },
+                { id: 7, title: 'Triggers', icon: 'zap' },
+                { id: 8, title: 'Review & Activate', icon: 'check' }
+            ];
+
+            const canNavigateToStep = (stepId) => {
+                // Allow navigation to any step if editing, or to completed steps if creating
+                return stepId <= wizardStep;
+            };
+
+            return (
+                <div className="w-64 bg-white rounded-lg shadow-sm p-6 sticky top-24 h-fit">
+                    <div className="mb-6">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">Agent Setup</h3>
+                        {currentAgent?.channel && (
+                            <div className={`px-3 py-2 rounded-lg inline-flex items-center gap-2 channel-${currentAgent.channel}`}>
+                                <Icon name={currentAgent.channel === 'voice' ? 'phone' : currentAgent.channel === 'whatsapp' ? 'message' : currentAgent.channel === 'sms' ? 'send' : 'mail'} className="w-4 h-4" />
+                                <span className="font-medium capitalize">{currentAgent.channel}</span>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="space-y-1">
+                        {steps.map((step, index) => (
+                            <button
+                                key={step.id}
+                                onClick={() => canNavigateToStep(step.id) && setWizardStep(step.id)}
+                                disabled={!canNavigateToStep(step.id)}
+                                className={`w-full text-left px-4 py-3 rounded-lg transition flex items-center gap-3 ${
+                                    wizardStep === step.id
+                                        ? 'bg-blue text-white'
+                                        : canNavigateToStep(step.id)
+                                        ? 'hover:bg-gray-100 text-gray-700'
+                                        : 'text-gray-400 cursor-not-allowed'
+                                }`}
+                            >
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
+                                    wizardStep === step.id
+                                        ? 'bg-white text-blue'
+                                        : step.id < wizardStep
+                                        ? 'bg-green-100 text-green-800'
+                                        : 'bg-gray-100 text-gray-600'
+                                }`}>
+                                    {step.id < wizardStep ? <Icon name="check" className="w-4 h-4" /> : index + 1}
+                                </div>
+                                <span className="font-medium text-sm">{step.title}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        // Wizard Content Component - This will be quite long, so I'll create it in parts
+        const WizardContent = () => {
+            const { wizardStep, currentAgent, setCurrentAgent, setWizardStep, saveAgent, setView } = useApp();
+
+            const canProceed = () => {
+                switch (wizardStep) {
+                    case 0: return !!currentAgent?.channel;
+                    case 1: return !!currentAgent?.name && currentAgent.name.length >= 3;
+                    case 2: return !!currentAgent?.userSelection?.method;
+                    case 3: return true; // KB is optional
+                    case 4: return true; // Config has defaults
+                    case 5: return !!currentAgent?.prompt && currentAgent.prompt.length >= 10;
+                    case 6: return true; // Document templates are optional
+                    case 7: return !!currentAgent?.trigger?.type;
+                    case 8: return true;
+                    default: return false;
+                }
+            };
+
+            const handleNext = () => {
+                if (canProceed()) {
+                    if (wizardStep < 8) {
+                        setWizardStep(wizardStep + 1);
+                    } else {
+                        // Final step - activate agent
+                        const updatedAgent = {
+                            ...currentAgent,
+                            status: 'active',
+                            updatedAt: new Date().toISOString()
+                        };
+                        saveAgent(updatedAgent);
+                        alert('Agent activated successfully!');
+                        setView('list');
+                    }
+                }
+            };
+
+            const handlePrevious = () => {
+                if (wizardStep > 0) {
+                    setWizardStep(wizardStep - 1);
+                }
+            };
+
+            const handleSaveDraft = () => {
+                saveAgent(currentAgent);
+                alert('Draft saved!');
+            };
+
+            return (
+                <div className="bg-white rounded-lg shadow-sm">
+                    <div className="p-8">
+                        {wizardStep === 0 && <Step1ChannelSelection />}
+                        {wizardStep === 1 && <Step2AgentBasics />}
+                        {wizardStep === 2 && <Step3UserSelection />}
+                        {wizardStep === 3 && <Step4KnowledgeBase />}
+                        {wizardStep === 4 && <Step5Configuration />}
+                        {wizardStep === 5 && <Step6PromptBuilding />}
+                        {wizardStep === 6 && <Step7DocumentTemplates />}
+                        {wizardStep === 7 && <Step8Triggers />}
+                        {wizardStep === 8 && <Step9ReviewActivate />}
+                    </div>
+
+                    <div className="border-t border-gray-200 p-6 flex justify-between items-center">
+                        <button
+                            onClick={handlePrevious}
+                            disabled={wizardStep === 0}
+                            className="flex items-center gap-2 px-6 py-3 text-gray-700 font-semibold hover:bg-gray-100 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <Icon name="chevronLeft" />
+                            Previous
+                        </button>
+
+                        <button
+                            onClick={handleSaveDraft}
+                            className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 rounded-lg transition"
+                        >
+                            Save as Draft
+                        </button>
+
+                        <button
+                            onClick={handleNext}
+                            disabled={!canProceed()}
+                            className="flex items-center gap-2 px-6 py-3 bg-blue text-white font-semibold hover:bg-navy rounded-lg transition disabled:bg-gray-300 disabled:cursor-not-allowed"
+                        >
+                            {wizardStep === 8 ? 'Activate Agent' : 'Next'}
+                            {wizardStep < 8 && <Icon name="chevronRight" />}
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        // Step 1: Channel Selection
+        const Step1ChannelSelection = () => {
+            const { currentAgent, setCurrentAgent, settings } = useApp();
+
+            const channels = [
+                { id: 'voice', name: 'Voice Call', icon: 'phone', aiEnabled: true, color: 'voice', description: 'AI-powered phone conversations via Retell AI' },
+                { id: 'whatsapp', name: 'WhatsApp', icon: 'message', aiEnabled: true, color: 'whatsapp', description: 'Two-way chat via WhatsApp Business API' },
+                { id: 'sms', name: 'SMS', icon: 'send', aiEnabled: false, color: 'sms', description: 'Simple text message delivery' },
+                { id: 'email', name: 'Email', icon: 'mail', aiEnabled: false, color: 'email', description: 'Email delivery with templates' }
+            ];
+
+            const handleSelectChannel = (channelId) => {
+                if (channelId === 'voice' && !settings.retellConfigured) {
+                    return; // Don't allow selection if Retell not configured
+                }
+                setCurrentAgent({ ...currentAgent, channel: channelId });
+            };
+
+            return (
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Step 1: Select Outreach Tool</h2>
+                    <p className="text-gray-600 mb-8">Choose the communication channel for this agent</p>
+
+                    <div className="grid grid-cols-2 gap-6">
+                        {channels.map(channel => {
+                            const isDisabled = channel.id === 'voice' && !settings.retellConfigured;
+                            const isSelected = currentAgent?.channel === channel.id;
+
+                            return (
+                                <button
+                                    key={channel.id}
+                                    onClick={() => handleSelectChannel(channel.id)}
+                                    disabled={isDisabled}
+                                    className={`p-6 rounded-lg border-2 transition text-left ${
+                                        isSelected
+                                            ? 'border-blue bg-blue-50'
+                                            : isDisabled
+                                            ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-50'
+                                            : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
+                                    } channel-border-${channel.color}`}
+                                >
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div className={`p-3 rounded-lg channel-${channel.color}`}>
+                                            <Icon name={channel.icon} className="w-8 h-8" />
+                                        </div>
+                                        {channel.aiEnabled && (
+                                            <span className="px-3 py-1 bg-purple-100 text-purple-800 text-xs font-semibold rounded-full">
+                                                AI-ENABLED
+                                            </span>
+                                        )}
+                                    </div>
+                                    <h3 className="text-xl font-bold text-gray-900 mb-2">{channel.name}</h3>
+                                    <p className="text-gray-600 text-sm">{channel.description}</p>
+                                    {isDisabled && (
+                                        <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                                            <p className="text-sm text-amber-800">Retell AI not configured</p>
+                                        </div>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <h4 className="font-semibold text-gray-900 mb-2">💡 Channel Selection Tips</h4>
+                        <ul className="text-sm text-gray-700 space-y-1">
+                            <li>• AI-enabled channels can conduct two-way conversations</li>
+                            <li>• Non-AI channels send simple messages without conversation</li>
+                            <li>• You can create multiple agents for different channels</li>
+                        </ul>
+                    </div>
+                </div>
+            );
+        };
+
+        // Step 2: Agent Basics
+        const Step2AgentBasics = () => {
+            const { currentAgent, setCurrentAgent } = useApp();
+
+            return (
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Step 2: Agent Creation</h2>
+                    <p className="text-gray-600 mb-8">Name your agent and establish its identity</p>
+
+                    <div className="max-w-2xl">
+                        <div className="mb-6">
+                            <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                Agent Name *
+                            </label>
+                            <input
+                                type="text"
+                                value={currentAgent?.name || ''}
+                                onChange={(e) => setCurrentAgent({ ...currentAgent, name: e.target.value })}
+                                placeholder="e.g., Medication Reminder - Voice"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent text-lg"
+                                maxLength={60}
+                            />
+                            <div className="mt-2 flex justify-between text-sm text-gray-600">
+                                <span>Use descriptive names that indicate purpose and channel</span>
+                                <span>{currentAgent?.name?.length || 0}/60</span>
+                            </div>
+                        </div>
+
+                        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                            <div className="text-sm font-semibold text-gray-700 mb-2">Agent ID (auto-generated)</div>
+                            <div className="font-mono text-gray-500">{currentAgent?.id}</div>
+                        </div>
+
+                        <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                            <h4 className="font-semibold text-gray-900 mb-2">✏️ Naming Conventions</h4>
+                            <ul className="text-sm text-gray-700 space-y-1">
+                                <li>• Include the purpose: "Medication Reminder", "Onboarding", "Follow-up"</li>
+                                <li>• Include the channel: "- Voice", "- WhatsApp", "- SMS"</li>
+                                <li>• Keep it concise but descriptive</li>
+                                <li>• Examples: "Daily Med Check - Voice", "Welcome Call - New Patients"</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Due to length, I'll create a condensed version that shows the pattern
+        // In a real implementation, each step would be fully fleshed out
+
+        const Step3UserSelection = () => {
+            const { currentAgent, setCurrentAgent } = useApp();
+            const [activeTab, setActiveTab] = useState(currentAgent?.userSelection?.method || 'cohort');
+
+            return (
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Step 3: User Selection (WHO)</h2>
+                    <p className="text-gray-600 mb-8">Define who receives this outreach</p>
+
+                    <div className="border-b border-gray-200 mb-6">
+                        <div className="flex gap-4">
+                            {['cohort', 'upload', 'journey', 'trigger-defined'].map(tab => (
+                                <button
+                                    key={tab}
+                                    onClick={() => {
+                                        setActiveTab(tab);
+                                        setCurrentAgent({
+                                            ...currentAgent,
+                                            userSelection: { ...currentAgent.userSelection, method: tab }
+                                        });
+                                    }}
+                                    className={`px-4 py-3 font-medium border-b-2 transition ${
+                                        activeTab === tab
+                                            ? 'border-blue text-blue'
+                                            : 'border-transparent text-gray-600 hover:text-gray-900'
+                                    }`}
+                                >
+                                    {tab === 'cohort' && 'Cohort Builder'}
+                                    {tab === 'upload' && 'Manual Upload'}
+                                    {tab === 'journey' && 'Journey Stage'}
+                                    {tab === 'trigger-defined' && 'Trigger-Defined'}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {activeTab === 'cohort' && (
+                        <div>
+                            <div className="mb-6">
+                                <label className="block text-sm font-semibold text-gray-900 mb-2">User Type</label>
+                                <select className="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option>Patients</option>
+                                    <option>Caregivers</option>
+                                    <option>Care Providers</option>
+                                </select>
+                            </div>
+
+                            <div className="p-6 bg-gray-50 rounded-lg">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h4 className="font-semibold">Filters</h4>
+                                    <button className="text-blue font-semibold text-sm">+ Add Filter</button>
+                                </div>
+                                <div className="text-gray-600 text-center py-8">
+                                    Add filters to define your cohort
+                                </div>
+                            </div>
+
+                            <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                                <div className="flex items-center gap-3">
+                                    <Icon name="check" className="w-5 h-5 text-green-600" />
+                                    <div>
+                                        <div className="font-semibold text-gray-900">Matching Users: 147</div>
+                                        <button className="text-blue text-sm font-medium">Preview List</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'upload' && (
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
+                            <Icon name="upload" className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                            <p className="text-gray-600 mb-4">Drag and drop CSV file or click to browse</p>
+                            <button className="px-6 py-2 bg-blue text-white rounded-lg font-semibold">
+                                Upload CSV
+                            </button>
+                            <p className="text-sm text-gray-500 mt-4">
+                                <a href="#" className="text-blue">Download template</a>
+                            </p>
+                        </div>
+                    )}
+
+                    {activeTab === 'trigger-defined' && (
+                        <div className="p-6 bg-blue-50 border border-blue-200 rounded-lg">
+                            <h4 className="font-semibold text-gray-900 mb-2">Dynamic User Selection</h4>
+                            <p className="text-gray-700">
+                                Users will be determined by the trigger event (e.g., the patient whose glucose spiked).
+                                You'll configure the specific event in Step 8 (Triggers).
+                            </p>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // Continuing with more steps...
+        const Step4KnowledgeBase = () => {
+            const { currentAgent, setCurrentAgent } = useApp();
+            const isAIChannel = currentAgent?.channel === 'voice' || currentAgent?.channel === 'whatsapp';
+
+            if (!isAIChannel) {
+                return (
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-2">Step 4: Knowledge Base</h2>
+                        <div className="p-12 text-center bg-gray-50 rounded-lg">
+                            <Icon name="shield" className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                            <h3 className="text-xl font-semibold text-gray-900 mb-2">Not Applicable</h3>
+                            <p className="text-gray-600 mb-6">
+                                Knowledge bases are only available for AI-enabled channels (Voice and WhatsApp).
+                                {currentAgent?.channel && ` ${currentAgent.channel.toUpperCase()} uses simple message templates.`}
+                            </p>
+                            <button className="px-6 py-3 bg-blue text-white rounded-lg font-semibold">
+                                Skip to Next Step
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            const templates = [
+                { id: 'safety', name: 'Safety Guardrails', icon: 'shield', color: 'red', desc: 'What the AI should never say, emergency protocols, escalation triggers' },
+                { id: 'compliance', name: 'Healthcare Compliance', icon: 'alert', color: 'amber', desc: 'HIPAA-safe language, consent reminders, regulatory requirements' },
+                { id: 'communication', name: 'Communication Best Practices', icon: 'message', color: 'blue', desc: 'Empathetic language, active listening, cultural sensitivity' }
+            ];
+
+            const toggleTemplate = (templateId) => {
+                const current = currentAgent?.knowledgeBases?.templates || [];
+                const updated = current.includes(templateId)
+                    ? current.filter(id => id !== templateId)
+                    : [...current, templateId];
+                setCurrentAgent({
+                    ...currentAgent,
+                    knowledgeBases: { ...currentAgent.knowledgeBases, templates: updated }
+                });
+            };
+
+            return (
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Step 4: Knowledge Base</h2>
+                    <p className="text-gray-600 mb-8">Select what the AI knows and how it should behave</p>
+
+                    <div className="mb-8">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Pre-built Templates</h3>
+                        <div className="grid gap-4">
+                            {templates.map(template => {
+                                const isSelected = currentAgent?.knowledgeBases?.templates?.includes(template.id);
+                                return (
+                                    <button
+                                        key={template.id}
+                                        onClick={() => toggleTemplate(template.id)}
+                                        className={`p-6 rounded-lg border-2 transition text-left ${
+                                            isSelected ? 'border-blue bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                                        }`}
+                                    >
+                                        <div className="flex items-start gap-4">
+                                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-1 ${
+                                                isSelected ? 'bg-blue border-blue' : 'border-gray-300'
+                                            }`}>
+                                                {isSelected && <Icon name="check" className="w-3 h-3 text-white" />}
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-3 mb-2">
+                                                    <Icon name={template.icon} className="w-6 h-6 text-gray-600" />
+                                                    <h4 className="text-lg font-semibold text-gray-900">{template.name}</h4>
+                                                </div>
+                                                <p className="text-gray-600 text-sm">{template.desc}</p>
+                                            </div>
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Custom Knowledge Bases</h3>
+                        <button className="w-full p-6 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue hover:text-blue transition">
+                            <Icon name="plus" className="w-8 h-8 mx-auto mb-2" />
+                            <div className="font-semibold">Add Custom Knowledge Base</div>
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        const Step5Configuration = () => {
+            const { currentAgent, setCurrentAgent } = useApp();
+            const isAIChannel = currentAgent?.channel === 'voice' || currentAgent?.channel === 'whatsapp';
+
+            const tones = [
+                { id: 'friendly', name: 'Friendly & Warm', desc: 'Casual, approachable, conversational' },
+                { id: 'professional', name: 'Professional', desc: 'Formal, clear, business-appropriate' },
+                { id: 'empathetic', name: 'Empathetic & Supportive', desc: 'Gentle, understanding, emotionally aware' },
+                { id: 'concise', name: 'Concise & Direct', desc: 'Brief, to-the-point, minimal small talk' }
+            ];
+
+            return (
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Step 5: Agent Configuration</h2>
+                    <p className="text-gray-600 mb-8">Configure behavior and channel-specific settings</p>
+
+                    {isAIChannel ? (
+                        <div className="space-y-8">
+                            <div>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Conversation Tone</h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    {tones.map(tone => {
+                                        const isSelected = currentAgent?.config?.tone === tone.id;
+                                        return (
+                                            <button
+                                                key={tone.id}
+                                                onClick={() => setCurrentAgent({
+                                                    ...currentAgent,
+                                                    config: { ...currentAgent.config, tone: tone.id }
+                                                })}
+                                                className={`p-4 rounded-lg border-2 transition text-left ${
+                                                    isSelected ? 'border-blue bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                                                }`}
+                                            >
+                                                <h4 className="font-semibold text-gray-900 mb-1">{tone.name}</h4>
+                                                <p className="text-sm text-gray-600">{tone.desc}</p>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Behavior Settings</h3>
+                                <div className="space-y-3">
+                                    {[
+                                        { id: 'interruptions', label: 'Allow interruptions during speech (Voice only)', default: false },
+                                        { id: 'escalation', label: 'Enable escalation to human agent', default: true },
+                                        { id: 'recording', label: 'Record conversation for review', default: true },
+                                        { id: 'summary', label: 'Send summary to care team after call', default: false }
+                                    ].map(setting => (
+                                        <label key={setting.id} className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                                            <input type="checkbox" className="w-5 h-5 text-blue" defaultChecked={setting.default} />
+                                            <span className="text-gray-900">{setting.label}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                    Maximum Conversation Duration
+                                </label>
+                                <select className="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option>2 minutes</option>
+                                    <option>5 minutes</option>
+                                    <option selected>10 minutes</option>
+                                    <option>15 minutes</option>
+                                    <option>No limit</option>
+                                </select>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="space-y-6">
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                    {currentAgent?.channel === 'sms' ? 'Character Limit' : 'From Name'}
+                                </label>
+                                {currentAgent?.channel === 'sms' ? (
+                                    <select className="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                        <option>160 characters (single message)</option>
+                                        <option>320 characters (multi-part)</option>
+                                    </select>
+                                ) : (
+                                    <input
+                                        type="text"
+                                        placeholder="Your Organization Name"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                                    />
+                                )}
+                            </div>
+
+                            {currentAgent?.channel === 'email' && (
+                                <>
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-900 mb-2">Reply-To Email</label>
+                                        <input
+                                            type="email"
+                                            placeholder="noreply@example.com"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                                        />
+                                    </div>
+                                    <div className="space-y-3">
+                                        <label className="flex items-center gap-3">
+                                            <input type="checkbox" className="w-5 h-5 text-blue" defaultChecked />
+                                            <span className="text-gray-900">Track email opens</span>
+                                        </label>
+                                        <label className="flex items-center gap-3">
+                                            <input type="checkbox" className="w-5 h-5 text-blue" defaultChecked />
+                                            <span className="text-gray-900">Track link clicks</span>
+                                        </label>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const Step6PromptBuilding = () => {
+            const { currentAgent, setCurrentAgent } = useApp();
+            const isAIChannel = currentAgent?.channel === 'voice' || currentAgent?.channel === 'whatsapp';
+            const [selectedTemplate, setSelectedTemplate] = useState('blank');
+
+            const variables = [
+                '{{patient_name}}', '{{program_name}}', '{{medication_name}}',
+                '{{medication_time}}', '{{appointment_date}}', '{{provider_name}}',
+                '{{coach_name}}', '{{care_team_phone}}'
+            ];
+
+            const loadTemplate = (templateKey) => {
+                setSelectedTemplate(templateKey);
+                if (templateKey !== 'blank') {
+                    setCurrentAgent({ ...currentAgent, prompt: promptTemplates[templateKey] });
+                }
+            };
+
+            const insertVariable = (variable) => {
+                const textarea = document.getElementById('prompt-textarea');
+                if (textarea) {
+                    const start = textarea.selectionStart;
+                    const end = textarea.selectionEnd;
+                    const text = currentAgent?.prompt || '';
+                    const newText = text.substring(0, start) + variable + text.substring(end);
+                    setCurrentAgent({ ...currentAgent, prompt: newText });
+                    setTimeout(() => {
+                        textarea.focus();
+                        textarea.setSelectionRange(start + variable.length, start + variable.length);
+                    }, 0);
+                }
+            };
+
+            return (
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                        Step 6: {isAIChannel ? 'Prompt Building' : 'Message Template'}
+                    </h2>
+                    <p className="text-gray-600 mb-8">
+                        {isAIChannel ? 'Write instructions for your AI agent' : 'Create your message template'}
+                    </p>
+
+                    {isAIChannel && (
+                        <div className="mb-6">
+                            <label className="block text-sm font-semibold text-gray-900 mb-2">Quick Start Templates</label>
+                            <div className="flex gap-2 flex-wrap">
+                                {[
+                                    { id: 'medication', label: 'Medication Reminder' },
+                                    { id: 'onboarding', label: 'Onboarding' },
+                                    { id: 'followup', label: 'Follow-up' },
+                                    { id: 'survey', label: 'Survey' },
+                                    { id: 'blank', label: 'Blank' }
+                                ].map(template => (
+                                    <button
+                                        key={template.id}
+                                        onClick={() => loadTemplate(template.id)}
+                                        className={`px-4 py-2 rounded-lg font-medium transition ${
+                                            selectedTemplate === template.id
+                                                ? 'bg-blue text-white'
+                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        }`}
+                                    >
+                                        {template.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="mb-4">
+                        <label className="block text-sm font-semibold text-gray-900 mb-2">
+                            Available Variables
+                        </label>
+                        <div className="flex gap-2 flex-wrap">
+                            {variables.map(variable => (
+                                <button
+                                    key={variable}
+                                    onClick={() => insertVariable(variable)}
+                                    className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm font-mono hover:bg-blue hover:text-white transition variable-chip"
+                                >
+                                    {variable}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-900 mb-2">
+                            {isAIChannel ? 'Agent Instructions' : 'Message Template'}
+                        </label>
+                        <textarea
+                            id="prompt-textarea"
+                            value={currentAgent?.prompt || ''}
+                            onChange={(e) => setCurrentAgent({ ...currentAgent, prompt: e.target.value })}
+                            placeholder={isAIChannel ? "Enter your agent's instructions here..." : "Enter your message template here..."}
+                            className="w-full h-96 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent resize-none"
+                        />
+                        <div className="mt-2 flex justify-between text-sm text-gray-600">
+                            <span>{isAIChannel ? 'Be specific about goals, steps, and data collection' : 'Use variables for personalization'}</span>
+                            <span>{currentAgent?.prompt?.length || 0} characters</span>
+                        </div>
+                    </div>
+
+                    <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <h4 className="font-semibold text-gray-900 mb-2">💡 Writing Tips</h4>
+                        <ul className="text-sm text-gray-700 space-y-1">
+                            {isAIChannel ? (
+                                <>
+                                    <li>• Start with the agent's role and primary goal</li>
+                                    <li>• Break down the conversation into numbered steps</li>
+                                    <li>• Specify what information to collect</li>
+                                    <li>• Define escalation conditions clearly</li>
+                                </>
+                            ) : (
+                                <>
+                                    <li>• Keep messages concise and clear</li>
+                                    <li>• Include a clear call-to-action</li>
+                                    <li>• Use variables for personalization</li>
+                                    <li>• Test different lengths for SMS</li>
+                                </>
+                            )}
+                        </ul>
+                    </div>
+                </div>
+            );
+        };
+
+        const Step7DocumentTemplates = () => {
+            const { currentAgent, setCurrentAgent, settings } = useApp();
+
+            const templates = [
+                { id: 'adherence', name: 'Medication Adherence Log', fields: ['adherence_status', 'barriers_mentioned', 'follow_up_needed'] },
+                { id: 'onboarding', name: 'Onboarding Summary', fields: ['preferred_time', 'questions_asked', 'emergency_contact'] },
+                { id: 'followup', name: 'Follow-up Notes', fields: ['patient_sentiment', 'concerns_raised', 'action_items'] },
+                { id: 'survey', name: 'Survey Response Collection', fields: ['q1_response', 'q2_response', 'overall_satisfaction'] }
+            ];
+
+            if (!settings.hasDocumentsModule) {
+                return (
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-2">Step 7: Document Templates</h2>
+                        <div className="p-12 text-center bg-gray-50 rounded-lg border-2 border-gray-200">
+                            <Icon name="lock" className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                            <h3 className="text-xl font-semibold text-gray-900 mb-2">Documents Module Required</h3>
+                            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                                Document templates are part of the Documents module, which is not included in your current plan.
+                                Upgrade to automatically capture and structure data from conversations.
+                            </p>
+                            <button className="px-6 py-3 bg-blue text-white rounded-lg font-semibold hover:bg-navy transition">
+                                Learn More About Documents Module
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Step 7: Document Templates</h2>
+                    <p className="text-gray-600 mb-8">Link templates for structured data capture from conversations</p>
+
+                    <div className="grid gap-4 mb-6">
+                        {templates.map(template => {
+                            const isSelected = currentAgent?.documentTemplateId === template.id;
+                            return (
+                                <button
+                                    key={template.id}
+                                    onClick={() => setCurrentAgent({
+                                        ...currentAgent,
+                                        documentTemplateId: isSelected ? null : template.id
+                                    })}
+                                    className={`p-6 rounded-lg border-2 transition text-left ${
+                                        isSelected ? 'border-blue bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                                    }`}
+                                >
+                                    <div className="flex items-start gap-4">
+                                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-1 ${
+                                            isSelected ? 'bg-blue border-blue' : 'border-gray-300'
+                                        }`}>
+                                            {isSelected && <div className="w-2 h-2 bg-white rounded-full" />}
+                                        </div>
+                                        <div className="flex-1">
+                                            <h4 className="text-lg font-semibold text-gray-900 mb-2">{template.name}</h4>
+                                            <div className="flex gap-2 flex-wrap">
+                                                {template.fields.map(field => (
+                                                    <span key={field} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md font-mono">
+                                                        {field}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <h4 className="font-semibold text-gray-900 mb-2">🤖 Automatic Data Extraction</h4>
+                        <p className="text-sm text-gray-700">
+                            When a template is linked, the agent's prompt is automatically enhanced with instructions
+                            to collect the required data. The AI will extract and populate template fields during the conversation.
+                        </p>
+                    </div>
+                </div>
+            );
+        };
+
+        const Step8Triggers = () => {
+            const { currentAgent, setCurrentAgent, settings } = useApp();
+            const [triggerType, setTriggerType] = useState(currentAgent?.trigger?.type || 'scheduled');
+
+            const handleTypeChange = (type) => {
+                setTriggerType(type);
+                setCurrentAgent({
+                    ...currentAgent,
+                    trigger: { ...currentAgent.trigger, type }
+                });
+            };
+
+            return (
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Step 8: Triggers (WHEN)</h2>
+                    <p className="text-gray-600 mb-8">Define when this outreach executes</p>
+
+                    <div className="grid gap-4 mb-6">
+                        {[
+                            { id: 'scheduled', name: 'Scheduled', icon: 'calendar', desc: 'Run at specific times or recurring intervals' },
+                            { id: 'event', name: 'Event-Based', icon: 'zap', desc: 'Trigger on platform events or user actions' },
+                            { id: 'api', name: 'API / Webhook', icon: 'settings', desc: 'External systems trigger via API call' },
+                            { id: 'journey', name: 'Journey Task', icon: 'users', desc: 'Linked to a specific Journey Tracker task' }
+                        ].map(trigger => (
+                            <button
+                                key={trigger.id}
+                                onClick={() => handleTypeChange(trigger.id)}
+                                className={`p-6 rounded-lg border-2 transition text-left ${
+                                    triggerType === trigger.id ? 'border-blue bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                                }`}
+                            >
+                                <div className="flex items-start gap-4">
+                                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-1 ${
+                                        triggerType === trigger.id ? 'bg-blue border-blue' : 'border-gray-300'
+                                    }`}>
+                                        {triggerType === trigger.id && <div className="w-2 h-2 bg-white rounded-full" />}
+                                    </div>
+                                    <div>
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <Icon name={trigger.icon} className="w-5 h-5 text-gray-600" />
+                                            <h4 className="text-lg font-semibold text-gray-900">{trigger.name}</h4>
+                                        </div>
+                                        <p className="text-gray-600 text-sm">{trigger.desc}</p>
+                                    </div>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+
+                    {triggerType === 'scheduled' && (
+                        <div className="p-6 bg-gray-50 rounded-lg space-y-6">
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-900 mb-2">Frequency</label>
+                                <select className="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option>One-time</option>
+                                    <option selected>Daily</option>
+                                    <option>Weekly</option>
+                                    <option>Monthly</option>
+                                </select>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-900 mb-2">Time</label>
+                                    <input type="time" defaultValue="09:00" className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-900 mb-2">Timezone</label>
+                                    <select className="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                        <option>User's local timezone</option>
+                                        <option>UTC</option>
+                                        <option>America/New_York</option>
+                                        <option>Asia/Kolkata</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {triggerType === 'event' && (
+                        <div className="p-6 bg-gray-50 rounded-lg">
+                            <label className="block text-sm font-semibold text-gray-900 mb-2">Select Event</label>
+                            <select className="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                <option>Patient onboarded</option>
+                                <option>Check-in missed</option>
+                                <option>Glucose reading {">"} threshold</option>
+                                <option>Medication adherence {"<"} 80%</option>
+                                <option>Appointment in 24 hours</option>
+                            </select>
+                        </div>
+                    )}
+
+                    {triggerType === 'api' && (
+                        <div className="p-6 bg-gray-50 rounded-lg">
+                            <h4 className="font-semibold text-gray-900 mb-3">API Endpoint</h4>
+                            <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm mb-4">
+                                POST /api/v1/outreach/agents/{'{agent_id}'}/trigger
+                            </div>
+                            <p className="text-sm text-gray-600">
+                                After agent creation, you'll receive the full endpoint and authentication credentials.
+                            </p>
+                        </div>
+                    )}
+
+                    {triggerType === 'journey' && (
+                        <div className="p-6 bg-gray-50 rounded-lg">
+                            <label className="block text-sm font-semibold text-gray-900 mb-2">Search Journey Tasks</label>
+                            <input
+                                type="text"
+                                placeholder="Type to search for a task..."
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-3"
+                            />
+                            <div className="space-y-2">
+                                <button className="w-full p-4 bg-white border border-gray-200 rounded-lg text-left hover:border-blue transition">
+                                    <div className="font-semibold text-gray-900">Day 7: Initial Follow-up Call</div>
+                                    <div className="text-sm text-gray-600">Diabetes Care Journey</div>
+                                </button>
+                                <button className="w-full p-4 bg-white border border-gray-200 rounded-lg text-left hover:border-blue transition">
+                                    <div className="font-semibold text-gray-900">Day 14: Medication Check</div>
+                                    <div className="text-sm text-gray-600">Diabetes Care Journey</div>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const Step9ReviewActivate = () => {
+            const { currentAgent } = useApp();
+
+            const getChannelName = (channel) => {
+                const names = { voice: 'Voice Call', whatsapp: 'WhatsApp', sms: 'SMS', email: 'Email' };
+                return names[channel] || channel;
+            };
+
+            return (
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Step 9: Review & Activate</h2>
+                    <p className="text-gray-600 mb-8">Review your configuration and activate your agent</p>
+
+                    <div className="grid gap-6 mb-8">
+                        <div className="p-6 bg-white border border-gray-200 rounded-lg">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Configuration Summary</h3>
+                            <dl className="space-y-3">
+                                <div className="flex justify-between py-2 border-b border-gray-100">
+                                    <dt className="text-gray-600 font-medium">Channel</dt>
+                                    <dd className="text-gray-900 font-semibold">{getChannelName(currentAgent?.channel)}</dd>
+                                </div>
+                                <div className="flex justify-between py-2 border-b border-gray-100">
+                                    <dt className="text-gray-600 font-medium">Agent Name</dt>
+                                    <dd className="text-gray-900 font-semibold">{currentAgent?.name || '—'}</dd>
+                                </div>
+                                <div className="flex justify-between py-2 border-b border-gray-100">
+                                    <dt className="text-gray-600 font-medium">User Selection</dt>
+                                    <dd className="text-gray-900 font-semibold capitalize">{currentAgent?.userSelection?.method || '—'}</dd>
+                                </div>
+                                <div className="flex justify-between py-2 border-b border-gray-100">
+                                    <dt className="text-gray-600 font-medium">Knowledge Bases</dt>
+                                    <dd className="text-gray-900 font-semibold">
+                                        {currentAgent?.knowledgeBases?.templates?.length || 0} selected
+                                    </dd>
+                                </div>
+                                <div className="flex justify-between py-2 border-b border-gray-100">
+                                    <dt className="text-gray-600 font-medium">Prompt Length</dt>
+                                    <dd className="text-gray-900 font-semibold">{currentAgent?.prompt?.length || 0} characters</dd>
+                                </div>
+                                <div className="flex justify-between py-2 border-b border-gray-100">
+                                    <dt className="text-gray-600 font-medium">Document Template</dt>
+                                    <dd className="text-gray-900 font-semibold">{currentAgent?.documentTemplateId || 'None'}</dd>
+                                </div>
+                                <div className="flex justify-between py-2">
+                                    <dt className="text-gray-600 font-medium">Trigger Mode</dt>
+                                    <dd className="text-gray-900 font-semibold capitalize">{currentAgent?.trigger?.type || '—'}</dd>
+                                </div>
+                            </dl>
+                        </div>
+
+                        <div className="p-6 bg-white border border-gray-200 rounded-lg">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Pre-Activation Validation</h3>
+                            <div className="space-y-2">
+                                {[
+                                    { check: 'Channel configured', status: !!currentAgent?.channel },
+                                    { check: 'Agent name provided', status: !!currentAgent?.name },
+                                    { check: 'User selection defined', status: !!currentAgent?.userSelection?.method },
+                                    { check: 'Prompt provided', status: (currentAgent?.prompt?.length || 0) >= 10 },
+                                    { check: 'Trigger configured', status: !!currentAgent?.trigger?.type }
+                                ].map((item, idx) => (
+                                    <div key={idx} className={`flex items-center gap-3 p-3 rounded-lg ${
+                                        item.status ? 'bg-green-50' : 'bg-red-50'
+                                    }`}>
+                                        <Icon name={item.status ? 'check' : 'x'} className={`w-5 h-5 ${
+                                            item.status ? 'text-green-600' : 'text-red-600'
+                                        }`} />
+                                        <span className={`font-medium ${
+                                            item.status ? 'text-green-900' : 'text-red-900'
+                                        }`}>
+                                            {item.check}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="p-6 bg-green-50 border border-green-200 rounded-lg">
+                        <div className="flex items-start gap-3">
+                            <Icon name="check" className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+                            <div>
+                                <h4 className="font-semibold text-green-900 mb-1">Ready to Activate!</h4>
+                                <p className="text-green-800 text-sm">
+                                    All validation checks passed. Your agent is ready to be activated and start reaching out to users.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Agent Detail View (placeholder)
+        const AgentDetailView = () => {
+            return (
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <h1 className="text-3xl font-bold text-gray-900">Agent Details</h1>
+                    <p className="text-gray-600 mt-2">Detailed view coming soon...</p>
+                </div>
+            );
+        };
+
+        // Render the app
+        ReactDOM.render(
+            <AppProvider>
+                <App />
+            </AppProvider>,
+            document.getElementById('root')
+        );
+    </script>
+</body>
+</html>

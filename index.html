@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lillia Outreach Module - Prototype Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --peach-lightest: #F9EAE4;
+            --peach-light: #FFD2BB;
+            --lavender-light: #EADEFC;
+            --purple-light: #D3B9F9;
+            --purple-medium: #9F7BFF;
+            --purple-brand: #7848FE;
+            --purple-deep: #280470;
+            --grey-100: #F5F5F7;
+            --grey-200: #E5E5EA;
+            --grey-600: #636366;
+            --grey-900: #1C1C1E;
+            --white: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background: linear-gradient(135deg, var(--lavender-light) 0%, var(--peach-lightest) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            background: var(--white);
+            border-radius: 16px;
+            padding: 48px;
+            box-shadow: 0 20px 60px rgba(120, 72, 254, 0.15);
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 56px;
+            font-weight: 700;
+            color: var(--purple-brand);
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--grey-900);
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 16px;
+            color: var(--grey-600);
+            margin-bottom: 48px;
+            line-height: 1.6;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .card {
+            background: var(--grey-100);
+            border-radius: 12px;
+            padding: 28px;
+            border: 2px solid var(--grey-200);
+            transition: all 0.3s;
+            text-decoration: none;
+            display: block;
+        }
+
+        .card:hover {
+            border-color: var(--purple-brand);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(120, 72, 254, 0.2);
+            background: var(--lavender-light);
+        }
+
+        .card-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--grey-900);
+            margin-bottom: 8px;
+        }
+
+        .card-desc {
+            font-size: 14px;
+            color: var(--grey-600);
+            line-height: 1.6;
+        }
+
+        .info-section {
+            background: var(--lavender-light);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .info-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--purple-brand);
+            margin-bottom: 12px;
+        }
+
+        .info-text {
+            font-size: 14px;
+            color: var(--grey-600);
+            line-height: 1.7;
+            margin-bottom: 8px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .feature-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .feature-text {
+            font-size: 14px;
+            color: var(--grey-900);
+            line-height: 1.5;
+        }
+
+        .footer {
+            text-align: center;
+            padding-top: 32px;
+            border-top: 1px solid var(--grey-200);
+            color: var(--grey-600);
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 32px 24px;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">lillia</div>
+        <h1>Outreach Module Prototype</h1>
+        <p class="subtitle">Intelligent, multi-channel patient engagement for healthcare organizations</p>
+
+        <div class="info-section" style="background: linear-gradient(135deg, var(--lavender-light), var(--peach-lightest)); border: 2px solid var(--purple-light);">
+            <div class="info-title">🆕 Version 3.0 Now Available!</div>
+            <p class="info-text"><strong>Major update based on product review feedback:</strong> Single-channel agents, role selection, pre-built KB templates, prompt building step, three trigger modes, and more!</p>
+        </div>
+
+        <div class="info-section">
+            <div class="info-title">👋 Welcome to the Prototype</div>
+            <p class="info-text">This prototype demonstrates the user interface and system architecture for the <strong>Lillia Outreach Module</strong> — a configurable platform that enables healthcare organizations to engage patients, caregivers, and care providers across Voice, WhatsApp, SMS, and Email using AI-powered conversational agents.</p>
+            <p class="info-text">Choose a version below to explore different aspects of the system:</p>
+        </div>
+
+        <div class="card-grid">
+            <a href="outreach-module-v3.html" class="card" style="border: 2px solid var(--purple-brand); background: var(--lavender-light);">
+                <span class="card-icon">✨</span>
+                <div class="card-title">V3.0 Prototype (NEW)</div>
+                <div class="card-desc">Latest version with 8-step flow, single-channel agents, role selection, pre-built KB templates, prompt building, three trigger modes, and product gating.</div>
+            </a>
+
+            <a href="system-architecture-v3.html" class="card" style="border: 2px solid var(--purple-brand); background: var(--lavender-light);">
+                <span class="card-icon">🏗️</span>
+                <div class="card-title">V3.0 System Architecture (NEW)</div>
+                <div class="card-desc">Complete architecture visualization with component interaction map, agent execution flow, and detailed integration documentation.</div>
+            </a>
+
+            <a href="outreach-module-v2.html" class="card">
+                <span class="card-icon">📋</span>
+                <div class="card-title">V2.0 Prototype</div>
+                <div class="card-desc">6-step flow with multi-program customization, KB management, and elite UI design.</div>
+            </a>
+
+            <a href="outreach-module-prototype.html" class="card">
+                <span class="card-icon">📜</span>
+                <div class="card-title">V1.0 Prototype (Original)</div>
+                <div class="card-desc">Original 5-step configuration process with basic multi-channel support.</div>
+            </a>
+
+            <a href="system-architecture-visualization.html" class="card">
+                <span class="card-icon">🏛️</span>
+                <div class="card-title">V1.0 System Architecture</div>
+                <div class="card-desc">Original architecture visualization showing building blocks and layer interactions.</div>
+            </a>
+        </div>
+
+        <div class="info-section">
+            <div class="info-title">✨ Key Features in V3.0</div>
+            <div class="features">
+                <div class="feature">
+                    <span class="feature-icon">📌</span>
+                    <div class="feature-text"><strong>Single-Channel Agents</strong><br>One channel per agent with duplication</div>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">🎯</span>
+                    <div class="feature-text"><strong>Role Selection</strong><br>Target patients, caregivers, or providers</div>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">📚</span>
+                    <div class="feature-text"><strong>Pre-Built KB Templates</strong><br>Safety, compliance, best practices</div>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">✍️</span>
+                    <div class="feature-text"><strong>Prompt Building</strong><br>Dedicated step for agent instructions</div>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">🔌</span>
+                    <div class="feature-text"><strong>Three Trigger Modes</strong><br>API, Internal Events, Journey Tasks</div>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">🔒</span>
+                    <div class="feature-text"><strong>Product Gating</strong><br>Smart feature access control</div>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">📋</span>
+                    <div class="feature-text"><strong>Optional Programs</strong><br>Flexible agent organization</div>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">⎘</span>
+                    <div class="feature-text"><strong>Agent Duplication</strong><br>Create channel variants easily</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="info-title">📋 What's Included</div>
+            <p class="info-text"><strong>V3.0 Files:</strong></p>
+            <p class="info-text">• <strong>outreach-module-v3.html</strong> — Latest prototype with 8-step flow and all V3 features</p>
+            <p class="info-text">• <strong>system-architecture-v3.html</strong> — Complete architecture with integration flows</p>
+            <p class="info-text">• <strong>README-V3.md</strong> — Full V3 documentation with migration guide</p>
+            <p class="info-text" style="margin-top: 12px;"><strong>Previous Versions:</strong></p>
+            <p class="info-text">• <strong>outreach-module-v2.html</strong> — V2 prototype with multi-program customization</p>
+            <p class="info-text">• <strong>outreach-module-prototype.html</strong> — V1 original prototype</p>
+            <p class="info-text">• <strong>V2-CHANGES.md</strong> — V2 changelog and improvements</p>
+            <p class="info-text">• <strong>README.md</strong> — Original documentation</p>
+        </div>
+
+        <div class="info-section">
+            <div class="info-title">🎨 Design Compliance</div>
+            <p class="info-text">This prototype follows the <strong>Lillia Brand Guidelines</strong>:</p>
+            <p class="info-text">• Typography: Lato font family (Light to Black weights)</p>
+            <p class="info-text">• Colors: Purple-focused palette (#7848FE brand color) with lavender and peach accents</p>
+            <p class="info-text">• Modern, clean, healthcare-appropriate visual design</p>
+        </div>
+
+        <div class="info-section" style="background: var(--peach-lightest);">
+            <div class="info-title" style="color: var(--grey-900);">💡 How to Use This Prototype</div>
+            <p class="info-text">1. <strong>Start with the Main Prototype</strong> to understand the user experience and configuration flow</p>
+            <p class="info-text">2. <strong>Review the System Architecture</strong> to see how all building blocks connect behind the scenes</p>
+            <p class="info-text">3. <strong>Read the README.md</strong> for detailed documentation and design rationale</p>
+            <p class="info-text">4. <strong>Share with stakeholders</strong> to gather feedback on UI/UX and functionality</p>
+        </div>
+
+        <div class="footer">
+            <p>Lillia Outreach Module Prototype • Version 3.0 • February 2026</p>
+            <p style="margin-top: 8px;">Built with care for healthcare</p>
+        </div>
+    </div>
+</body>
+</html>

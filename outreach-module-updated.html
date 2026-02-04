@@ -1,0 +1,2772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lillia Outreach Module</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Lillia Brand Colors */
+            --peach-lightest: #F9EAE4;
+            --peach-light: #FFD2BB;
+            --lavender-light: #EADEFC;
+            --purple-light: #D3B9F9;
+            --purple-medium: #9F7BFF;
+            --purple-brand: #7848FE;
+            --purple-deep: #280470;
+            --blue-deep: #1405D6;
+
+            /* Neutrals */
+            --white: #FFFFFF;
+            --gray-50: #FAFAFA;
+            --gray-100: #F5F5F7;
+            --gray-200: #E5E5EA;
+            --gray-300: #D1D1D6;
+            --gray-400: #AEAEB2;
+            --gray-600: #636366;
+            --gray-700: #48484A;
+            --gray-900: #1C1C1E;
+
+            /* Semantic */
+            --success: #34C759;
+            --warning: #FF9500;
+            --error: #FF3B30;
+        }
+
+        body {
+            font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f8f9fc 0%, #fcfbff 50%, #fef9f8 100%);
+            color: var(--gray-900);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .logo img {
+            max-width: 180px;
+            height: auto;
+            display: inline-block;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 19px;
+            font-weight: 400;
+            color: var(--gray-600);
+            margin-bottom: 56px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .channel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto 40px;
+        }
+
+        .channel-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 36px 28px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 2px solid var(--gray-200);
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .channel-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0;
+            transition: opacity 0.35s;
+            pointer-events: none;
+        }
+
+        .channel-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 20px 48px rgba(120, 72, 254, 0.2), 0 8px 16px rgba(0, 0, 0, 0.08);
+            border-color: var(--purple-brand);
+        }
+
+        .channel-card:hover::before {
+            opacity: 1;
+        }
+
+        .channel-card.voice { background: linear-gradient(135deg, #ffffff 0%, #f5f7ff 100%); }
+        .channel-card.voice::before { background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%); }
+
+        .channel-card.whatsapp { background: linear-gradient(135deg, #ffffff 0%, #f0fdf5 100%); }
+        .channel-card.whatsapp::before { background: linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%); }
+
+        .channel-card.sms { background: linear-gradient(135deg, #ffffff 0%, var(--lavender-light) 100%); }
+        .channel-card.sms::before { background: linear-gradient(135deg, var(--lavender-light) 0%, var(--purple-light) 100%); }
+
+        .channel-card.email { background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%); }
+        .channel-card.email::before { background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); }
+
+        .channel-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .channel-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 12px;
+        }
+
+        .channel-desc {
+            font-size: 15px;
+            color: var(--gray-600);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .ai-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: linear-gradient(135deg, var(--purple-brand), var(--purple-medium));
+            color: var(--white);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* Wizard Container */
+        .wizard-container {
+            background: var(--white);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            max-width: 1400px;
+            margin: 0 auto;
+            border: 1px solid var(--gray-200);
+        }
+
+        .wizard-header {
+            background: linear-gradient(135deg, var(--purple-brand), var(--purple-medium));
+            color: var(--white);
+            padding: 24px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .wizard-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .channel-badge {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .progress-container {
+            display: flex;
+            padding: 24px 40px;
+            gap: 12px;
+            background: var(--gray-50);
+            border-bottom: 2px solid var(--gray-200);
+            overflow-x: auto;
+        }
+
+        .progress-step {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gray-200);
+            color: var(--gray-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            margin: 0 auto 8px;
+            transition: all 0.3s;
+        }
+
+        .progress-step.active .step-number {
+            background: var(--purple-brand);
+            color: var(--white);
+            box-shadow: 0 4px 12px rgba(120, 72, 254, 0.4);
+        }
+
+        .progress-step.completed .step-number {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .step-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-600);
+        }
+
+        .progress-step.active .step-label {
+            color: var(--purple-brand);
+        }
+
+        .wizard-content {
+            padding: 36px 32px;
+            min-height: 500px;
+        }
+
+        .step-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 12px;
+        }
+
+        .step-description {
+            font-size: 16px;
+            color: var(--gray-600);
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 10px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 16px 20px;
+            border: 1.5px solid var(--gray-300);
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 400;
+            font-family: 'Lato', sans-serif;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--white);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-input:hover, .form-select:hover, .form-textarea:hover {
+            border-color: var(--gray-400);
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--purple-brand);
+            background: #fdfcff;
+            box-shadow: 0 0 0 4px rgba(120, 72, 254, 0.08), 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .form-textarea {
+            min-height: 200px;
+            resize: vertical;
+            font-family: 'Monaco', 'Courier New', monospace;
+        }
+
+        .checkbox-group {
+            margin-top: 20px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: var(--gray-50);
+            border-radius: 10px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .checkbox-item:hover {
+            background: var(--lavender-light);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            font-size: 15px;
+            color: var(--gray-900);
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .option-card {
+            padding: 20px;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--white);
+        }
+
+        .option-card:hover {
+            border-color: var(--purple-light);
+            background: var(--lavender-light);
+        }
+
+        .option-card.selected {
+            border-color: var(--purple-brand);
+            background: var(--lavender-light);
+            box-shadow: 0 4px 12px rgba(120, 72, 254, 0.2);
+        }
+
+        .option-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 6px;
+        }
+
+        .option-desc {
+            font-size: 14px;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+
+        .info-box {
+            padding: 20px 24px;
+            background: var(--lavender-light);
+            border-left: 4px solid var(--purple-brand);
+            border-radius: 10px;
+            margin: 24px 0;
+        }
+
+        .info-box-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--purple-brand);
+            margin-bottom: 8px;
+        }
+
+        .info-box-text {
+            font-size: 14px;
+            color: var(--gray-700);
+            line-height: 1.6;
+        }
+
+        .wizard-footer {
+            padding: 20px 32px;
+            border-top: 2px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            background: var(--gray-50);
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-family: 'Lato', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--purple-brand), var(--purple-medium));
+            color: var(--white);
+            box-shadow: 0 4px 12px rgba(120, 72, 254, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(120, 72, 254, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--purple-brand);
+            border: 2px solid var(--gray-300);
+        }
+
+        .btn-secondary:hover {
+            background: var(--lavender-light);
+            border-color: var(--purple-brand);
+        }
+
+        .variable-picker {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .variable-chip {
+            padding: 8px 14px;
+            background: var(--purple-light);
+            color: var(--purple-deep);
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Monaco', monospace;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .variable-chip:hover {
+            background: var(--purple-brand);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .kb-item {
+            padding: 20px;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            gap: 16px;
+            align-items: start;
+        }
+
+        .kb-item:hover {
+            border-color: var(--purple-light);
+            background: var(--lavender-light);
+        }
+
+        .kb-item.selected {
+            border-color: var(--purple-brand);
+            background: var(--lavender-light);
+        }
+
+        .kb-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--gray-300);
+            border-radius: 6px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .kb-item.selected .kb-checkbox {
+            background: var(--purple-brand);
+            border-color: var(--purple-brand);
+        }
+
+        .kb-content {
+            flex: 1;
+        }
+
+        .kb-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 6px;
+        }
+
+        .kb-desc {
+            font-size: 14px;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+
+        .review-section {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .review-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 20px;
+        }
+
+        .review-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .review-item:last-child {
+            border-bottom: none;
+        }
+
+        .review-label {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-600);
+        }
+
+        .review-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .validation-checks {
+            margin-top: 24px;
+        }
+
+        .validation-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .validation-item.pass {
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--success);
+        }
+
+        .validation-item.warning {
+            background: rgba(255, 149, 0, 0.1);
+            color: var(--warning);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .kb-method-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 32px rgba(120, 72, 254, 0.2) !important;
+            border-color: var(--purple-brand) !important;
+        }
+
+        /* Table Styles */
+        table tbody tr {
+            transition: all 0.2s;
+        }
+
+        table tbody tr:hover {
+            background: var(--lavender-light) !important;
+            transform: scale(1.01);
+        }
+
+        table tbody tr:active {
+            transform: scale(0.99);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+
+            .channel-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .wizard-content {
+                padding: 32px 24px;
+            }
+
+            .option-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script>
+        // State Management
+        const state = {
+            view: 'landing', // 'landing', 'fullList', or 'wizard'
+            currentStep: 0,
+            selectedChannel: null,
+            savedAgents: [], // Saved/configured agents
+            agentData: {
+                name: '',
+                audienceTrigger: {
+                    type: 'manual', // 'manual', 'event', 'program'
+                    manual: {
+                        csvFile: null,
+                        csvColumns: ['patient_name', 'phone_number', 'medication_name', 'dosage', 'last_refill_date'], // Detected from CSV
+                        when: 'scheduled', // 'now' or 'scheduled'
+                        frequency: 'one-time', // 'one-time' or 'recurring'
+                        dateTime: '',
+                        recurring: {
+                            interval: 'Monday',
+                            time: '09:00',
+                            start: '',
+                            end: 'never'
+                        }
+                    },
+                    event: {
+                        triggerType: 'sms-incoming',
+                        phoneNumber: '',
+                        webhookUrl: '',
+                        elementId: '',
+                        eventVariables: ['user_phone', 'message_text', 'timestamp', 'user_id'] // Variables from event
+                    },
+                    program: {
+                        programId: 'diabetes',
+                        programName: 'Diabetes Management',
+                        filterAll: true,
+                        conditions: [],
+                        matchingUsers: 0,
+                        whenType: 'scheduled', // 'scheduled', 'journey-task', 'event'
+                        programFields: ['patient_name', 'member_id', 'enrollment_date', 'last_glucose_reading', 'target_glucose_range', 'care_manager_name', 'next_appointment'] // Program-specific fields
+                    }
+                },
+                knowledgeBase: {
+                    view: 'methods', // 'methods', 'template', 'write', 'upload', 'summary'
+                    items: [], // Array of {type: 'template'|'custom'|'uploaded', id, name, content}
+                    templates: [
+                        {
+                            id: 'safety',
+                            icon: '🛡️',
+                            name: 'Safety Guardrails',
+                            desc: 'Critical safety rules and emergency protocols',
+                            expanded: false,
+                            content: `THE AI AGENT MUST:
+• Never provide medical diagnoses
+• Never recommend specific medications or dosages
+• Never advise stopping prescribed treatment
+• Always recommend consulting a doctor for medical questions
+
+EMERGENCY PROTOCOL:
+If patient mentions: chest pain, difficulty breathing, suicidal thoughts, or severe symptoms → immediately say: "This sounds serious. Please call 911 or go to your nearest emergency room right away."
+
+ESCALATION TRIGGERS:
+Transfer to human agent if patient:
+• Asks to speak to a person 2+ times
+• Expresses frustration or anger
+• Reports a safety concern
+• Conversation exceeds 10 minutes without resolution`
+                        },
+                        {
+                            id: 'compliance',
+                            icon: '⚖️',
+                            name: 'Healthcare Compliance',
+                            desc: 'HIPAA-safe language, consent verification, disclosures',
+                            expanded: false,
+                            content: `HIPAA COMPLIANCE:
+• Never mention other patients or cases
+• Don't discuss treatment details in messages that could be seen by others
+• Always verify identity before discussing health information
+• Remind patients that call/message may be recorded for quality
+
+CONSENT LANGUAGE:
+• "Is now a good time to discuss your health information?"
+• "This conversation may be recorded for quality and training"
+• "Can I confirm your date of birth for verification?"
+
+REQUIRED DISCLOSURES:
+• State that this is a reminder/informational service
+• Clarify that AI cannot replace medical advice from their doctor
+• Provide contact information for their care team`
+                        },
+                        {
+                            id: 'communication',
+                            icon: '💬',
+                            name: 'Communication Style',
+                            desc: 'Empathetic language patterns, active listening cues',
+                            expanded: false,
+                            content: `EMPATHETIC LANGUAGE:
+• Use validating phrases: "I understand that can be challenging"
+• Acknowledge emotions: "It sounds like you're feeling frustrated"
+• Express appreciation: "Thank you for sharing that with me"
+• Show patience: "Take your time, I'm here to listen"
+
+ACTIVE LISTENING CUES:
+• Reflect back what you heard: "So if I understand correctly..."
+• Ask clarifying questions: "Can you tell me more about..."
+• Summarize key points: "Let me make sure I have this right..."
+
+AVOID:
+• Medical jargon without explanation
+• Judgmental language ("you should have", "why didn't you")
+• Rushing the conversation
+• Dismissive phrases ("it's not that bad", "just try harder")`
+                        }
+                    ],
+                    customText: '',
+                    uploadedFiles: []
+                },
+                config: {
+                    tone: 'friendly',
+                    voice: 'female-american',
+                    maxDuration: 5,
+                    allowInterruptions: true,
+                    recordCalls: true,
+                    conditionalRules: [] // Array of {variable, operator, value, action}
+                },
+                prompt: '',
+                extractVariables: [], // Variables to extract from conversation
+                documentTemplate: null
+            }
+        };
+
+        const steps = [
+            { id: 1, label: 'Name', key: 'name' },
+            { id: 2, label: 'Audience & Trigger', key: 'audienceTrigger' },
+            { id: 3, label: 'Knowledge Base', key: 'knowledgeBase' },
+            { id: 4, label: 'Prompt', key: 'prompt' },
+            { id: 5, label: 'Configuration', key: 'config' },
+            { id: 6, label: 'Document', key: 'documentTemplate' },
+            { id: 7, label: 'Review', key: 'review' }
+        ];
+
+        const channels = [
+            { id: 'voice', name: 'Voice Call', icon: '📞', desc: 'AI-powered phone conversations', aiEnabled: true },
+            { id: 'whatsapp', name: 'WhatsApp', icon: '💬', desc: 'Two-way messaging via WhatsApp', aiEnabled: true },
+            { id: 'sms', name: 'SMS', icon: '📱', desc: 'Simple text message delivery', aiEnabled: false },
+            { id: 'email', name: 'Email', icon: '📧', desc: 'Email campaigns and notifications', aiEnabled: false }
+        ];
+
+        // Render Functions
+        function render() {
+            const app = document.getElementById('app');
+            if (state.view === 'landing') {
+                app.innerHTML = renderLanding();
+            } else if (state.view === 'fullList') {
+                app.innerHTML = renderFullList();
+            } else {
+                app.innerHTML = renderWizard();
+            }
+            attachEventListeners();
+        }
+
+        function renderLanding() {
+            const hasAgents = state.savedAgents.length > 0;
+            const sectionTitle = hasAgents ? 'CREATE NEW OUTREACH' : 'CREATE YOUR FIRST OUTREACH';
+
+            return `
+                <div class="container">
+                    <div class="logo">
+                        <img src="/Users/vidhikachakravarti/Downloads/Lillia_Logo-01 (1).png" alt="Lillia">
+                    </div>
+                    <h1 class="title">Outreach Module</h1>
+
+                    <!-- CREATE SECTION -->
+                    <div style="margin: 48px auto; max-width: 1200px;">
+                        <div style="text-align: center; padding: 16px 0; margin-bottom: 32px; border-top: 3px solid var(--gray-300); border-bottom: 3px solid var(--gray-300);">
+                            <h2 style="font-size: 20px; font-weight: 800; letter-spacing: 1px; color: var(--gray-900);">${sectionTitle}</h2>
+                        </div>
+
+                        ${!hasAgents ? `
+                            <p style="text-align: center; font-size: 17px; color: var(--gray-600); margin-bottom: 32px;">
+                                Choose a communication channel to get started:
+                            </p>
+                        ` : ''}
+
+                        <div class="channel-grid">
+                            ${channels.map(channel => `
+                                <div class="channel-card ${channel.id}" onclick="selectChannel('${channel.id}')">
+                                    <span class="channel-icon">${channel.icon}</span>
+                                    <div class="channel-name">${channel.name}</div>
+                                    <div class="channel-desc">${channel.desc}</div>
+                                    ${channel.aiEnabled ? '<span class="ai-badge">AI-ENABLED</span>' : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        ${!hasAgents ? `
+                            <div style="margin-top: 40px; padding: 24px; background: var(--lavender-light); border-radius: 12px; border: 2px solid var(--purple-light); max-width: 900px; margin-left: auto; margin-right: auto;">
+                                <div style="font-size: 16px; font-weight: 700; margin-bottom: 12px; color: var(--purple-deep);">💡 What happens next?</div>
+                                <div style="font-size: 14px; color: var(--gray-700); line-height: 1.7;">
+                                    After selecting a channel, you'll configure your outreach in <strong>7 simple steps</strong>:
+                                    Name, Audience & Trigger, Knowledge Base, Prompt, Configuration, Document Capture, and Review.
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- YOUR OUTREACH SECTION -->
+                    ${hasAgents ? `
+                        <div style="margin: 64px auto 0; max-width: 1200px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 0; margin-bottom: 24px; border-top: 3px solid var(--gray-300); border-bottom: 3px solid var(--gray-300);">
+                                <h2 style="font-size: 20px; font-weight: 800; letter-spacing: 1px; color: var(--gray-900);">YOUR OUTREACH</h2>
+                                ${state.savedAgents.length > 3 ? `
+                                    <button onclick="viewAllAgents()" style="background: none; border: none; color: var(--purple-brand); font-weight: 600; cursor: pointer; font-size: 15px; display: flex; align-items: center; gap: 6px;">
+                                        View All →
+                                    </button>
+                                ` : ''}
+                            </div>
+
+                            ${renderAgentCards()}
+
+                            ${state.savedAgents.length > 3 ? `
+                                <div style="text-align: center; margin-top: 24px; color: var(--gray-600); font-size: 14px;">
+                                    Showing 3 of ${state.savedAgents.length} outreach configs
+                                    <button onclick="viewAllAgents()" style="background: none; border: none; color: var(--purple-brand); font-weight: 600; cursor: pointer; margin-left: 8px;">
+                                        View All →
+                                    </button>
+                                </div>
+                            ` : ''}
+
+                            <div style="text-align: center; margin-top: 24px;">
+                                <button onclick="clearSampleAgents()" style="background: var(--gray-100); color: var(--gray-600); border: 2px solid var(--gray-300); padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 12px;">
+                                    🧹 Clear Sample Data
+                                </button>
+                            </div>
+                        </div>
+                    ` : `
+                        <div style="margin: 64px auto 0; max-width: 1200px;">
+                            <div style="text-align: center; padding: 16px 0; margin-bottom: 24px; border-top: 3px solid var(--gray-300); border-bottom: 3px solid var(--gray-300);">
+                                <h2 style="font-size: 20px; font-weight: 800; letter-spacing: 1px; color: var(--gray-900);">YOUR OUTREACH</h2>
+                            </div>
+
+                            <div style="background: var(--gray-50); border: 2px dashed var(--gray-300); border-radius: 16px; padding: 80px 40px; text-align: center;">
+                                <div style="font-size: 56px; margin-bottom: 16px;">📭</div>
+                                <div style="font-size: 18px; font-weight: 600; color: var(--gray-700); margin-bottom: 8px;">
+                                    No outreach configured yet
+                                </div>
+                                <div style="font-size: 15px; color: var(--gray-600); margin-bottom: 24px;">
+                                    Select a channel above to create your first outreach.
+                                </div>
+                                <button onclick="loadSampleAgents()" style="background: var(--purple-light); color: var(--purple-deep); border: 2px solid var(--purple-brand); padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 13px;">
+                                    🧪 Load Sample Data (for testing)
+                                </button>
+                            </div>
+                        </div>
+                    `}
+                </div>
+            `;
+        }
+
+        function renderAgentCards() {
+            const agentsToShow = state.savedAgents.slice(0, 3);
+
+            return agentsToShow.map(agent => `
+                <div style="background: var(--white); border: 2px solid var(--gray-200); border-radius: 16px; padding: 28px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
+                        <div style="flex: 1;">
+                            <div style="font-size: 20px; font-weight: 700; color: var(--gray-900); margin-bottom: 8px;">
+                                ${agent.icon} ${agent.name}
+                            </div>
+                            <div style="font-size: 14px; color: var(--gray-600); margin-bottom: 12px;">
+                                ${agent.channel} · ${agent.audience} · ${agent.trigger}
+                            </div>
+                            <div style="display: inline-block; padding: 6px 14px; background: ${agent.status === 'active' ? 'rgba(52, 199, 89, 0.15)' : 'rgba(255, 149, 0, 0.15)'}; border: 2px solid ${agent.status === 'active' ? 'var(--success)' : 'var(--warning)'}; border-radius: 8px; font-size: 13px; font-weight: 700; text-transform: uppercase; color: ${agent.status === 'active' ? 'var(--success)' : 'var(--warning)'};">
+                                ${agent.status === 'active' ? '🟢 ACTIVE' : '⏸️ PAUSED'}
+                            </div>
+                            <span style="margin-left: 12px; font-size: 13px; color: var(--gray-600);">
+                                ${agent.lastRun ? `Last run: ${agent.lastRun}` : ''} ${agent.nextRun ? `· Next: ${agent.nextRun}` : agent.triggerInfo ? `· ${agent.triggerInfo}` : ''}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;" onclick="editAgent('${agent.id}')">Edit</button>
+                        <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;" onclick="toggleAgentStatus('${agent.id}')">
+                            ${agent.status === 'active' ? 'Pause' : 'Resume'}
+                        </button>
+                        <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;" onclick="duplicateAgent('${agent.id}')">Duplicate</button>
+                        <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;" onclick="viewAgentLogs('${agent.id}')">View Logs</button>
+                        <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;" onclick="agentMoreActions('${agent.id}')">⋮</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderFullList() {
+            return `
+                <div class="container">
+                    <div style="max-width: 1400px; margin: 0 auto;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+                            <div style="display: flex; align-items: center; gap: 16px;">
+                                <button onclick="backToLanding()" style="background: var(--white); border: 2px solid var(--gray-300); color: var(--gray-700); cursor: pointer; padding: 10px 16px; border-radius: 10px; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                                    ← Back
+                                </button>
+                                <h1 style="font-size: 32px; font-weight: 800; color: var(--gray-900);">Your Outreach</h1>
+                            </div>
+                            <div class="dropdown" style="position: relative;">
+                                <button class="btn btn-primary" onclick="showCreateDropdown()" style="display: flex; align-items: center; gap: 8px;">
+                                    + Create New ▼
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Filters -->
+                        <div style="background: var(--white); border: 2px solid var(--gray-200); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+                            <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;">
+                                <select class="form-select" style="flex: 1; min-width: 150px;">
+                                    <option>All Channels</option>
+                                    <option>Voice Call</option>
+                                    <option>WhatsApp</option>
+                                    <option>SMS</option>
+                                    <option>Email</option>
+                                </select>
+                                <select class="form-select" style="flex: 1; min-width: 150px;">
+                                    <option>All Status</option>
+                                    <option>Active</option>
+                                    <option>Paused</option>
+                                    <option>Draft</option>
+                                </select>
+                                <select class="form-select" style="flex: 1; min-width: 150px;">
+                                    <option>All Programs</option>
+                                    <option>Diabetes Management</option>
+                                    <option>Cardiac Care</option>
+                                    <option>General Health</option>
+                                </select>
+                            </div>
+                            <div style="position: relative;">
+                                <input type="text" placeholder="Search by name..." class="form-input" style="width: 100%; padding-right: 40px;">
+                                <span style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 18px;">🔍</span>
+                            </div>
+                        </div>
+
+                        <!-- Table -->
+                        <div style="background: var(--white); border: 2px solid var(--gray-200); border-radius: 12px; overflow: hidden;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: var(--gray-100); border-bottom: 2px solid var(--gray-300);">
+                                        <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 700; color: var(--gray-700); text-transform: uppercase; letter-spacing: 0.5px;">NAME</th>
+                                        <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 700; color: var(--gray-700); text-transform: uppercase; letter-spacing: 0.5px;">CHANNEL</th>
+                                        <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 700; color: var(--gray-700); text-transform: uppercase; letter-spacing: 0.5px;">AUDIENCE</th>
+                                        <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 700; color: var(--gray-700); text-transform: uppercase; letter-spacing: 0.5px;">TRIGGER</th>
+                                        <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 700; color: var(--gray-700); text-transform: uppercase; letter-spacing: 0.5px;">STATUS</th>
+                                        <th style="padding: 16px; text-align: center; font-size: 13px; font-weight: 700; color: var(--gray-700); text-transform: uppercase; letter-spacing: 0.5px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${state.savedAgents.map((agent, index) => `
+                                        <tr style="border-bottom: 1px solid var(--gray-200); ${index % 2 === 0 ? 'background: var(--white);' : 'background: var(--gray-50);'}">
+                                            <td style="padding: 20px;">
+                                                <div style="font-size: 15px; font-weight: 700; color: var(--gray-900);">${agent.name}</div>
+                                                <div style="font-size: 13px; color: var(--gray-600); margin-top: 4px;">${agent.program || 'All programs'}</div>
+                                            </td>
+                                            <td style="padding: 20px;">
+                                                <span style="font-size: 16px; margin-right: 6px;">${agent.icon}</span>
+                                                <span style="font-size: 14px; font-weight: 600; color: var(--gray-700);">${agent.channel}</span>
+                                            </td>
+                                            <td style="padding: 20px;">
+                                                <div style="font-size: 14px; color: var(--gray-700);">${agent.audience}</div>
+                                            </td>
+                                            <td style="padding: 20px;">
+                                                <div style="font-size: 14px; color: var(--gray-700);">${agent.trigger}</div>
+                                            </td>
+                                            <td style="padding: 20px;">
+                                                <span style="display: inline-block; padding: 4px 10px; background: ${agent.status === 'active' ? 'rgba(52, 199, 89, 0.15)' : 'rgba(255, 149, 0, 0.15)'}; border-radius: 6px; font-size: 12px; font-weight: 700; color: ${agent.status === 'active' ? 'var(--success)' : 'var(--warning)'};">
+                                                    ${agent.status === 'active' ? '🟢 Active' : '⏸️ Paused'}
+                                                </span>
+                                            </td>
+                                            <td style="padding: 20px; text-align: center;">
+                                                <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 16px;" onclick="agentMoreActions('${agent.id}')">⋮</button>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div style="margin-top: 20px; padding: 16px; background: var(--gray-50); border-radius: 10px; font-size: 13px; color: var(--gray-600);">
+                            <strong>[⋮] Menu contains:</strong> Edit, Duplicate, Pause/Resume, View Logs, View Analytics, Archive
+                        </div>
+
+                        <div style="text-align: center; margin-top: 16px;">
+                            <button onclick="clearSampleAgents()" style="background: var(--gray-100); color: var(--gray-600); border: 2px solid var(--gray-300); padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 12px;">
+                                🧹 Clear Sample Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderWizard() {
+            return `
+                <div class="wizard-container">
+                    <div class="wizard-header">
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <button onclick="goToLanding()" style="background: rgba(255,255,255,0.2); border: none; color: white; cursor: pointer; padding: 8px 12px; border-radius: 8px; font-size: 18px; display: flex; align-items: center; backdrop-filter: blur(10px); transition: all 0.2s;"
+                                    onmouseover="this.style.background='rgba(255,255,255,0.3)'"
+                                    onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                                ←
+                            </button>
+                            <h2>Configure Your Outreach Agent</h2>
+                        </div>
+                        <div class="channel-badge">
+                            ${channels.find(c => c.id === state.selectedChannel)?.icon}
+                            ${channels.find(c => c.id === state.selectedChannel)?.name}
+                        </div>
+                    </div>
+
+                    <div class="progress-container">
+                        ${steps.map((step, index) => `
+                            <div class="progress-step ${index === state.currentStep ? 'active' : ''} ${index < state.currentStep ? 'completed' : ''}">
+                                <div class="step-number">${index < state.currentStep ? '✓' : step.id}</div>
+                                <div class="step-label">${step.label}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="wizard-content">
+                        ${renderStep(state.currentStep)}
+                    </div>
+
+                    <div class="wizard-footer">
+                        <button class="btn btn-secondary" onclick="previousStep()">
+                            ${state.currentStep === 0 ? '← Back to Channels' : '← Previous'}
+                        </button>
+                        <div style="flex: 1;"></div>
+                        <button class="btn btn-secondary">Save Draft</button>
+                        <button class="btn btn-primary" onclick="nextStep()">
+                            ${state.currentStep === 6 ? 'Activate Agent' : 'Next →'}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderAudienceTriggerConfig(type) {
+            switch(type) {
+                case 'manual':
+                    const manualConfig = state.agentData.audienceTrigger.manual;
+                    return `
+                        <div style="background: var(--gray-50); border-radius: 16px; padding: 32px; border: 2px solid var(--gray-200);">
+                            <div class="form-group">
+                                <label class="form-label">Upload CSV</label>
+                                <input type="file" class="form-input" accept=".csv" style="padding: 12px;">
+                                <div style="margin-top: 8px; font-size: 13px; color: var(--gray-600);">
+                                    CSV should contain user IDs or phone numbers/emails
+                                </div>
+
+                                ${manualConfig.csvColumns && manualConfig.csvColumns.length > 0 ? `
+                                    <div style="margin-top: 16px; padding: 16px; background: rgba(52, 199, 89, 0.1); border-radius: 10px; border: 2px solid var(--success);">
+                                        <div style="font-size: 14px; font-weight: 700; color: var(--success); margin-bottom: 8px;">✓ CSV Columns Detected</div>
+                                        <div style="font-size: 13px; color: var(--gray-700); margin-bottom: 12px;">
+                                            These columns will be available as insert variables in Step 4 (Prompt):
+                                        </div>
+                                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                            ${manualConfig.csvColumns.map(col => `
+                                                <code style="padding: 6px 12px; background: var(--white); border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--purple-deep);">${'{{' + col + '}}'}</code>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                ` : `
+                                    <div style="margin-top: 16px; padding: 16px; background: var(--lavender-light); border-radius: 10px; border: 2px solid var(--purple-light);">
+                                        <div style="font-size: 14px; font-weight: 600; color: var(--purple-deep); margin-bottom: 6px;">💡 Column Detection</div>
+                                        <div style="font-size: 13px; color: var(--gray-700);">
+                                            Once you upload a CSV, we'll detect the column headers and make them available as insert variables in Step 4 (Prompt).
+                                        </div>
+                                    </div>
+                                `}
+                            </div>
+
+                            <div class="form-group" style="margin-top: 32px;">
+                                <label class="form-label">When to contact them?</label>
+
+                                <div style="display: flex; gap: 24px; margin-top: 16px;">
+                                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                        <input type="radio" name="when" value="now" ${manualConfig.when === 'now' ? 'checked' : ''}
+                                               onchange="updateAudienceTrigger('manual', 'when', 'now')" style="width: 18px; height: 18px;">
+                                        <span style="font-size: 15px; font-weight: 600;">Now (immediately after activation)</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                        <input type="radio" name="when" value="scheduled" ${manualConfig.when === 'scheduled' ? 'checked' : ''}
+                                               onchange="updateAudienceTrigger('manual', 'when', 'scheduled')" style="width: 18px; height: 18px;">
+                                        <span style="font-size: 15px; font-weight: 600;">Scheduled</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            ${manualConfig.when === 'scheduled' ? `
+                                <div style="margin-top: 24px; padding: 24px; background: var(--white); border-radius: 12px; border: 1px solid var(--gray-300);">
+                                    <div class="form-group">
+                                        <label class="form-label">Frequency</label>
+                                        <select class="form-select" onchange="updateAudienceTrigger('manual', 'frequency', this.value)">
+                                            <option value="one-time" ${manualConfig.frequency === 'one-time' ? 'selected' : ''}>One-time</option>
+                                            <option value="recurring" ${manualConfig.frequency === 'recurring' ? 'selected' : ''}>Recurring</option>
+                                        </select>
+                                    </div>
+
+                                    ${manualConfig.frequency === 'one-time' ? `
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                            <div class="form-group">
+                                                <label class="form-label">Date</label>
+                                                <input type="date" class="form-input" value="${manualConfig.dateTime}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Time</label>
+                                                <input type="time" class="form-input" value="09:00">
+                                            </div>
+                                        </div>
+                                    ` : `
+                                        <div class="form-group">
+                                            <label class="form-label">Every</label>
+                                            <select class="form-select">
+                                                <option>Monday</option>
+                                                <option>Tuesday</option>
+                                                <option>Wednesday</option>
+                                                <option>Thursday</option>
+                                                <option>Friday</option>
+                                                <option>Saturday</option>
+                                                <option>Sunday</option>
+                                                <option>1st of month</option>
+                                                <option>15th of month</option>
+                                            </select>
+                                        </div>
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+                                            <div class="form-group">
+                                                <label class="form-label">Time</label>
+                                                <input type="time" class="form-input" value="${manualConfig.recurring.time}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Start Date</label>
+                                                <input type="date" class="form-input">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">End Date</label>
+                                                <select class="form-select">
+                                                    <option>Never</option>
+                                                    <option>Custom date</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    `}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+
+                case 'event':
+                    const eventConfig = state.agentData.audienceTrigger.event;
+                    return `
+                        <div style="background: var(--gray-50); border-radius: 16px; padding: 32px; border: 2px solid var(--gray-200);">
+                            <div class="form-group">
+                                <label class="form-label">Trigger when:</label>
+
+                                <div style="margin-top: 16px;">
+                                    <label style="display: flex; align-items: start; gap: 12px; padding: 16px; background: var(--white); border-radius: 10px; margin-bottom: 12px; cursor: pointer; border: 2px solid ${eventConfig.triggerType === 'sms-incoming' ? 'var(--purple-brand)' : 'var(--gray-200)'};">
+                                        <input type="radio" name="eventType" value="sms-incoming" ${eventConfig.triggerType === 'sms-incoming' ? 'checked' : ''}
+                                               onchange="updateAudienceTrigger('event', 'triggerType', 'sms-incoming')" style="margin-top: 2px; width: 18px; height: 18px; flex-shrink: 0;">
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 600; margin-bottom: 4px;">User sends SMS to this number</div>
+                                            ${eventConfig.triggerType === 'sms-incoming' ? `
+                                                <input type="text" class="form-input" placeholder="+1-XXX-XXX-XXXX" style="margin-top: 8px;">
+                                            ` : ''}
+                                        </div>
+                                    </label>
+
+                                    <label style="display: flex; align-items: start; gap: 12px; padding: 16px; background: var(--white); border-radius: 10px; margin-bottom: 12px; cursor: pointer; border: 2px solid ${eventConfig.triggerType === 'whatsapp-incoming' ? 'var(--purple-brand)' : 'var(--gray-200)'};">
+                                        <input type="radio" name="eventType" value="whatsapp-incoming" ${eventConfig.triggerType === 'whatsapp-incoming' ? 'checked' : ''}
+                                               onchange="updateAudienceTrigger('event', 'triggerType', 'whatsapp-incoming')" style="margin-top: 2px; width: 18px; height: 18px; flex-shrink: 0;">
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 600; margin-bottom: 4px;">Incoming WhatsApp message</div>
+                                            ${eventConfig.triggerType === 'whatsapp-incoming' ? `
+                                                <input type="text" class="form-input" placeholder="+1-XXX-XXX-XXXX" style="margin-top: 8px;">
+                                            ` : ''}
+                                        </div>
+                                    </label>
+
+                                    <label style="display: flex; align-items: start; gap: 12px; padding: 16px; background: var(--white); border-radius: 10px; margin-bottom: 12px; cursor: pointer; border: 2px solid ${eventConfig.triggerType === 'api-call' ? 'var(--purple-brand)' : 'var(--gray-200)'};">
+                                        <input type="radio" name="eventType" value="api-call" ${eventConfig.triggerType === 'api-call' ? 'checked' : ''}
+                                               onchange="updateAudienceTrigger('event', 'triggerType', 'api-call')" style="margin-top: 2px; width: 18px; height: 18px; flex-shrink: 0;">
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 600; margin-bottom: 4px;">API call received</div>
+                                            ${eventConfig.triggerType === 'api-call' ? `
+                                                <div style="margin-top: 8px; padding: 12px; background: var(--gray-50); border-radius: 8px; font-family: Monaco, monospace; font-size: 13px; color: var(--purple-deep);">
+                                                    https://api.lillia.com/trigger/${Math.random().toString(36).substring(7)}
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                    </label>
+
+                                    <label style="display: flex; align-items: start; gap: 12px; padding: 16px; background: var(--white); border-radius: 10px; cursor: pointer; border: 2px solid ${eventConfig.triggerType === 'website-click' ? 'var(--purple-brand)' : 'var(--gray-200)'};">
+                                        <input type="radio" name="eventType" value="website-click" ${eventConfig.triggerType === 'website-click' ? 'checked' : ''}
+                                               onchange="updateAudienceTrigger('event', 'triggerType', 'website-click')" style="margin-top: 2px; width: 18px; height: 18px; flex-shrink: 0;">
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 600; margin-bottom: 4px;">User clicks on website element</div>
+                                            ${eventConfig.triggerType === 'website-click' ? `
+                                                <input type="text" class="form-input" placeholder="Enter URL or element ID" style="margin-top: 8px;">
+                                            ` : ''}
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="info-box" style="margin-top: 24px;">
+                                <div class="info-box-title">💡 Event-Triggered Behavior</div>
+                                <div class="info-box-text">
+                                    The user who triggers the event will automatically be the recipient of the outreach. No separate audience selection needed.
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 16px; padding: 16px; background: var(--lavender-light); border-radius: 10px; border: 2px solid var(--purple-light);">
+                                <div style="font-size: 14px; font-weight: 700; color: var(--purple-deep); margin-bottom: 8px;">📥 Available Insert Variables</div>
+                                <div style="font-size: 13px; color: var(--gray-700); margin-bottom: 12px;">
+                                    These event data variables will be available in Step 4 (Prompt):
+                                </div>
+                                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                    ${eventConfig.eventVariables.map(v => `
+                                        <code style="padding: 6px 12px; background: var(--white); border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--purple-deep);">${'{{' + v + '}}'}</code>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                case 'program':
+                    const programConfig = state.agentData.audienceTrigger.program;
+                    return `
+                        <div style="background: var(--gray-50); border-radius: 16px; padding: 32px; border: 2px solid var(--gray-200);">
+                            <div class="form-group">
+                                <label class="form-label">Select Program</label>
+                                <select class="form-select">
+                                    <option value="">Choose a program...</option>
+                                    <option value="diabetes" ${programConfig.programId === 'diabetes' ? 'selected' : ''}>Diabetes Management</option>
+                                    <option value="hypertension">Hypertension Care</option>
+                                    <option value="weight">Weight Management</option>
+                                    <option value="mental">Mental Health Support</option>
+                                </select>
+
+                                ${programConfig.programId ? `
+                                    <div style="margin-top: 16px; padding: 16px; background: var(--lavender-light); border-radius: 10px; border: 2px solid var(--purple-light);">
+                                        <div style="font-size: 14px; font-weight: 700; color: var(--purple-deep); margin-bottom: 8px;">📥 Available Insert Variables</div>
+                                        <div style="font-size: 13px; color: var(--gray-700); margin-bottom: 12px;">
+                                            These ${programConfig.programName} fields will be available in Step 4 (Prompt):
+                                        </div>
+                                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                            ${programConfig.programFields.map(field => `
+                                                <code style="padding: 6px 12px; background: var(--white); border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--purple-deep);">${'{{' + field + '}}'}</code>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+
+                            <div class="form-group" style="margin-top: 24px;">
+                                <label class="form-label">Filter users (optional)</label>
+
+                                <div class="checkbox-item" style="margin-bottom: 16px;">
+                                    <input type="checkbox" id="filterAll" ${programConfig.filterAll ? 'checked' : ''}>
+                                    <label for="filterAll">All enrolled users</label>
+                                </div>
+
+                                <div class="checkbox-item" style="background: var(--white); border: 2px solid var(--purple-light);">
+                                    <input type="checkbox" id="filterConditions" ${!programConfig.filterAll ? 'checked' : ''}>
+                                    <label for="filterConditions">With conditions:</label>
+                                </div>
+
+                                ${!programConfig.filterAll ? `
+                                    <div style="margin-top: 16px; padding: 20px; background: var(--white); border-radius: 12px; border: 2px solid var(--gray-300);">
+                                        <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center;">
+                                            <select class="form-select">
+                                                <option>Missed check-ins</option>
+                                                <option>Days since last contact</option>
+                                                <option>Medication adherence</option>
+                                                <option>Program progress</option>
+                                            </select>
+                                            <select class="form-select">
+                                                <option>greater than</option>
+                                                <option>less than</option>
+                                                <option>equals</option>
+                                            </select>
+                                            <input type="number" class="form-input" value="2">
+                                        </div>
+                                        <button class="btn" style="margin-top: 12px; padding: 10px 16px; background: var(--purple-light); color: var(--purple-deep); font-size: 14px;" onclick="addProgramCondition()">
+                                            + Add condition
+                                        </button>
+                                    </div>
+
+                                    <div style="margin-top: 16px; padding: 16px; background: rgba(52, 199, 89, 0.1); border-radius: 10px; display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="font-weight: 600; color: var(--success);">Matching: 147 users</span>
+                                        <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px;" onclick="previewProgramConfiguration()">Preview</button>
+                                    </div>
+                                ` : ''}
+                            </div>
+
+                            <div class="form-group" style="margin-top: 32px;">
+                                <label class="form-label">When to contact them?</label>
+
+                                <div style="margin-top: 16px;">
+                                    <label style="display: flex; align-items: center; gap: 10px; padding: 14px; background: var(--white); border-radius: 10px; margin-bottom: 10px; cursor: pointer; border: 2px solid ${programConfig.whenType === 'scheduled' ? 'var(--purple-brand)' : 'var(--gray-200)'};">
+                                        <input type="radio" name="programWhen" value="scheduled" ${programConfig.whenType === 'scheduled' ? 'checked' : ''}
+                                               onchange="updateAudienceTrigger('program', 'whenType', 'scheduled')" style="width: 18px; height: 18px;">
+                                        <span style="font-weight: 600;">Scheduled (frequency + start/end)</span>
+                                    </label>
+
+                                    ${programConfig.whenType === 'scheduled' ? `
+                                        <div style="margin: 12px 0 12px 32px; padding: 20px; background: var(--white); border-radius: 10px; border: 1px solid var(--gray-300);">
+                                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                                <div class="form-group">
+                                                    <label class="form-label">Frequency</label>
+                                                    <select class="form-select">
+                                                        <option>Daily</option>
+                                                        <option>Weekly</option>
+                                                        <option>Monthly</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="form-label">Time</label>
+                                                    <input type="time" class="form-input" value="09:00">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ` : ''}
+
+                                    <label style="display: flex; align-items: center; gap: 10px; padding: 14px; background: var(--white); border-radius: 10px; margin-bottom: 10px; cursor: pointer; border: 2px solid ${programConfig.whenType === 'journey-task' ? 'var(--purple-brand)' : 'var(--gray-200)'};">
+                                        <input type="radio" name="programWhen" value="journey-task" ${programConfig.whenType === 'journey-task' ? 'checked' : ''}
+                                               onchange="updateAudienceTrigger('program', 'whenType', 'journey-task')" style="width: 18px; height: 18px;">
+                                        <span style="font-weight: 600;">Journey Task (links to JT)</span>
+                                    </label>
+
+                                    ${programConfig.whenType === 'journey-task' ? `
+                                        <div style="margin: 12px 0 12px 32px;">
+                                            <input type="text" class="form-input" placeholder="Search for task...">
+                                        </div>
+                                    ` : ''}
+
+                                    <label style="display: flex; align-items: center; gap: 10px; padding: 14px; background: var(--white); border-radius: 10px; cursor: pointer; border: 2px solid ${programConfig.whenType === 'event' ? 'var(--purple-brand)' : 'var(--gray-200)'};">
+                                        <input type="radio" name="programWhen" value="event" ${programConfig.whenType === 'event' ? 'checked' : ''}
+                                               onchange="updateAudienceTrigger('program', 'whenType', 'event')" style="width: 18px; height: 18px;">
+                                        <span style="font-weight: 600;">Event-based</span>
+                                    </label>
+
+                                    ${programConfig.whenType === 'event' ? `
+                                        <div style="margin: 12px 0 12px 32px;">
+                                            <select class="form-select">
+                                                <option>Glucose spike detected</option>
+                                                <option>Missed check-in</option>
+                                                <option>Low medication adherence</option>
+                                                <option>Emergency alert</option>
+                                            </select>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+            }
+        }
+
+        function renderKnowledgeBase() {
+            const kb = state.agentData.knowledgeBase;
+
+            return `
+                <div class="step-title">Step 3: Knowledge Base</div>
+                <div class="step-description">Tell the AI what it should know during conversations</div>
+
+                ${kb.items.length > 0 ? `
+                    <div style="background: var(--gray-50); border-radius: 16px; padding: 32px; border: 2px solid var(--gray-200); margin-bottom: 32px;">
+                        <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 24px; color: var(--gray-900);">YOUR KNOWLEDGE BASE FOR THIS OUTREACH</h3>
+
+                        ${kb.items.map((item, index) => `
+                            <div style="display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--white); border-radius: 12px; margin-bottom: 12px; border: 2px solid var(--gray-200);">
+                                <span style="font-size: 24px;">${item.icon || '📄'}</span>
+                                <div style="flex: 1;">
+                                    <div style="font-size: 16px; font-weight: 700; color: var(--gray-900); margin-bottom: 4px;">${item.name}</div>
+                                    <div style="font-size: 13px; color: var(--gray-600);">${item.type === 'template' ? 'Template' : item.type === 'custom' ? 'Custom' : 'Uploaded'}</div>
+                                </div>
+                                <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px;" onclick="editKBItem(${index})">Edit</button>
+                                <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px; background: var(--error); color: var(--white); border: none;" onclick="removeKBItem(${index})">✕</button>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="info-box" style="margin-bottom: 32px;">
+                        <div class="info-box-title">⚠️ Conflict Resolution</div>
+                        <div class="info-box-text">
+                            If instructions conflict, the AI will prioritize in this order:<br>
+                            <strong>Safety Guardrails > Healthcare Compliance > Custom > Uploaded</strong><br><br>
+                            <strong>Example:</strong> If your custom KB says "recommend medications" but Safety Guardrails says "never recommend medications" — the Safety rule wins.
+                        </div>
+                    </div>
+                ` : ''}
+
+                ${kb.view === 'methods' ? `
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 20px; color: var(--gray-900);">${kb.items.length > 0 ? 'Add More Knowledge' : 'Choose a Method to Add Knowledge'}</h3>
+
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 32px;">
+                        <div onclick="selectKBMethod('template')" class="kb-method-card" style="cursor: pointer; background: linear-gradient(135deg, var(--white), var(--lavender-light)); border: 2px solid var(--gray-200); border-radius: 16px; padding: 32px; text-align: center; transition: all 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                            <div style="font-size: 48px; margin-bottom: 16px;">📋</div>
+                            <div style="font-size: 18px; font-weight: 700; color: var(--gray-900); margin-bottom: 8px;">USE A<br>TEMPLATE</div>
+                            <div style="font-size: 14px; color: var(--gray-600); line-height: 1.6;">Start with<br>pre-written<br>knowledge</div>
+                        </div>
+
+                        <div onclick="selectKBMethod('write')" class="kb-method-card" style="cursor: pointer; background: linear-gradient(135deg, var(--white), var(--peach-lightest)); border: 2px solid var(--gray-200); border-radius: 16px; padding: 32px; text-align: center; transition: all 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                            <div style="font-size: 48px; margin-bottom: 16px;">✏️</div>
+                            <div style="font-size: 18px; font-weight: 700; color: var(--gray-900); margin-bottom: 8px;">WRITE<br>YOUR OWN</div>
+                            <div style="font-size: 14px; color: var(--gray-600); line-height: 1.6;">Type or paste<br>your own<br>instructions</div>
+                        </div>
+
+                        <div onclick="selectKBMethod('upload')" class="kb-method-card" style="cursor: pointer; background: linear-gradient(135deg, var(--white), #f0f9ff); border: 2px solid var(--gray-200); border-radius: 16px; padding: 32px; text-align: center; transition: all 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                            <div style="font-size: 48px; margin-bottom: 16px;">📄</div>
+                            <div style="font-size: 18px; font-weight: 700; color: var(--gray-900); margin-bottom: 8px;">UPLOAD<br>DOCUMENT</div>
+                            <div style="font-size: 14px; color: var(--gray-600); line-height: 1.6;">Upload PDF, Word,<br>or text files</div>
+                        </div>
+                    </div>
+
+                    ${kb.items.length === 0 ? `
+                        <div class="info-box">
+                            <div class="info-box-text" style="text-align: center; font-size: 15px;">
+                                You can use multiple methods. All knowledge will be combined.
+                            </div>
+                        </div>
+                    ` : ''}
+                ` : ''}
+
+                ${renderKBMethodView()}
+            `;
+        }
+
+        function renderKBMethodView() {
+            const kb = state.agentData.knowledgeBase;
+
+            switch(kb.view) {
+                case 'template':
+                    return `
+                        <div style="margin-top: 32px; padding: 32px; background: var(--gray-50); border-radius: 16px; border: 2px solid var(--gray-200);">
+                            <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 24px;">PRE-BUILT TEMPLATES</h3>
+
+                            ${kb.templates.map((template, index) => `
+                                <div style="background: var(--white); border-radius: 12px; padding: 24px; margin-bottom: 16px; border: 2px solid var(--gray-200);">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <span style="font-size: 28px;">${template.icon}</span>
+                                            <div style="font-size: 19px; font-weight: 700; color: var(--gray-900);">${template.name.toUpperCase()}</div>
+                                        </div>
+                                        <button onclick="toggleTemplatePreview(${index})" style="padding: 6px 16px; background: var(--purple-light); color: var(--purple-deep); border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                                            Preview ${template.expanded ? '▲' : '▼'}
+                                        </button>
+                                    </div>
+
+                                    <div style="font-size: 14px; color: var(--gray-600); margin-bottom: ${template.expanded ? '16px' : '0'};">${template.desc}</div>
+
+                                    ${template.expanded ? `
+                                        <div style="background: var(--gray-50); border-radius: 10px; padding: 20px; margin-bottom: 16px; border: 2px solid var(--gray-300); font-family: 'Monaco', monospace; font-size: 13px; line-height: 1.8; white-space: pre-wrap; color: var(--gray-900);">${template.content}</div>
+                                    ` : ''}
+
+                                    <div style="display: flex; gap: 12px;">
+                                        <button class="btn btn-primary" style="padding: 12px 24px;" onclick="addTemplate('${template.id}', false)">
+                                            Add to Knowledge Base
+                                        </button>
+                                        <button class="btn btn-secondary" style="padding: 12px 24px;" onclick="addTemplate('${template.id}', true)">
+                                            Add & Customize
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+
+                            <button class="btn btn-secondary" style="margin-top: 16px;" onclick="selectKBMethod('methods')">
+                                ← Back to Methods
+                            </button>
+                        </div>
+                    `;
+
+                case 'write':
+                    return `
+                        <div style="margin-top: 32px; padding: 32px; background: var(--gray-50); border-radius: 16px; border: 2px solid var(--gray-200);">
+                            <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 16px;">WRITE YOUR OWN KNOWLEDGE</h3>
+                            <p style="font-size: 15px; color: var(--gray-600); margin-bottom: 20px; line-height: 1.7;">
+                                Give the AI specific instructions or information relevant to this outreach. Be specific — the AI will follow this exactly.
+                            </p>
+
+                            <div style="margin-bottom: 20px;">
+                                <strong style="font-size: 14px; color: var(--gray-900);">Examples of what to include:</strong>
+                                <ul style="margin: 12px 0 0 20px; font-size: 14px; color: var(--gray-600); line-height: 1.8;">
+                                    <li>Specific medication information (dosages, timing, side effects)</li>
+                                    <li>Program-specific protocols</li>
+                                    <li>Company/partner terminology</li>
+                                    <li>Specific phrases to use or avoid</li>
+                                </ul>
+                            </div>
+
+                            <div class="form-group">
+                                <textarea id="custom-kb-text" class="form-textarea" placeholder="MEDICATION INFORMATION:
+Metformin 500mg is taken twice daily with meals.
+Common side effects include nausea and stomach upset.
+If patient reports severe diarrhea or vomiting, advise them to contact their doctor.
+
+PROGRAM RULES:
+Patients in the Diabetes Management program should check their glucose levels before each meal. Target range is 80-130 mg/dL before meals." style="min-height: 300px;">${kb.customText}</textarea>
+                            </div>
+
+                            <div class="info-box">
+                                <div class="info-box-title">💡 Tip</div>
+                                <div class="info-box-text">
+                                    Use headers like "MEDICATION INFO:" or "ALWAYS:" to organize your instructions clearly.
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                                <button class="btn btn-primary" onclick="saveCustomKB()">
+                                    Save to Knowledge Base
+                                </button>
+                                <button class="btn btn-secondary" onclick="selectKBMethod('methods')">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    `;
+
+                case 'upload':
+                    return `
+                        <div style="margin-top: 32px; padding: 32px; background: var(--gray-50); border-radius: 16px; border: 2px solid var(--gray-200);">
+                            <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 16px;">UPLOAD DOCUMENTS</h3>
+                            <p style="font-size: 15px; color: var(--gray-600); margin-bottom: 24px;">
+                                Upload existing documents and we'll extract the knowledge.<br>
+                                <strong>Supported:</strong> PDF, Word (.docx), Text (.txt)
+                            </p>
+
+                            <div style="border: 3px dashed var(--gray-300); border-radius: 16px; padding: 60px 40px; text-align: center; background: var(--white); margin-bottom: 24px;">
+                                <div style="font-size: 56px; margin-bottom: 16px;">📄</div>
+                                <div style="font-size: 17px; font-weight: 600; color: var(--gray-900); margin-bottom: 12px;">
+                                    Drag and drop files here
+                                </div>
+                                <div style="margin-bottom: 16px; color: var(--gray-600);">or</div>
+                                <button class="btn btn-primary">Browse Files</button>
+                                <div style="margin-top: 16px; font-size: 13px; color: var(--gray-600);">
+                                    Max 5 files, 10MB each
+                                </div>
+                            </div>
+
+                            ${kb.uploadedFiles.length > 0 ? `
+                                <div style="margin-bottom: 24px;">
+                                    <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">Uploaded:</h4>
+                                    ${kb.uploadedFiles.map((file, index) => `
+                                        <div style="background: var(--white); border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 2px solid var(--gray-200); display: flex; align-items: center; gap: 16px;">
+                                            <span style="font-size: 32px;">📄</span>
+                                            <div style="flex: 1;">
+                                                <div style="font-size: 15px; font-weight: 700; color: var(--gray-900);">${file.name}</div>
+                                                <div style="font-size: 13px; color: var(--gray-600); margin-top: 4px;">
+                                                    Extracted: ${file.wordCount} words
+                                                </div>
+                                            </div>
+                                            <div style="font-size: 14px; color: var(--gray-600);">${file.size}</div>
+                                            <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px;" onclick="previewExtractedDocument('${file.name}')">Preview Extract</button>
+                                            <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px; background: var(--error); color: var(--white); border: none;" onclick="removeUploadedDocument('${file.name}')">Remove</button>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+
+                            <button class="btn btn-secondary" onclick="selectKBMethod('methods')">
+                                ← Back to Methods
+                            </button>
+                        </div>
+                    `;
+
+                default:
+                    return '';
+            }
+        }
+
+        function getAvailableInsertVariables() {
+            const triggerType = state.agentData.audienceTrigger.type;
+            const variableGroups = [];
+
+            // System variables - ALWAYS AVAILABLE regardless of audience type
+            variableGroups.push({
+                category: 'System Variables',
+                description: 'Always available',
+                icon: '⚙️',
+                color: 'var(--gray-600)',
+                variables: [
+                    { name: 'current_date', sample: '2026-02-04' },
+                    { name: 'current_time', sample: '2:30 PM' },
+                    { name: 'day_of_week', sample: 'Tuesday' },
+                    { name: 'agent_name', sample: 'Medication Reminder - Voice' }
+                ]
+            });
+
+            // Read from Step 2 → What audience type was selected?
+            // Show relevant variables only → Don't show if data doesn't exist
+
+            if (triggerType === 'manual') {
+                // Only show CSV columns if CSV was actually uploaded
+                const csvColumns = state.agentData.audienceTrigger.manual.csvColumns;
+                if (csvColumns && csvColumns.length > 0) {
+                    // Group CSV columns logically by type
+                    const patientVars = csvColumns.filter(col =>
+                        ['patient_name', 'first_name', 'last_name', 'phone_number', 'email', 'date_of_birth', 'age'].includes(col)
+                    ).map(col => ({
+                        name: col,
+                        sample: getSampleValue(col)
+                    }));
+
+                    const healthVars = csvColumns.filter(col =>
+                        ['medication_name', 'dosage', 'last_refill_date', 'diagnosis', 'condition'].includes(col)
+                    ).map(col => ({
+                        name: col,
+                        sample: getSampleValue(col)
+                    }));
+
+                    if (patientVars.length > 0) {
+                        variableGroups.push({
+                            category: 'Patient Info',
+                            description: 'From CSV upload',
+                            icon: '👤',
+                            color: 'var(--purple-brand)',
+                            variables: patientVars
+                        });
+                    }
+
+                    if (healthVars.length > 0) {
+                        variableGroups.push({
+                            category: 'Health Data',
+                            description: 'From CSV upload',
+                            icon: '💊',
+                            color: 'var(--success)',
+                            variables: healthVars
+                        });
+                    }
+                }
+            } else if (triggerType === 'event') {
+                // Event-triggered variables
+                variableGroups.push({
+                    category: 'Event Data',
+                    description: 'From triggering event',
+                    icon: '⚡',
+                    color: 'var(--purple-brand)',
+                    variables: [
+                        { name: 'user_phone', sample: '+1-555-123-4567' },
+                        { name: 'message_text', sample: 'HELP' },
+                        { name: 'timestamp', sample: '2026-02-04 14:30:15' },
+                        { name: 'user_id', sample: 'USR-12345' }
+                    ]
+                });
+            } else if (triggerType === 'program') {
+                // Only show program fields if program is selected
+                const programId = state.agentData.audienceTrigger.program.programId;
+                if (programId) {
+                    variableGroups.push({
+                        category: 'Patient Info',
+                        description: 'From program enrollment',
+                        icon: '👤',
+                        color: 'var(--purple-brand)',
+                        variables: [
+                            { name: 'patient_name', sample: 'Sarah Johnson' },
+                            { name: 'member_id', sample: 'MEM-78945' },
+                            { name: 'enrollment_date', sample: '2025-11-15' }
+                        ]
+                    });
+
+                    variableGroups.push({
+                        category: 'Program Info',
+                        description: 'From Diabetes Management',
+                        icon: '📋',
+                        color: 'var(--purple-medium)',
+                        variables: [
+                            { name: 'care_manager_name', sample: 'Dr. Emily Chen' },
+                            { name: 'next_appointment', sample: '2026-02-15 10:00 AM' }
+                        ]
+                    });
+
+                    variableGroups.push({
+                        category: 'Health Data',
+                        description: 'From program metrics',
+                        icon: '💊',
+                        color: 'var(--success)',
+                        variables: [
+                            { name: 'last_glucose_reading', sample: '128 mg/dL' },
+                            { name: 'target_glucose_range', sample: '80-130 mg/dL' }
+                        ]
+                    });
+                }
+            }
+
+            return variableGroups;
+        }
+
+        function getSampleValue(columnName) {
+            const samples = {
+                'patient_name': 'John Smith',
+                'first_name': 'John',
+                'last_name': 'Smith',
+                'phone_number': '+1-555-123-4567',
+                'email': 'john.smith@email.com',
+                'date_of_birth': '1965-03-15',
+                'age': '59',
+                'medication_name': 'Metformin 500mg',
+                'dosage': '500mg twice daily',
+                'last_refill_date': '2026-01-28',
+                'diagnosis': 'Type 2 Diabetes',
+                'condition': 'Hypertension'
+            };
+            return samples[columnName] || 'Sample data';
+        }
+
+        function renderStep(stepIndex) {
+            const isAI = state.selectedChannel === 'voice' || state.selectedChannel === 'whatsapp';
+
+            switch(stepIndex) {
+                case 0: // Name
+                    return `
+                        <div class="step-title">Step 1: Name Your Agent</div>
+                        <div class="step-description">Give your agent a descriptive name that indicates its purpose</div>
+
+                        <div class="form-group">
+                            <label class="form-label">Agent Name</label>
+                            <input type="text" class="form-input" id="agent-name"
+                                   placeholder="e.g., Medication Reminder - Voice"
+                                   value="${state.agentData.name}"
+                                   oninput="updateState('name', this.value)">
+                            <div style="margin-top: 8px; font-size: 13px; color: var(--gray-600);">
+                                ${state.agentData.name.length}/60 characters
+                            </div>
+                        </div>
+
+                        <div class="info-box">
+                            <div class="info-box-title">💡 Naming Best Practices</div>
+                            <div class="info-box-text">
+                                • Include the purpose: "Medication Reminder", "Onboarding", "Follow-up"<br>
+                                • Include the channel: "- Voice", "- WhatsApp"<br>
+                                • Keep it clear and concise<br>
+                                • Example: "Daily Check-in - Voice Call"
+                            </div>
+                        </div>
+                    `;
+
+                case 1: // Audience & Trigger
+                    const triggerType = state.agentData.audienceTrigger.type;
+                    return `
+                        <div class="step-title">Step 2: Audience & Trigger</div>
+                        <div class="step-description">How should this outreach be triggered?</div>
+
+                        <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px;">
+                            <div class="option-card ${triggerType === 'manual' ? 'selected' : ''}"
+                                 onclick="selectAudienceTriggerType('manual')"
+                                 style="padding: 24px; cursor: pointer;">
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                                    <span style="font-size: 24px;">📤</span>
+                                    <div class="option-title" style="margin: 0;">MANUAL UPLOAD</div>
+                                </div>
+                                <div class="option-desc">Upload a list of users, then schedule when to contact them</div>
+                            </div>
+
+                            <div class="option-card ${triggerType === 'event' ? 'selected' : ''}"
+                                 onclick="selectAudienceTriggerType('event')"
+                                 style="padding: 24px; cursor: pointer;">
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                                    <span style="font-size: 24px;">⚡</span>
+                                    <div class="option-title" style="margin: 0;">EVENT-TRIGGERED</div>
+                                </div>
+                                <div class="option-desc">Outreach fires when a specific event happens (user action, API call, incoming SMS, etc.)</div>
+                            </div>
+
+                            <div class="option-card ${triggerType === 'program' ? 'selected' : ''}"
+                                 onclick="selectAudienceTriggerType('program')"
+                                 style="padding: 24px; cursor: pointer;">
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                                    <span style="font-size: 24px;">📋</span>
+                                    <div class="option-title" style="margin: 0;">PROGRAM-BASED</div>
+                                    <span style="padding: 4px 12px; background: var(--purple-light); color: var(--purple-deep); border-radius: 6px; font-size: 12px; font-weight: 700; margin-left: auto;">Requires CMS</span>
+                                </div>
+                                <div class="option-desc">Select users from a program, with scheduled or event triggers</div>
+                            </div>
+                        </div>
+
+                        ${renderAudienceTriggerConfig(triggerType)}
+                    `;
+
+                case 2: // Knowledge Base
+                    return isAI ? renderKnowledgeBase() : `
+                        <div class="step-title">Step 3: Knowledge Base</div>
+                        <div style="text-align: center; padding: 60px 20px;">
+                            <div style="font-size: 64px; margin-bottom: 20px;">📚</div>
+                            <h3 style="font-size: 24px; font-weight: 700; margin-bottom: 12px;">Not Applicable</h3>
+                            <p style="font-size: 16px; color: var(--gray-600);">
+                                Knowledge bases are only available for AI-enabled channels (Voice and WhatsApp).
+                            </p>
+                        </div>
+                    `;
+
+                case 3: // Prompt (NEW POSITION - data IN and OUT)
+                    return `
+                        <div class="step-title">Step 4: Prompt (WHAT)</div>
+                        <div class="step-description">Write instructions for what your agent should say and do</div>
+
+                        <!-- INSERT VARIABLES (Data going IN) -->
+                        <div style="margin-bottom: 32px;">
+                            <h3 style="font-size: 17px; font-weight: 700; margin-bottom: 8px; color: var(--gray-900);">📥 Insert Variables (Data Going IN)</h3>
+                            <p style="font-size: 14px; color: var(--gray-600); margin-bottom: 20px;">
+                                Variables come from multiple sources. Click any variable to insert it into your prompt.
+                            </p>
+
+                            ${getAvailableInsertVariables().map(source => `
+                                <div style="margin-bottom: 20px; padding: 20px; background: var(--gray-50); border-radius: 12px; border: 2px solid var(--gray-200);">
+                                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+                                        <span style="font-size: 20px;">${source.icon}</span>
+                                        <div style="font-size: 15px; font-weight: 700; color: ${source.color};">${source.category}</div>
+                                        <div style="padding: 4px 12px; background: var(--white); border-radius: 6px; font-size: 12px; color: var(--gray-600);">
+                                            ${source.description}
+                                        </div>
+                                    </div>
+                                    <div style="display: grid; gap: 10px;">
+                                        ${source.variables.map(v =>
+                                            `<div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--white); border-radius: 8px; cursor: pointer; transition: all 0.2s; border: 1.5px solid var(--gray-200);"
+                                                  onmouseover="this.style.borderColor='var(--purple-brand)'; this.style.background='var(--lavender-light)';"
+                                                  onmouseout="this.style.borderColor='var(--gray-200)'; this.style.background='var(--white)';"
+                                                  onclick="insertVariable('{{${v.name}}}')">
+                                                <code style="font-size: 13px; font-weight: 700; color: var(--purple-deep); font-family: Monaco, monospace;">${'{{' + v.name + '}}'}</code>
+                                                <span style="font-size: 13px; color: var(--gray-600); font-style: italic;">→ ${v.sample}</span>
+                                            </div>`
+                                        ).join('')}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">${isAI ? 'Agent Instructions' : 'Message Template'}</label>
+                            <textarea class="form-textarea" id="agent-prompt" placeholder="${isAI ?
+                                'You are a medication reminder assistant for {{program_name}}. Your goal is to:\n1. Greet the patient warmly using their name ({{patient_name}})\n2. Remind them about their {{medication_name}}\n3. Ask if they have taken it today\n4. If not, gently encourage them and ask about barriers\n5. Thank them for their time' :
+                                'Hi {{patient_name}}, reminder about your appointment with {{provider_name}} on {{appointment_date}}. Reply YES to confirm.'
+                            }" oninput="updateState('prompt', this.value)">${state.agentData.prompt}</textarea>
+                            <div style="margin-top: 8px; font-size: 13px; color: var(--gray-600);">
+                                ${state.agentData.prompt.length} characters
+                            </div>
+                        </div>
+
+                        ${isAI ? `
+                            <!-- EXTRACT VARIABLES (Data coming OUT) -->
+                            <div style="margin-top: 40px; padding: 24px; background: var(--gray-50); border-radius: 16px; border: 2px solid var(--gray-200);">
+                                <h3 style="font-size: 17px; font-weight: 700; margin-bottom: 12px; color: var(--gray-900);">📤 Extract Variables (Data Coming OUT)</h3>
+                                <p style="font-size: 14px; color: var(--gray-600); margin-bottom: 16px;">
+                                    Define what data the AI should extract from the conversation. These will be used in Configuration and Document Capture.
+                                </p>
+
+                                <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: center; margin-bottom: 12px;">
+                                    <div>
+                                        <label class="form-label" style="margin-bottom: 6px;">Variable Name</label>
+                                        <input type="text" class="form-input" placeholder="adherence_status" style="font-family: Monaco, monospace;">
+                                    </div>
+                                    <div>
+                                        <label class="form-label" style="margin-bottom: 6px;">Type</label>
+                                        <select class="form-select">
+                                            <option>Yes/No</option>
+                                            <option>Text</option>
+                                            <option>Number</option>
+                                            <option>Date</option>
+                                        </select>
+                                    </div>
+                                    <div style="padding-top: 28px;">
+                                        <button class="btn btn-primary" style="padding: 10px 20px; font-size: 14px;" onclick="addExtractVariable()">+ Add</button>
+                                    </div>
+                                </div>
+
+                                <div style="background: var(--white); border-radius: 12px; padding: 16px; border: 2px solid var(--gray-300);">
+                                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--lavender-light); border-radius: 8px; margin-bottom: 8px;">
+                                        <code style="flex: 1; font-size: 14px; font-weight: 700;">adherence_status</code>
+                                        <span style="padding: 4px 12px; background: var(--purple-light); color: var(--purple-deep); border-radius: 6px; font-size: 12px; font-weight: 600;">Yes/No</span>
+                                        <button style="padding: 4px 12px; background: var(--error); color: var(--white); border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">Remove</button>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--lavender-light); border-radius: 8px; margin-bottom: 8px;">
+                                        <code style="flex: 1; font-size: 14px; font-weight: 700;">barriers_mentioned</code>
+                                        <span style="padding: 4px 12px; background: var(--purple-light); color: var(--purple-deep); border-radius: 6px; font-size: 12px; font-weight: 600;">Text</span>
+                                        <button style="padding: 4px 12px; background: var(--error); color: var(--white); border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">Remove</button>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--lavender-light); border-radius: 8px;">
+                                        <code style="flex: 1; font-size: 14px; font-weight: 700;">next_followup_date</code>
+                                        <span style="padding: 4px 12px; background: var(--purple-light); color: var(--purple-deep); border-radius: 6px; font-size: 12px; font-weight: 600;">Date</span>
+                                        <button style="padding: 4px 12px; background: var(--error); color: var(--white); border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">Remove</button>
+                                    </div>
+                                </div>
+
+                                <div class="info-box" style="margin-top: 16px;">
+                                    <div class="info-box-title">💡 Extract Variables Flow</div>
+                                    <div class="info-box-text">
+                                        These variables will be available in:<br>
+                                        • <strong>Step 5 (Configuration)</strong> — for conditional logic (e.g., "If adherence_status = no → escalate")<br>
+                                        • <strong>Step 6 (Document Capture)</strong> — to populate document templates
+                                    </div>
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        <div class="info-box" style="margin-top: 24px;">
+                            <div class="info-box-title">✍️ Writing Tips</div>
+                            <div class="info-box-text">
+                                ${isAI ? `
+                                    • Start with the agent's role and goal<br>
+                                    • Break down conversation into numbered steps<br>
+                                    • Specify what information to collect<br>
+                                    • Define when to escalate to human
+                                ` : `
+                                    • Keep messages clear and concise<br>
+                                    • Include a clear call-to-action<br>
+                                    • Use variables for personalization<br>
+                                    • Test different message lengths
+                                `}
+                            </div>
+                        </div>
+                    `;
+
+                case 4: // Configuration (references extract variables)
+                    return isAI ? `
+                        <div class="step-title">Step 5: Configuration (HOW)</div>
+                        <div class="step-description">Configure how your agent behaves during conversations</div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px;">
+                            <div class="form-group">
+                                <label class="form-label">Tone</label>
+                                <select class="form-select">
+                                    <option>Friendly & Warm</option>
+                                    <option>Professional</option>
+                                    <option>Empathetic & Supportive</option>
+                                    <option>Concise & Direct</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Voice (Voice Call only)</label>
+                                <select class="form-select">
+                                    <option>Female - American</option>
+                                    <option>Male - American</option>
+                                    <option>Female - British</option>
+                                    <option>Male - British</option>
+                                    <option>Female - Indian English</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Max Duration</label>
+                            <select class="form-select" style="max-width: 300px;">
+                                <option>2 minutes</option>
+                                <option selected>5 minutes</option>
+                                <option>10 minutes</option>
+                                <option>15 minutes</option>
+                                <option>No limit</option>
+                            </select>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="interruptions" checked>
+                                <label for="interruptions">Allow interruptions during speech</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="record" checked>
+                                <label for="record">Record calls for quality and compliance</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="escalation" checked>
+                                <label for="escalation">Enable escalation to human agent</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="summary">
+                                <label for="summary">Send summary to care team after call</label>
+                            </div>
+                        </div>
+
+                        <!-- CONDITIONAL LOGIC BASED ON EXTRACT VARIABLES -->
+                        <div style="margin-top: 40px; padding: 24px; background: var(--gray-50); border-radius: 16px; border: 2px solid var(--gray-200);">
+                            <h3 style="font-size: 17px; font-weight: 700; margin-bottom: 12px; color: var(--gray-900);">🔀 Conditional Logic (Optional)</h3>
+                            <p style="font-size: 14px; color: var(--gray-600); margin-bottom: 16px;">
+                                Create rules based on extract variables from Step 4 (Prompt)
+                            </p>
+
+                            ${state.agentData.config.conditionalRules.length > 0 ? `
+                                ${state.agentData.config.conditionalRules.map((rule, index) => `
+                                    <div style="background: var(--white); border-radius: 12px; padding: 20px; border: 2px solid var(--gray-300); margin-bottom: 12px; position: relative;">
+                                        <button onclick="removeConditionalRule(${index})" style="position: absolute; top: 12px; right: 12px; padding: 6px 12px; background: var(--error); color: var(--white); border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">Remove</button>
+                                        <div style="display: grid; grid-template-columns: auto 1fr auto auto; gap: 12px; align-items: center; margin-right: 80px;">
+                                            <span style="font-size: 14px; font-weight: 600;">If</span>
+                                            <select class="form-select" onchange="updateConditionalRule(${index}, 'variable', this.value)">
+                                                <option ${rule.variable === 'adherence_status' ? 'selected' : ''}>adherence_status</option>
+                                                <option ${rule.variable === 'barriers_mentioned' ? 'selected' : ''}>barriers_mentioned</option>
+                                                <option ${rule.variable === 'next_followup_date' ? 'selected' : ''}>next_followup_date</option>
+                                            </select>
+                                            <select class="form-select" onchange="updateConditionalRule(${index}, 'operator', this.value)">
+                                                <option ${rule.operator === 'equals' ? 'selected' : ''}>equals</option>
+                                                <option ${rule.operator === 'not equals' ? 'selected' : ''}>not equals</option>
+                                                <option ${rule.operator === 'contains' ? 'selected' : ''}>contains</option>
+                                            </select>
+                                            <input type="text" class="form-input" placeholder="value" value="${rule.value}" onchange="updateConditionalRule(${index}, 'value', this.value)" style="max-width: 120px;">
+                                        </div>
+                                        <div style="margin: 12px 0 0 40px; display: flex; gap: 12px; align-items: center;">
+                                            <span style="font-size: 14px; font-weight: 600;">Then:</span>
+                                            <select class="form-select" onchange="updateConditionalRule(${index}, 'action', this.value)">
+                                                <option ${rule.action === 'Escalate to human agent' ? 'selected' : ''}>Escalate to human agent</option>
+                                                <option ${rule.action === 'Send alert to care team' ? 'selected' : ''}>Send alert to care team</option>
+                                                <option ${rule.action === 'Schedule follow-up' ? 'selected' : ''}>Schedule follow-up</option>
+                                                <option ${rule.action === 'Tag conversation' ? 'selected' : ''}>Tag conversation</option>
+                                                <option ${rule.action === 'User profile creation' ? 'selected' : ''}>User profile creation</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            ` : ''}
+
+                            <div style="padding: 16px; background: rgba(120, 72, 254, 0.08); border-radius: 10px; border: 2px solid var(--purple-light); margin-bottom: 16px;">
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                                    <span style="font-size: 14px; font-weight: 700; color: var(--purple-deep);">Example Rule:</span>
+                                </div>
+                                <code style="font-size: 13px; color: var(--gray-900);">
+                                    If <strong>adherence_status</strong> = "no" → <strong>Escalate to human agent</strong>
+                                </code>
+                            </div>
+
+                            <button class="btn btn-primary" style="padding: 10px 20px; font-size: 14px;" onclick="addConditionalRule()">
+                                + Add Conditional Rule
+                            </button>
+                        </div>
+
+                        <div class="info-box" style="margin-top: 24px;">
+                            <div class="info-box-title">⚙️ Configuration Tips</div>
+                            <div class="info-box-text">
+                                • Choose a tone that matches your brand and use case<br>
+                                • Shorter durations (2-5 min) work better for simple tasks<br>
+                                • Always enable call recording for compliance and training<br>
+                                • Use conditional logic to handle different conversation outcomes
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="step-title">Step 5: Configuration</div>
+                        <div class="step-description">Configure channel-specific settings</div>
+
+                        <div class="form-group">
+                            <label class="form-label">Sender ID / From Name</label>
+                            <input type="text" class="form-input" placeholder="Your Organization Name">
+                        </div>
+
+                        ${state.selectedChannel === 'sms' ? `
+                            <div class="form-group">
+                                <label class="form-label">Character Limit</label>
+                                <select class="form-select">
+                                    <option>160 characters (single message)</option>
+                                    <option>320 characters (multi-part)</option>
+                                </select>
+                            </div>
+                        ` : ''}
+
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" checked>
+                                <label>Track delivery status</label>
+                            </div>
+                            ${state.selectedChannel === 'email' ? `
+                                <div class="checkbox-item">
+                                    <input type="checkbox" checked>
+                                    <label>Track email opens</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" checked>
+                                    <label>Track link clicks</label>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+
+                case 5: // Document Capture (uses extract variables)
+                    return `
+                        <div class="step-title">Step 6: Document Capture</div>
+                        <div class="step-description">Save conversation data as documents and/or update patient profiles</div>
+
+                        <!-- EXTRACTED VARIABLES FROM STEP 4 -->
+                        <div style="margin-bottom: 32px; padding: 20px; background: var(--lavender-light); border-radius: 12px; border: 2px solid var(--purple-light);">
+                            <div style="font-size: 15px; font-weight: 700; margin-bottom: 12px; color: var(--purple-deep);">Your extracted variables from Step 4:</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                <code style="padding: 8px 14px; background: var(--white); border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--purple-deep);">{{adherence_status}}</code>
+                                <code style="padding: 8px 14px; background: var(--white); border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--purple-deep);">{{barriers_mentioned}}</code>
+                                <code style="padding: 8px 14px; background: var(--white); border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--purple-deep);">{{patient_sentiment}}</code>
+                                <code style="padding: 8px 14px; background: var(--white); border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--purple-deep);">{{follow_up_needed}}</code>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 1: STORE AS DOCUMENT -->
+                        <div style="margin-bottom: 32px; padding: 28px; background: var(--gray-50); border-radius: 16px; border: 3px solid var(--gray-300);">
+                            <div style="text-align: center; padding: 16px 0; margin-bottom: 24px; border-bottom: 2px solid var(--gray-300);">
+                                <div style="font-size: 20px; font-weight: 800; color: var(--gray-900); letter-spacing: 0.5px;">📄 STORE AS DOCUMENT</div>
+                            </div>
+
+                            <div class="checkbox-item" style="margin-bottom: 24px; background: var(--white); padding: 16px; border: 2px solid var(--gray-300);">
+                                <input type="checkbox" id="create-document" checked>
+                                <label for="create-document" style="font-weight: 700;">Create a document after each conversation</label>
+                            </div>
+
+                            <div style="margin-bottom: 24px;">
+                                <label class="form-label" style="font-size: 16px;">Select template from Documents module:</label>
+
+                                <div style="margin-top: 16px;">
+                                    <label style="display: flex; align-items: start; gap: 16px; padding: 16px; background: var(--white); border-radius: 12px; margin-bottom: 12px; cursor: pointer; border: 2px solid var(--purple-brand);">
+                                        <input type="radio" name="doc-template" value="adherence" checked style="margin-top: 4px; width: 18px; height: 18px;">
+                                        <div style="flex: 1;">
+                                            <div style="font-size: 16px; font-weight: 700; color: var(--gray-900); margin-bottom: 6px;">Medication Adherence Log</div>
+                                            <div style="font-size: 13px; color: var(--gray-600); margin-bottom: 8px;">
+                                                <strong>Fields:</strong> adherence_status, barriers, follow_up_needed
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-secondary" style="padding: 6px 16px; font-size: 13px;" onclick="event.preventDefault(); event.stopPropagation(); previewDocumentTemplate('adherence');">Preview</button>
+                                    </label>
+
+                                    <label style="display: flex; align-items: start; gap: 16px; padding: 16px; background: var(--white); border-radius: 12px; margin-bottom: 12px; cursor: pointer; border: 2px solid var(--gray-200);">
+                                        <input type="radio" name="doc-template" value="onboarding" style="margin-top: 4px; width: 18px; height: 18px;">
+                                        <div style="flex: 1;">
+                                            <div style="font-size: 16px; font-weight: 700; color: var(--gray-900); margin-bottom: 6px;">Onboarding Summary</div>
+                                            <div style="font-size: 13px; color: var(--gray-600); margin-bottom: 8px;">
+                                                <strong>Fields:</strong> preferred_time, questions, emergency_contact
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-secondary" style="padding: 6px 16px; font-size: 13px;" onclick="event.preventDefault(); event.stopPropagation(); previewDocumentTemplate('onboarding');">Preview</button>
+                                    </label>
+
+                                    <label style="display: flex; align-items: start; gap: 16px; padding: 16px; background: var(--white); border-radius: 12px; cursor: pointer; border: 2px solid var(--gray-200);">
+                                        <input type="radio" name="doc-template" value="followup" style="margin-top: 4px; width: 18px; height: 18px;">
+                                        <div style="flex: 1;">
+                                            <div style="font-size: 16px; font-weight: 700; color: var(--gray-900); margin-bottom: 6px;">Follow-up Notes</div>
+                                            <div style="font-size: 13px; color: var(--gray-600); margin-bottom: 8px;">
+                                                <strong>Fields:</strong> sentiment, concerns, action_items
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-secondary" style="padding: 6px 16px; font-size: 13px;" onclick="event.preventDefault(); event.stopPropagation(); previewDocumentTemplate('followup');">Preview</button>
+                                    </label>
+                                </div>
+
+                                <button class="btn" style="margin-top: 16px; padding: 10px 20px; background: var(--purple-light); color: var(--purple-deep); font-weight: 600;" onclick="createNewDocumentTemplate()">
+                                    + Create New Template
+                                </button>
+                                <span style="margin-left: 12px; font-size: 13px; color: var(--gray-600);">→ Opens Documents module</span>
+                            </div>
+
+                            <div style="height: 2px; background: var(--gray-300); margin: 32px 0;"></div>
+
+                            <!-- FIELD MAPPING -->
+                            <div>
+                                <h3 style="font-size: 17px; font-weight: 700; margin-bottom: 16px; color: var(--gray-900);">FIELD MAPPING</h3>
+                                <p style="font-size: 14px; color: var(--gray-600); margin-bottom: 20px;">
+                                    Map your extracted variables to document template fields:
+                                </p>
+
+                                <div style="background: var(--white); border-radius: 12px; padding: 20px; border: 2px solid var(--gray-300);">
+                                    <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 2px solid var(--gray-200); font-weight: 700; color: var(--gray-700);">
+                                        <div>Template Field</div>
+                                        <div></div>
+                                        <div>Extract Variable</div>
+                                    </div>
+
+                                    <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--gray-200);">
+                                        <div style="font-size: 15px; font-weight: 600;">Adherence Status</div>
+                                        <div style="font-size: 18px; color: var(--purple-brand);">→</div>
+                                        <select class="form-select" style="font-family: Monaco, monospace; font-weight: 600;">
+                                            <option>{{adherence_status}}</option>
+                                            <option>{{barriers_mentioned}}</option>
+                                            <option>{{patient_sentiment}}</option>
+                                            <option>{{follow_up_needed}}</option>
+                                        </select>
+                                    </div>
+
+                                    <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--gray-200);">
+                                        <div style="font-size: 15px; font-weight: 600;">Barriers Reported</div>
+                                        <div style="font-size: 18px; color: var(--purple-brand);">→</div>
+                                        <select class="form-select" style="font-family: Monaco, monospace; font-weight: 600;">
+                                            <option>{{barriers_mentioned}}</option>
+                                            <option>{{adherence_status}}</option>
+                                            <option>{{patient_sentiment}}</option>
+                                            <option>{{follow_up_needed}}</option>
+                                        </select>
+                                    </div>
+
+                                    <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--gray-200);">
+                                        <div style="font-size: 15px; font-weight: 600;">Follow-up Required</div>
+                                        <div style="font-size: 18px; color: var(--purple-brand);">→</div>
+                                        <select class="form-select" style="font-family: Monaco, monospace; font-weight: 600;">
+                                            <option>{{follow_up_needed}}</option>
+                                            <option>{{adherence_status}}</option>
+                                            <option>{{barriers_mentioned}}</option>
+                                            <option>{{patient_sentiment}}</option>
+                                        </select>
+                                    </div>
+
+                                    <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--gray-200);">
+                                        <div style="font-size: 15px; font-weight: 600;">Patient Mood</div>
+                                        <div style="font-size: 18px; color: var(--purple-brand);">→</div>
+                                        <select class="form-select" style="font-family: Monaco, monospace; font-weight: 600;">
+                                            <option>{{patient_sentiment}}</option>
+                                            <option>{{adherence_status}}</option>
+                                            <option>{{barriers_mentioned}}</option>
+                                            <option>{{follow_up_needed}}</option>
+                                        </select>
+                                    </div>
+
+                                    <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: center; padding: 12px 0;">
+                                        <div style="font-size: 15px; font-weight: 600;">Call Date</div>
+                                        <div style="font-size: 18px; color: var(--purple-brand);">→</div>
+                                        <div>
+                                            <select class="form-select" style="font-family: Monaco, monospace; font-weight: 600;">
+                                                <option>{{current_date}}</option>
+                                                <option>{{current_time}}</option>
+                                            </select>
+                                            <div style="font-size: 12px; color: var(--gray-600); margin-top: 4px; font-style: italic;">(auto-filled)</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 24px; padding: 20px; background: var(--peach-lightest); border-radius: 12px; border: 2px solid var(--peach-light);">
+                                <div style="font-size: 15px; font-weight: 700; margin-bottom: 8px; color: var(--gray-900);">📁 Documents will be saved to:</div>
+                                <div style="font-size: 14px; color: var(--gray-700); margin-bottom: 12px;">
+                                    <strong>Patient Record → Documents → Outreach Logs</strong>
+                                </div>
+                                <div style="font-size: 13px; color: var(--gray-600);">
+                                    <strong>Naming:</strong> <code style="background: var(--white); padding: 4px 8px; border-radius: 4px;">{patient_name}_MedicationAdherence_{date}</code>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                case 6: // Review
+                    return `
+                        <div class="step-title">Step 7: Review & Activate</div>
+                        <div class="step-description">Review your configuration and activate the agent</div>
+
+                        <div class="review-section">
+                            <div class="review-title">📋 Configuration Summary</div>
+                            <div class="review-item">
+                                <div class="review-label">Channel</div>
+                                <div class="review-value">${channels.find(c => c.id === state.selectedChannel)?.name}</div>
+                            </div>
+                            <div class="review-item">
+                                <div class="review-label">Agent Name</div>
+                                <div class="review-value">${state.agentData.name || 'Not set'}</div>
+                            </div>
+                            <div class="review-item">
+                                <div class="review-label">User Segment</div>
+                                <div class="review-value">Cohort (147 users)</div>
+                            </div>
+                            <div class="review-item">
+                                <div class="review-label">Trigger</div>
+                                <div class="review-value">Daily at 9:00 AM</div>
+                            </div>
+                            <div class="review-item">
+                                <div class="review-label">Knowledge Bases</div>
+                                <div class="review-value">2 selected</div>
+                            </div>
+                            <div class="review-item">
+                                <div class="review-label">Configuration</div>
+                                <div class="review-value">Friendly tone, 5 min max</div>
+                            </div>
+                            <div class="review-item">
+                                <div class="review-label">Prompt</div>
+                                <div class="review-value">${state.agentData.prompt.length} characters</div>
+                            </div>
+                            <div class="review-item">
+                                <div class="review-label">Document Template</div>
+                                <div class="review-value">Medication Adherence Log</div>
+                            </div>
+                        </div>
+
+                        <div class="review-section">
+                            <div class="review-title">✅ Pre-Activation Validation</div>
+                            <div class="validation-checks">
+                                <div class="validation-item pass">
+                                    ✓ Channel configured
+                                </div>
+                                <div class="validation-item pass">
+                                    ✓ Agent name provided
+                                </div>
+                                <div class="validation-item pass">
+                                    ✓ User segment defined (147 users)
+                                </div>
+                                <div class="validation-item pass">
+                                    ✓ Trigger configured
+                                </div>
+                                <div class="validation-item pass">
+                                    ✓ Prompt provided (${state.agentData.prompt.length} characters)
+                                </div>
+                                <div class="validation-item warning">
+                                    ⚠️ Knowledge base recommended (2 selected)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="info-box" style="background: rgba(52, 199, 89, 0.1); border-left-color: var(--success); margin-top: 24px;">
+                            <div class="info-box-title" style="color: var(--success);">🎉 Ready to Activate!</div>
+                            <div class="info-box-text">
+                                All validation checks passed. Your agent is ready to be activated and will start reaching out to the 147 users in your cohort.
+                            </div>
+                        </div>
+                    `;
+            }
+        }
+
+        // Event Handlers
+        function selectChannel(channelId) {
+            state.selectedChannel = channelId;
+            state.view = 'wizard';
+            state.currentStep = 0;
+            render();
+        }
+
+        function nextStep() {
+            if (state.currentStep < 6) {
+                state.currentStep++;
+                render();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                alert('🎉 Agent activated successfully!\n\nYour outreach agent is now live and will start running based on your configured trigger.');
+                state.view = 'landing';
+                state.currentStep = 0;
+                state.agentData = {
+                    name: '',
+                    audienceTrigger: {
+                        type: 'manual',
+                        manual: {
+                            csvFile: null,
+                            when: 'scheduled',
+                            frequency: 'one-time',
+                            dateTime: '',
+                            recurring: { interval: 'Monday', time: '09:00', start: '', end: 'never' }
+                        },
+                        event: { triggerType: 'sms-incoming', phoneNumber: '', webhookUrl: '', elementId: '' },
+                        program: { programId: null, filterAll: true, conditions: [], matchingUsers: 0, whenType: 'scheduled' }
+                    },
+                    knowledgeBase: { view: 'methods', items: [], templates: state.agentData.knowledgeBase.templates, customText: '', uploadedFiles: [] },
+                    config: { tone: 'friendly', voice: 'female-american', maxDuration: 5, allowInterruptions: true, recordCalls: true, conditionalRules: [] },
+                    prompt: '',
+                    extractVariables: [],
+                    documentTemplate: null
+                };
+                render();
+            }
+        }
+
+        function previousStep() {
+            if (state.currentStep > 0) {
+                state.currentStep--;
+                render();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (state.currentStep === 0) {
+                // Go back to landing page (channel selection)
+                goToLanding();
+            }
+        }
+
+        function goToLanding() {
+            if (confirm('Return to channel selection? Any unsaved changes will be lost.')) {
+                state.view = 'landing';
+                state.selectedChannel = null;
+                state.currentStep = 0;
+                render();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function updateState(key, value) {
+            state.agentData[key] = value;
+        }
+
+        function selectAudienceTriggerType(type) {
+            state.agentData.audienceTrigger.type = type;
+            render();
+        }
+
+        function updateAudienceTrigger(section, key, value) {
+            state.agentData.audienceTrigger[section][key] = value;
+            render();
+        }
+
+        // Knowledge Base Functions
+        function selectKBMethod(method) {
+            state.agentData.knowledgeBase.view = method;
+            render();
+        }
+
+        function toggleTemplatePreview(index) {
+            state.agentData.knowledgeBase.templates[index].expanded = !state.agentData.knowledgeBase.templates[index].expanded;
+            render();
+        }
+
+        function addTemplate(templateId, customize) {
+            const template = state.agentData.knowledgeBase.templates.find(t => t.id === templateId);
+            if (!template) return;
+
+            const newItem = {
+                type: 'template',
+                id: templateId,
+                icon: template.icon,
+                name: template.name,
+                content: template.content
+            };
+
+            state.agentData.knowledgeBase.items.push(newItem);
+
+            if (customize) {
+                // TODO: Show edit modal for customization
+                alert('Customization interface would open here');
+            }
+
+            state.agentData.knowledgeBase.view = 'methods';
+            render();
+        }
+
+        function saveCustomKB() {
+            const text = document.getElementById('custom-kb-text')?.value;
+            if (!text || text.trim() === '') {
+                alert('Please enter some knowledge text');
+                return;
+            }
+
+            state.agentData.knowledgeBase.items.push({
+                type: 'custom',
+                icon: '💊',
+                name: 'Custom Instructions',
+                content: text
+            });
+
+            state.agentData.knowledgeBase.customText = '';
+            state.agentData.knowledgeBase.view = 'methods';
+            render();
+        }
+
+        function editKBItem(index) {
+            alert(`Edit functionality for item ${index} would open here`);
+        }
+
+        function removeKBItem(index) {
+            if (confirm('Remove this knowledge base item?')) {
+                state.agentData.knowledgeBase.items.splice(index, 1);
+                render();
+            }
+        }
+
+        function insertVariable(variable) {
+            const textarea = document.getElementById('agent-prompt');
+            if (!textarea) return;
+
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = textarea.value;
+            const before = text.substring(0, start);
+            const after = text.substring(end, text.length);
+
+            textarea.value = before + variable + after;
+            textarea.selectionStart = textarea.selectionEnd = start + variable.length;
+            textarea.focus();
+
+            state.agentData.prompt = textarea.value;
+        }
+
+        // Conditional Rules Functions
+        function addConditionalRule() {
+            state.agentData.config.conditionalRules.push({
+                variable: 'adherence_status',
+                operator: 'equals',
+                value: '',
+                action: 'Escalate to human agent'
+            });
+            render();
+        }
+
+        function updateConditionalRule(index, field, value) {
+            state.agentData.config.conditionalRules[index][field] = value;
+        }
+
+        function removeConditionalRule(index) {
+            if (confirm('Remove this conditional rule?')) {
+                state.agentData.config.conditionalRules.splice(index, 1);
+                render();
+            }
+        }
+
+        function previewDocumentTemplate(templateName) {
+            const templates = {
+                'adherence': {
+                    name: 'Medication Adherence Log',
+                    fields: [
+                        { name: 'Adherence Status', type: 'text', required: true },
+                        { name: 'Barriers Reported', type: 'textarea', required: false },
+                        { name: 'Follow-up Required', type: 'boolean', required: true },
+                        { name: 'Patient Mood', type: 'text', required: false },
+                        { name: 'Call Date', type: 'date', required: true }
+                    ]
+                },
+                'onboarding': {
+                    name: 'Onboarding Summary',
+                    fields: [
+                        { name: 'Preferred Contact Time', type: 'text', required: true },
+                        { name: 'Questions Raised', type: 'textarea', required: false },
+                        { name: 'Emergency Contact', type: 'text', required: true }
+                    ]
+                },
+                'followup': {
+                    name: 'Follow-up Notes',
+                    fields: [
+                        { name: 'Discussion Summary', type: 'textarea', required: true },
+                        { name: 'Action Items', type: 'textarea', required: true },
+                        { name: 'Next Steps', type: 'text', required: false }
+                    ]
+                }
+            };
+
+            const template = templates[templateName];
+            if (!template) return;
+
+            let fieldsList = template.fields.map(f =>
+                `<div style="padding: 12px; background: var(--gray-50); border-radius: 8px; margin-bottom: 8px;">
+                    <strong>${f.name}</strong> (${f.type})${f.required ? ' <span style="color: var(--error);">*</span>' : ''}
+                </div>`
+            ).join('');
+
+            alert(`📄 ${template.name}\n\nThis template contains the following fields:\n\n${template.fields.map(f => `• ${f.name} (${f.type})${f.required ? ' *required' : ''}`).join('\n')}`);
+        }
+
+        function previewProgramConfiguration() {
+            alert('📊 Program Configuration Preview\n\nThis will show a detailed view of:\n• Selected program details\n• Applied filters and conditions\n• Estimated user count\n• Trigger schedule settings\n\n(Full preview functionality coming soon)');
+        }
+
+        function previewExtractedDocument(fileName) {
+            alert(`📄 Preview: ${fileName}\n\nThis will show the extracted content from the uploaded document.\n\n(Full preview functionality coming soon)`);
+        }
+
+        function removeUploadedDocument(fileName) {
+            if (confirm(`Remove "${fileName}" from knowledge base?`)) {
+                const index = state.agentData.knowledgeBase.uploadedFiles.findIndex(f => f.name === fileName);
+                if (index !== -1) {
+                    state.agentData.knowledgeBase.uploadedFiles.splice(index, 1);
+                    render();
+                }
+            }
+        }
+
+        function addProgramCondition() {
+            alert('Add Filter Condition\n\nThis would open a modal to add conditions like:\n• Age range\n• Glucose readings\n• Enrollment status\n• Last contact date\n\n(Full functionality coming soon)');
+        }
+
+        function addExtractVariable() {
+            const varName = prompt('Enter variable name to extract:\n(e.g., adherence_status, patient_sentiment, follow_up_needed)');
+            if (varName && varName.trim()) {
+                const cleanName = varName.trim().toLowerCase().replace(/\s+/g, '_');
+                if (!state.agentData.extractVariables.find(v => v.name === cleanName)) {
+                    state.agentData.extractVariables.push({
+                        name: cleanName,
+                        description: '',
+                        type: 'text'
+                    });
+                    render();
+                } else {
+                    alert('This variable already exists!');
+                }
+            }
+        }
+
+        function createNewDocumentTemplate() {
+            alert('📄 Create New Template\n\nThis will open the Documents module where you can:\n• Design custom document templates\n• Define fields and their types\n• Set validation rules\n• Configure access permissions\n\n(Opens Documents module)');
+        }
+
+        // Agent Management Functions
+        function viewAllAgents() {
+            state.view = 'fullList';
+            render();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function backToLanding() {
+            state.view = 'landing';
+            render();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showCreateDropdown() {
+            alert('Create New Outreach\n\nChoose a channel:\n• Voice Call\n• WhatsApp\n• SMS\n• Email\n\n(This would show a dropdown menu)');
+        }
+
+        function editAgent(agentId) {
+            alert(`Edit Agent: ${agentId}\n\nThis would load the agent configuration into the wizard for editing.`);
+        }
+
+        function toggleAgentStatus(agentId) {
+            const agent = state.savedAgents.find(a => a.id === agentId);
+            if (agent) {
+                agent.status = agent.status === 'active' ? 'paused' : 'active';
+                render();
+            }
+        }
+
+        function duplicateAgent(agentId) {
+            const agent = state.savedAgents.find(a => a.id === agentId);
+            if (agent) {
+                const duplicate = {
+                    ...agent,
+                    id: 'agent-' + Date.now(),
+                    name: agent.name + ' (Copy)',
+                    status: 'paused'
+                };
+                state.savedAgents.push(duplicate);
+                render();
+                alert(`Agent duplicated: ${duplicate.name}`);
+            }
+        }
+
+        function viewAgentLogs(agentId) {
+            alert(`View Logs: ${agentId}\n\nThis would show:\n• Execution history\n• Success/failure rates\n• User interactions\n• Error logs\n• Performance metrics`);
+        }
+
+        function agentMoreActions(agentId) {
+            const agent = state.savedAgents.find(a => a.id === agentId);
+            const actions = [
+                'Edit',
+                'Duplicate',
+                agent.status === 'active' ? 'Pause' : 'Resume',
+                'View Logs',
+                'View Analytics',
+                'Archive'
+            ];
+            alert(`More Actions for: ${agent.name}\n\n${actions.map((a, i) => `${i + 1}. ${a}`).join('\n')}`);
+        }
+
+        // Load Sample Data (for testing)
+        function loadSampleAgents() {
+            state.savedAgents = [
+                {
+                    id: 'agent-1',
+                    icon: '☎️',
+                    name: 'Medication Reminder Call',
+                    channel: 'Voice Call',
+                    audience: '147 patients',
+                    trigger: 'Mon 9am',
+                    status: 'active',
+                    program: 'Diabetes Program',
+                    lastRun: '2 hours ago',
+                    nextRun: 'Mon 9am'
+                },
+                {
+                    id: 'agent-2',
+                    icon: '💬',
+                    name: 'Onboarding Welcome Chat',
+                    channel: 'WhatsApp',
+                    audience: 'New enrollees',
+                    trigger: 'On event',
+                    status: 'active',
+                    program: 'All programs',
+                    lastRun: '1 day ago',
+                    triggerInfo: 'Trigger: On enroll'
+                },
+                {
+                    id: 'agent-3',
+                    icon: '📱',
+                    name: 'Appointment Reminder',
+                    channel: 'SMS',
+                    audience: 'All patients',
+                    trigger: '24hr before',
+                    status: 'paused',
+                    program: 'All programs',
+                    pausedBy: 'Admin',
+                    pausedOn: 'Feb 1'
+                },
+                {
+                    id: 'agent-4',
+                    icon: '☎️',
+                    name: 'Glucose Alert Call',
+                    channel: 'Voice',
+                    audience: 'Event-based',
+                    trigger: 'On spike',
+                    status: 'active',
+                    program: 'Diabetes',
+                    lastRun: '3 hours ago',
+                    nextRun: 'On spike'
+                },
+                {
+                    id: 'agent-5',
+                    icon: '💬',
+                    name: 'Weekly Check-in Reminder',
+                    channel: 'WhatsApp',
+                    audience: 'Care Managers',
+                    trigger: 'Mon 8am',
+                    status: 'active',
+                    program: 'Cardiac',
+                    lastRun: '6 days ago',
+                    nextRun: 'Mon 8am'
+                }
+            ];
+            render();
+        }
+
+        function clearSampleAgents() {
+            state.savedAgents = [];
+            render();
+        }
+
+        function attachEventListeners() {
+            // Add any additional event listeners here if needed
+        }
+
+        // Initialize
+        render();
+
+        // Load sample data on first load for demo purposes
+        // Comment out the line below to start with empty state
+        loadSampleAgents();
+    </script>
+</body>
+</html>
