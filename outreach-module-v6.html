@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outreach Module v6 - Production Spec</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            color: #1a202c;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: white;
+            padding: 20px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* Landing Screen */
+        .landing-screen {
+            display: block;
+        }
+
+        .tool-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid #e2e8f0;
+            position: relative;
+        }
+
+        .tool-card:hover:not(.disabled) {
+            border-color: #4299e1;
+            box-shadow: 0 4px 12px rgba(66, 153, 225, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .tool-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .tool-card.active {
+            border-color: #38a169;
+        }
+
+        .tool-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .tool-icon.voice { background: #edf2f7; }
+        .tool-icon.whatsapp { background: #d1fae5; }
+        .tool-icon.sms { background: #fed7d7; }
+        .tool-icon.email { background: #feebc8; }
+
+        .tool-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .tool-description {
+            font-size: 14px;
+            color: #718096;
+            margin-bottom: 12px;
+        }
+
+        .tool-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-active {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .badge-coming {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        /* Agent List */
+        .agents-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .agents-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .agents-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .agents-table th {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 2px solid #e2e8f0;
+            font-weight: 600;
+            font-size: 14px;
+            color: #4a5568;
+        }
+
+        .agents-table td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+
+        .agent-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .agent-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-draft {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .status-active {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-paused {
+            background: #feebc8;
+            color: #7c2d12;
+        }
+
+        .agent-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: #4299e1;
+            cursor: pointer;
+            font-size: 13px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .action-btn:hover {
+            background: #ebf8ff;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #718096;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        /* Creation Flow */
+        .creation-flow {
+            display: none;
+        }
+
+        .flow-header {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .flow-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #718096;
+            cursor: pointer;
+            font-size: 24px;
+            padding: 4px 12px;
+        }
+
+        .close-btn:hover {
+            color: #2d3748;
+        }
+
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 40px;
+            right: 40px;
+            height: 2px;
+            background: #e2e8f0;
+            z-index: 0;
+        }
+
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #e2e8f0;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #a0aec0;
+        }
+
+        .progress-step.active .step-circle {
+            background: #4299e1;
+            border-color: #4299e1;
+            color: white;
+        }
+
+        .progress-step.completed .step-circle {
+            background: #38a169;
+            border-color: #38a169;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 13px;
+            color: #718096;
+        }
+
+        .progress-step.active .step-label {
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .step-content {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #2d3748;
+            font-size: 14px;
+        }
+
+        .label-optional {
+            color: #a0aec0;
+            font-weight: 400;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #4299e1;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .radio-option:hover {
+            border-color: #cbd5e0;
+        }
+
+        .radio-option.selected {
+            border-color: #4299e1;
+            background: #ebf8ff;
+        }
+
+        .radio-option input[type="radio"] {
+            margin-top: 2px;
+        }
+
+        .radio-label {
+            flex: 1;
+        }
+
+        .radio-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .radio-description {
+            font-size: 13px;
+            color: #718096;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+        }
+
+        .slider-value {
+            min-width: 50px;
+            text-align: right;
+            font-weight: 600;
+            color: #4299e1;
+        }
+
+        .voice-preview {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            padding: 6px 12px;
+            background: #ebf8ff;
+            border-radius: 6px;
+            color: #2c5282;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        /* Template Selection */
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .template-card {
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .template-card:hover {
+            border-color: #cbd5e0;
+        }
+
+        .template-card.selected {
+            border-color: #4299e1;
+            background: #ebf8ff;
+        }
+
+        .template-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .template-description {
+            font-size: 13px;
+            color: #718096;
+        }
+
+        /* AI Generator */
+        .ai-generator {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 24px;
+            color: white;
+            margin-bottom: 24px;
+        }
+
+        .ai-generator h3 {
+            color: white;
+            margin-bottom: 12px;
+        }
+
+        .ai-generator textarea {
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            margin-bottom: 12px;
+        }
+
+        .generate-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .generate-btn:hover {
+            background: #f7fafc;
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Variable Chips */
+        .variable-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .variable-chip {
+            background: #edf2f7;
+            color: #2d3748;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            border: 1px solid #cbd5e0;
+            transition: all 0.2s;
+        }
+
+        .variable-chip:hover {
+            background: #e2e8f0;
+            border-color: #4299e1;
+        }
+
+        /* Knowledge Base */
+        .kb-section {
+            margin-top: 24px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 8px;
+        }
+
+        .kb-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .kb-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border-radius: 6px;
+        }
+
+        .upload-btn {
+            background: white;
+            border: 2px dashed #cbd5e0;
+            padding: 12px 20px;
+            border-radius: 6px;
+            color: #4299e1;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .upload-btn:hover {
+            border-color: #4299e1;
+            background: #ebf8ff;
+        }
+
+        /* Extraction Form Builder */
+        .extraction-fields {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .extraction-field {
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: #f7fafc;
+        }
+
+        .field-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .field-number {
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .remove-field-btn {
+            background: none;
+            border: none;
+            color: #e53e3e;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .field-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .field-options {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .add-field-btn {
+            background: white;
+            border: 2px dashed #cbd5e0;
+            padding: 16px;
+            border-radius: 8px;
+            color: #4299e1;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .add-field-btn:hover {
+            border-color: #4299e1;
+            background: #ebf8ff;
+        }
+
+        /* Post-Call Rules */
+        .rules-section {
+            margin-top: 32px;
+        }
+
+        .rule-card {
+            padding: 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            background: white;
+        }
+
+        .rule-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 12px;
+            align-items: end;
+        }
+
+        /* Test & Activate */
+        .test-section {
+            background: #f7fafc;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .test-call-box {
+            display: flex;
+            gap: 12px;
+            align-items: end;
+        }
+
+        .test-call-box input {
+            flex: 1;
+        }
+
+        .transcript-box {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .transcript-entry {
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .transcript-entry:last-child {
+            border-bottom: none;
+        }
+
+        .speaker {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .speaker.agent {
+            color: #4299e1;
+        }
+
+        .speaker.user {
+            color: #38a169;
+        }
+
+        .validation-checks {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f7fafc;
+            border-radius: 6px;
+        }
+
+        .check-icon {
+            font-size: 20px;
+        }
+
+        .check-icon.success {
+            color: #38a169;
+        }
+
+        .check-icon.error {
+            color: #e53e3e;
+        }
+
+        .check-icon.warning {
+            color: #ed8936;
+        }
+
+        /* Buttons */
+        .btn-container {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #4299e1;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3182ce;
+        }
+
+        .btn-primary:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #4a5568;
+            border: 1px solid #cbd5e0;
+        }
+
+        .btn-secondary:hover {
+            background: #f7fafc;
+        }
+
+        .btn-success {
+            background: #38a169;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #2f855a;
+        }
+
+        /* CSV Upload */
+        .csv-upload-area {
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            padding: 32px;
+            text-align: center;
+            margin-top: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .csv-upload-area:hover {
+            border-color: #4299e1;
+            background: #ebf8ff;
+        }
+
+        .csv-upload-area.has-file {
+            border-color: #38a169;
+            background: #f0fff4;
+        }
+
+        .csv-preview {
+            margin-top: 16px;
+            text-align: left;
+        }
+
+        .csv-variables {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .csv-variable {
+            background: #edf2f7;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .mb-16 {
+            margin-bottom: 16px;
+        }
+
+        .mt-24 {
+            margin-top: 24px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-muted {
+            color: #718096;
+        }
+
+        /* Loading State */
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Outreach Module</h1>
+            <div class="subtitle">Create and manage AI-powered outreach agents</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Landing Screen -->
+        <div id="landingScreen" class="landing-screen">
+            <h2>Choose Your Tool</h2>
+            <div class="tool-cards">
+                <div class="tool-card active" onclick="startCreation('voice')">
+                    <div class="tool-icon voice">📞</div>
+                    <div class="tool-name">Voice Call</div>
+                    <div class="tool-description">AI-powered outbound voice calls</div>
+                    <span class="tool-badge badge-active">Active</span>
+                </div>
+
+                <div class="tool-card disabled">
+                    <div class="tool-icon whatsapp">💬</div>
+                    <div class="tool-name">WhatsApp</div>
+                    <div class="tool-description">AI-powered chat via WhatsApp</div>
+                    <span class="tool-badge badge-coming">Coming Soon</span>
+                </div>
+
+                <div class="tool-card disabled">
+                    <div class="tool-icon sms">📱</div>
+                    <div class="tool-name">SMS</div>
+                    <div class="tool-description">Template-based message delivery</div>
+                    <span class="tool-badge badge-coming">Coming Soon</span>
+                </div>
+
+                <div class="tool-card disabled">
+                    <div class="tool-icon email">✉️</div>
+                    <div class="tool-name">Email</div>
+                    <div class="tool-description">Template-based email campaigns</div>
+                    <span class="tool-badge badge-coming">Coming Soon</span>
+                </div>
+            </div>
+
+            <div class="agents-section">
+                <div class="agents-header">
+                    <h2>Configured Agents</h2>
+                </div>
+
+                <table class="agents-table" id="agentsTable">
+                    <thead>
+                        <tr>
+                            <th>Agent Name</th>
+                            <th>Status</th>
+                            <th>Last Run</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="agentsTableBody">
+                        <!-- Sample data -->
+                        <tr>
+                            <td>
+                                <div class="agent-name">
+                                    <div class="agent-icon voice">📞</div>
+                                    <span>Medication Reminder</span>
+                                </div>
+                            </td>
+                            <td><span class="status-badge status-active">ACTIVE</span></td>
+                            <td class="text-muted">2 hours ago</td>
+                            <td>
+                                <div class="agent-actions">
+                                    <button class="action-btn">Edit</button>
+                                    <button class="action-btn">Duplicate</button>
+                                    <button class="action-btn">Pause</button>
+                                    <button class="action-btn">Archive</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="agent-name">
+                                    <div class="agent-icon voice">📞</div>
+                                    <span>Appointment Reminder</span>
+                                </div>
+                            </td>
+                            <td><span class="status-badge status-draft">DRAFT</span></td>
+                            <td class="text-muted">Never</td>
+                            <td>
+                                <div class="agent-actions">
+                                    <button class="action-btn">Edit</button>
+                                    <button class="action-btn">Duplicate</button>
+                                    <button class="action-btn">Archive</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Creation Flow -->
+        <div id="creationFlow" class="creation-flow">
+            <div class="flow-header">
+                <div>
+                    <div class="flow-title">Create Voice Agent</div>
+                    <div class="subtitle">Follow 4 simple steps to create your agent</div>
+                </div>
+                <button class="close-btn" onclick="closeCreation()">×</button>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-step active" data-step="1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Setup</div>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Prompt</div>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Extraction</div>
+                </div>
+                <div class="progress-step" data-step="4">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">Test & Activate</div>
+                </div>
+            </div>
+
+            <!-- Step 1: Setup -->
+            <div id="step1" class="step-content active">
+                <h2>Step 1: Setup</h2>
+                <p class="text-muted mb-16">Configure your agent's identity and voice</p>
+
+                <div class="form-group">
+                    <label>Agent Name</label>
+                    <input type="text" id="agentName" placeholder="e.g., Medication Reminder">
+                </div>
+
+                <div class="form-group">
+                    <label>Description <span class="label-optional">(optional)</span></label>
+                    <textarea id="agentDescription" placeholder="Internal note about what this agent does"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Tone</label>
+                    <select id="agentTone">
+                        <option value="friendly">Friendly</option>
+                        <option value="professional">Professional</option>
+                        <option value="empathetic">Empathetic</option>
+                        <option value="concise">Concise</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Voice</label>
+                    <select id="agentVoice">
+                        <option value="female-1">Sarah - Professional Female</option>
+                        <option value="female-2">Emma - Warm Female</option>
+                        <option value="male-1">James - Professional Male</option>
+                        <option value="male-2">David - Friendly Male</option>
+                    </select>
+                    <div class="voice-preview" onclick="previewVoice()">
+                        🔊 Preview Voice
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Speaking Speed</label>
+                    <div class="slider-container">
+                        <input type="range" id="speakingSpeed" min="0.5" max="2.0" step="0.1" value="1.0" oninput="updateSpeedValue(this.value)">
+                        <span class="slider-value" id="speedValue">1.0x</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Audience Source</label>
+                    <p class="text-muted mb-16">Choose how users will be fed into this agent</p>
+
+                    <div class="radio-group">
+                        <div class="radio-option" onclick="selectAudience('csv')">
+                            <input type="radio" name="audience" value="csv">
+                            <div class="radio-label">
+                                <div class="radio-title">Upload a List</div>
+                                <div class="radio-description">Upload a CSV file. System auto-detects column headings as available variables.</div>
+                            </div>
+                        </div>
+
+                        <div class="radio-option" onclick="selectAudience('program')">
+                            <input type="radio" name="audience" value="program">
+                            <div class="radio-label">
+                                <div class="radio-title">Program-Based</div>
+                                <div class="radio-description">Agent runs for users in a specific CMS program. System pulls user profile fields.</div>
+                            </div>
+                        </div>
+
+                        <div class="radio-option" onclick="selectAudience('api')">
+                            <input type="radio" name="audience" value="api">
+                            <div class="radio-label">
+                                <div class="radio-title">API Trigger</div>
+                                <div class="radio-description">External system triggers via webhook. Payload fields become variables.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CSV Upload Area -->
+                <div id="csvUploadSection" class="hidden">
+                    <div class="csv-upload-area" onclick="document.getElementById('csvFile').click()">
+                        <input type="file" id="csvFile" accept=".csv" style="display:none" onchange="handleCSVUpload(this)">
+                        <div id="uploadPlaceholder">
+                            📁 Click to upload CSV file or drag and drop
+                        </div>
+                        <div id="csvPreview" class="csv-preview hidden">
+                            <div><strong>File:</strong> <span id="fileName"></span></div>
+                            <div><strong>Detected Variables:</strong></div>
+                            <div class="csv-variables" id="csvVariables"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Program Selection -->
+                <div id="programSection" class="hidden">
+                    <div class="form-group">
+                        <label>Select Program</label>
+                        <select id="programSelect">
+                            <option value="">Choose a program...</option>
+                            <option value="diabetes-mgmt">Diabetes Management</option>
+                            <option value="hypertension">Hypertension Care</option>
+                            <option value="mental-health">Mental Health Support</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- API Schema -->
+                <div id="apiSection" class="hidden">
+                    <div class="form-group">
+                        <label>API Endpoint</label>
+                        <input type="text" id="apiEndpoint" value="/api/v1/outreach/{agent_id}/trigger" readonly>
+                        <p class="text-muted" style="margin-top: 8px; font-size: 13px;">This endpoint will be available once the agent is created</p>
+                    </div>
+                </div>
+
+                <div class="btn-container">
+                    <button class="btn btn-primary" onclick="nextStep(2)">Next: Prompt</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Prompt -->
+            <div id="step2" class="step-content">
+                <h2>Step 2: Prompt</h2>
+                <p class="text-muted mb-16">Define what your agent says and knows</p>
+
+                <h3>Select a Template (Optional)</h3>
+                <div class="template-grid">
+                    <div class="template-card" onclick="selectTemplate('onboarding')">
+                        <div class="template-name">Onboarding Call</div>
+                        <div class="template-description">Welcome new patients, collect baseline info</div>
+                    </div>
+                    <div class="template-card" onclick="selectTemplate('medication')">
+                        <div class="template-name">Medication Reminder</div>
+                        <div class="template-description">Remind patients about medication schedules</div>
+                    </div>
+                    <div class="template-card" onclick="selectTemplate('feedback')">
+                        <div class="template-name">Feedback Collection</div>
+                        <div class="template-description">Gather patient experience feedback</div>
+                    </div>
+                    <div class="template-card" onclick="selectTemplate('appointment')">
+                        <div class="template-name">Appointment Reminder</div>
+                        <div class="template-description">Confirm upcoming appointments</div>
+                    </div>
+                    <div class="template-card" onclick="selectTemplate('followup')">
+                        <div class="template-name">Follow-Up Check-In</div>
+                        <div class="template-description">Post-visit or post-discharge check-in</div>
+                    </div>
+                </div>
+
+                <div class="ai-generator">
+                    <h3>✨ AI Prompt Generator</h3>
+                    <p style="margin-bottom: 12px; opacity: 0.9;">Describe what you want your agent to do, and AI will generate a complete prompt for you.</p>
+                    <textarea id="aiDescription" placeholder="Example: Call diabetes patients who missed 2+ check-ins, remind them about their medication, ask if they're facing any barriers, and escalate if they mention side effects." maxlength="500"></textarea>
+                    <button class="generate-btn" onclick="generatePrompt()">
+                        <span>✨</span>
+                        <span id="generateBtnText">Generate Prompt</span>
+                    </button>
+                </div>
+
+                <h3>Available Variables</h3>
+                <div class="variable-chips" id="variableChips">
+                    <div class="variable-chip" onclick="insertVariable('patient_name')">patient_name</div>
+                    <div class="variable-chip" onclick="insertVariable('phone')">phone</div>
+                    <div class="variable-chip" onclick="insertVariable('medication_name')">medication_name</div>
+                    <div class="variable-chip" onclick="insertVariable('medication_time')">medication_time</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Prompt Instructions</label>
+                    <textarea id="promptEditor" rows="12" placeholder="Write your agent's instructions here, or use the AI generator above..."></textarea>
+                </div>
+
+                <div class="kb-section">
+                    <h3>Attach Knowledge Base (Optional)</h3>
+                    <p class="text-muted mb-16">Reference documents that provide context to the AI during calls</p>
+
+                    <div class="kb-items" id="kbItems">
+                        <!-- KB items will appear here -->
+                    </div>
+
+                    <button class="upload-btn" onclick="uploadKB()">
+                        📎 Upload Document
+                    </button>
+                </div>
+
+                <div class="btn-container">
+                    <button class="btn btn-secondary" onclick="prevStep(1)">Back</button>
+                    <button class="btn btn-primary" onclick="nextStep(3)">Next: Extraction</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Extraction -->
+            <div id="step3" class="step-content">
+                <h2>Step 3: Extraction</h2>
+                <p class="text-muted mb-16">Define what information to capture from conversations</p>
+
+                <div class="extraction-fields" id="extractionFields">
+                    <!-- Sample field -->
+                    <div class="extraction-field">
+                        <div class="field-header">
+                            <span class="field-number">Field 1</span>
+                            <button class="remove-field-btn" onclick="removeField(this)">×</button>
+                        </div>
+                        <div class="field-row">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Field Label</label>
+                                <input type="text" placeholder="e.g., Did the patient take their medication?">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Field Type</label>
+                                <select>
+                                    <option value="yesno">Yes/No</option>
+                                    <option value="text">Text</option>
+                                    <option value="number">Number</option>
+                                    <option value="date">Date</option>
+                                    <option value="select">Single-Select</option>
+                                    <option value="multiselect">Multi-Select</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="field-options">
+                            <label class="checkbox-label">
+                                <input type="checkbox">
+                                <span>Required</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="add-field-btn" onclick="addExtractionField()">
+                    + Add Field
+                </button>
+
+                <div class="rules-section">
+                    <h3>Post-Call Actions (Optional)</h3>
+                    <p class="text-muted mb-16">Define what happens based on extracted values</p>
+
+                    <div class="rule-card">
+                        <div class="rule-row">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>If Field</label>
+                                <select>
+                                    <option>Select field...</option>
+                                    <option>Field 1</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Equals</label>
+                                <input type="text" placeholder="value">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Then</label>
+                                <select>
+                                    <option>Escalate to human</option>
+                                    <option>Update user profile</option>
+                                    <option>Schedule follow-up</option>
+                                    <option>Store to document</option>
+                                </select>
+                            </div>
+                            <button class="remove-field-btn">×</button>
+                        </div>
+                    </div>
+
+                    <button class="add-field-btn" onclick="addRule()">
+                        + Add Rule
+                    </button>
+                </div>
+
+                <div class="btn-container">
+                    <button class="btn btn-secondary" onclick="prevStep(2)">Back</button>
+                    <button class="btn btn-primary" onclick="nextStep(4)">Next: Test & Activate</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Test & Activate -->
+            <div id="step4" class="step-content">
+                <h2>Step 4: Test & Activate</h2>
+                <p class="text-muted mb-16">Validate your agent before going live</p>
+
+                <div class="test-section">
+                    <h3>Test Call</h3>
+                    <p class="text-muted mb-16">Run a test call to your phone number to validate the agent</p>
+
+                    <div class="test-call-box">
+                        <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                            <label>Your Phone Number</label>
+                            <input type="tel" id="testPhone" placeholder="+1 (555) 123-4567">
+                        </div>
+                        <button class="btn btn-primary" onclick="startTestCall()">
+                            📞 Call Me
+                        </button>
+                    </div>
+
+                    <div id="transcriptBox" class="transcript-box hidden">
+                        <h4>Live Transcript</h4>
+                        <div id="transcriptContent">
+                            <div class="transcript-entry">
+                                <div class="speaker agent">Agent:</div>
+                                <div>Hello! This is a medication reminder call. Am I speaking with John?</div>
+                            </div>
+                            <div class="transcript-entry">
+                                <div class="speaker user">User:</div>
+                                <div>Yes, this is John.</div>
+                            </div>
+                            <div class="transcript-entry">
+                                <div class="speaker agent">Agent:</div>
+                                <div>Great! I'm calling to remind you about your diabetes medication. Have you taken your morning dose today?</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Validation Checks</h3>
+                <div class="validation-checks">
+                    <div class="check-item">
+                        <span class="check-icon success">✓</span>
+                        <span>Retell API configured</span>
+                    </div>
+                    <div class="check-item">
+                        <span class="check-icon success">✓</span>
+                        <span>Prompt is not empty</span>
+                    </div>
+                    <div class="check-item">
+                        <span class="check-icon success">✓</span>
+                        <span>Audience source is valid</span>
+                    </div>
+                    <div class="check-item">
+                        <span class="check-icon success">✓</span>
+                        <span>Phone field is present</span>
+                    </div>
+                    <div class="check-item">
+                        <span class="check-icon warning">⚠</span>
+                        <span>No extraction fields defined (warning only)</span>
+                    </div>
+                </div>
+
+                <div class="btn-container">
+                    <button class="btn btn-secondary" onclick="prevStep(3)">Back</button>
+                    <button class="btn btn-success" onclick="activateAgent()">
+                        ✓ Activate Agent
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentStep = 1;
+        let agentData = {
+            audienceType: null,
+            variables: [],
+            selectedTemplate: null,
+            kbItems: []
+        };
+
+        // Navigation functions
+        function startCreation(toolType) {
+            if (toolType !== 'voice') return;
+            document.getElementById('landingScreen').style.display = 'none';
+            document.getElementById('creationFlow').style.display = 'block';
+            currentStep = 1;
+            updateProgress();
+        }
+
+        function closeCreation() {
+            document.getElementById('landingScreen').style.display = 'block';
+            document.getElementById('creationFlow').style.display = 'none';
+            currentStep = 1;
+        }
+
+        function nextStep(step) {
+            currentStep = step;
+            updateProgress();
+            showStep(step);
+        }
+
+        function prevStep(step) {
+            currentStep = step;
+            updateProgress();
+            showStep(step);
+        }
+
+        function showStep(step) {
+            document.querySelectorAll('.step-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.getElementById('step' + step).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function updateProgress() {
+            document.querySelectorAll('.progress-step').forEach((el, index) => {
+                const stepNum = index + 1;
+                el.classList.remove('active', 'completed');
+
+                if (stepNum < currentStep) {
+                    el.classList.add('completed');
+                } else if (stepNum === currentStep) {
+                    el.classList.add('active');
+                }
+            });
+        }
+
+        // Step 1 functions
+        function selectAudience(type) {
+            agentData.audienceType = type;
+
+            // Update radio selection
+            document.querySelectorAll('.radio-option').forEach(el => {
+                el.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            event.currentTarget.querySelector('input').checked = true;
+
+            // Show/hide relevant sections
+            document.getElementById('csvUploadSection').classList.add('hidden');
+            document.getElementById('programSection').classList.add('hidden');
+            document.getElementById('apiSection').classList.add('hidden');
+
+            if (type === 'csv') {
+                document.getElementById('csvUploadSection').classList.remove('hidden');
+            } else if (type === 'program') {
+                document.getElementById('programSection').classList.remove('hidden');
+            } else if (type === 'api') {
+                document.getElementById('apiSection').classList.remove('hidden');
+            }
+        }
+
+        function handleCSVUpload(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const fileName = file.name;
+
+                // Simulate CSV parsing
+                const sampleVariables = ['patient_name', 'phone', 'medication_name', 'medication_time', 'last_visit_date'];
+                agentData.variables = sampleVariables;
+
+                // Update UI
+                document.getElementById('fileName').textContent = fileName;
+                document.querySelector('.csv-upload-area').classList.add('has-file');
+                document.getElementById('uploadPlaceholder').style.display = 'none';
+                document.getElementById('csvPreview').classList.remove('hidden');
+
+                const variablesContainer = document.getElementById('csvVariables');
+                variablesContainer.innerHTML = '';
+                sampleVariables.forEach(variable => {
+                    const chip = document.createElement('div');
+                    chip.className = 'csv-variable';
+                    chip.textContent = variable;
+                    variablesContainer.appendChild(chip);
+                });
+
+                // Update variable chips in Step 2
+                updateVariableChips(sampleVariables);
+            }
+        }
+
+        function updateVariableChips(variables) {
+            const container = document.getElementById('variableChips');
+            container.innerHTML = '';
+            variables.forEach(variable => {
+                const chip = document.createElement('div');
+                chip.className = 'variable-chip';
+                chip.textContent = variable;
+                chip.onclick = () => insertVariable(variable);
+                container.appendChild(chip);
+            });
+        }
+
+        function updateSpeedValue(value) {
+            document.getElementById('speedValue').textContent = value + 'x';
+        }
+
+        function previewVoice() {
+            alert('🔊 Voice preview would play here');
+        }
+
+        // Step 2 functions
+        function selectTemplate(templateId) {
+            agentData.selectedTemplate = templateId;
+
+            // Update selection
+            document.querySelectorAll('.template-card').forEach(el => {
+                el.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+
+            // Load template content
+            const templates = {
+                'onboarding': 'You are a friendly healthcare agent calling to welcome a new patient to the program. Start by introducing yourself and confirming their identity using patient_name. Explain the purpose of the call and collect baseline health information. Be warm and encouraging.',
+                'medication': 'You are calling to remind the patient about their medication schedule. Greet them using patient_name and ask if they have taken their medication_name at medication_time. If they haven\'t, gently ask about any barriers they\'re facing. If they mention side effects or distress, mark for escalation.',
+                'feedback': 'You are calling to collect feedback about the patient\'s recent healthcare experience. Be friendly and thank them for their time. Ask about their satisfaction with the service, any concerns they have, and what could be improved. If they mention a complaint, escalate appropriately.',
+                'appointment': 'You are calling to confirm an upcoming appointment. Verify the patient\'s identity using patient_name, remind them of their appointment date and time, and ask if they can still make it. If they need to reschedule or cancel, collect that information for follow-up.',
+                'followup': 'You are conducting a post-visit check-in call. Ask the patient how they\'re feeling since their last visit, whether they\'re following their care plan, and if they have any concerns. Be empathetic and listen for any red flags that might require escalation.'
+            };
+
+            document.getElementById('promptEditor').value = templates[templateId] || '';
+        }
+
+        function generatePrompt() {
+            const description = document.getElementById('aiDescription').value.trim();
+            if (!description) {
+                alert('Please enter a description of what you want your agent to do');
+                return;
+            }
+
+            // Show loading state
+            const btn = document.querySelector('.generate-btn');
+            const btnText = document.getElementById('generateBtnText');
+            btnText.textContent = 'Generating...';
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loading"></div><span>Generating...</span>';
+
+            // Simulate AI generation
+            setTimeout(() => {
+                const generatedPrompt = `You are a professional healthcare agent making an outbound call. Your role is to ${description}
+
+Key Instructions:
+1. Always verify patient identity using patient_name before proceeding
+2. Speak in a ${document.getElementById('agentTone').value} tone
+3. Listen carefully to the patient's responses and adapt accordingly
+4. If the patient expresses distress, side effects, or urgent concerns, acknowledge them and note for escalation
+5. Keep the conversation focused but allow the patient to express themselves
+6. End the call by thanking them for their time and summarizing next steps
+
+Remember to use the available variables naturally in conversation: ${agentData.variables.join(', ')}
+
+Your goal is to complete this call efficiently while being empathetic and helpful.`;
+
+                document.getElementById('promptEditor').value = generatedPrompt;
+
+                // Reset button
+                btn.disabled = false;
+                btn.innerHTML = '<span>✨</span><span id="generateBtnText">Generate Prompt</span>';
+            }, 2000);
+        }
+
+        function insertVariable(variable) {
+            const editor = document.getElementById('promptEditor');
+            const cursorPos = editor.selectionStart;
+            const textBefore = editor.value.substring(0, cursorPos);
+            const textAfter = editor.value.substring(cursorPos);
+
+            editor.value = textBefore + variable + textAfter;
+            editor.focus();
+            editor.setSelectionRange(cursorPos + variable.length, cursorPos + variable.length);
+        }
+
+        function uploadKB() {
+            const kbItems = document.getElementById('kbItems');
+            const newItem = document.createElement('div');
+            newItem.className = 'kb-item';
+            newItem.innerHTML = `
+                <span>📄 Sample_Guidelines.pdf</span>
+                <button class="action-btn" onclick="this.parentElement.remove()">Remove</button>
+            `;
+            kbItems.appendChild(newItem);
+        }
+
+        // Step 3 functions
+        function addExtractionField() {
+            const container = document.getElementById('extractionFields');
+            const fieldNumber = container.children.length + 1;
+
+            const field = document.createElement('div');
+            field.className = 'extraction-field';
+            field.innerHTML = `
+                <div class="field-header">
+                    <span class="field-number">Field ${fieldNumber}</span>
+                    <button class="remove-field-btn" onclick="removeField(this)">×</button>
+                </div>
+                <div class="field-row">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Field Label</label>
+                        <input type="text" placeholder="e.g., Did the patient take their medication?">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Field Type</label>
+                        <select>
+                            <option value="yesno">Yes/No</option>
+                            <option value="text">Text</option>
+                            <option value="number">Number</option>
+                            <option value="date">Date</option>
+                            <option value="select">Single-Select</option>
+                            <option value="multiselect">Multi-Select</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox">
+                        <span>Required</span>
+                    </label>
+                </div>
+            `;
+            container.appendChild(field);
+        }
+
+        function removeField(btn) {
+            btn.closest('.extraction-field').remove();
+            // Renumber remaining fields
+            document.querySelectorAll('.extraction-field').forEach((field, index) => {
+                field.querySelector('.field-number').textContent = `Field ${index + 1}`;
+            });
+        }
+
+        function addRule() {
+            alert('Add rule functionality would be implemented here');
+        }
+
+        // Step 4 functions
+        function startTestCall() {
+            const phone = document.getElementById('testPhone').value;
+            if (!phone) {
+                alert('Please enter your phone number');
+                return;
+            }
+
+            alert(`Starting test call to ${phone}...`);
+            document.getElementById('transcriptBox').classList.remove('hidden');
+        }
+
+        function activateAgent() {
+            const agentName = document.getElementById('agentName').value;
+            if (!agentName) {
+                alert('Please go back and enter an agent name');
+                return;
+            }
+
+            alert(`Agent "${agentName}" has been activated successfully!`);
+            closeCreation();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Outreach Module v6 initialized');
+        });
+    </script>
+</body>
+</html>
