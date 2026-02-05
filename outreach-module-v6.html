@@ -1565,9 +1565,7 @@
                             📁 Click to upload CSV file or drag and drop
                         </div>
                         <div id="csvPreview" class="csv-preview hidden">
-                            <div><strong>File:</strong> <span id="fileName"></span></div>
-                            <div><strong>Detected Variables:</strong></div>
-                            <div class="csv-variables" id="csvVariables"></div>
+                            <div id="csvConfirmation" style="color: #10B981; font-weight: 600;"></div>
                         </div>
                     </div>
                 </div>
@@ -1576,21 +1574,22 @@
                 <div id="programSection" class="hidden">
                     <div class="form-group">
                         <label>Select Program</label>
-                        <select id="programSelect">
+                        <select id="programSelect" onchange="handleProgramSelection(this)">
                             <option value="">Choose a program...</option>
                             <option value="diabetes-mgmt">Diabetes Management</option>
                             <option value="hypertension">Hypertension Care</option>
                             <option value="mental-health">Mental Health Support</option>
                         </select>
                     </div>
+                    <div id="programConfirmation" class="hidden" style="margin-top: 12px; padding: 12px; background: #ECFDF5; border: 1px solid #10B981; border-radius: 8px; color: #10B981; font-weight: 600;"></div>
                 </div>
 
                 <!-- API Schema -->
                 <div id="apiSection" class="hidden">
                     <div class="form-group">
-                        <label>API Endpoint</label>
-                        <input type="text" id="apiEndpoint" value="/api/v1/outreach/{agent_id}/trigger" readonly>
-                        <p class="text-muted" style="margin-top: 8px; font-size: 13px;">This endpoint will be available once the agent is created</p>
+                        <label>Webhook URL</label>
+                        <input type="text" id="apiEndpoint" value="https://api.lillia.ai/v1/outreach/{agent_id}/trigger" readonly style="background: var(--grey-50); font-family: 'Courier New', monospace; font-size: 13px;">
+                        <p class="text-muted" style="margin-top: 8px; font-size: 13px; line-height: 1.5;">Webhook URL generated. Share this with your external system or Journey Module. This endpoint accepts patient data via POST request and triggers the agent for that specific patient.</p>
                     </div>
                 </div>
 
@@ -1631,24 +1630,16 @@
                 <div class="ai-generator">
                     <h3>✨ AI Prompt Generator</h3>
                     <p style="margin-bottom: 12px; opacity: 0.9;">Describe what you want your agent to do, and AI will generate a complete prompt for you.</p>
-                    <textarea id="aiDescription" placeholder="Example: Call diabetes patients who missed 2+ check-ins, remind them about their medication, ask if they're facing any barriers, and escalate if they mention side effects." maxlength="500"></textarea>
+                    <textarea id="aiDescription" placeholder="Describe what this agent should do in a few sentences..." maxlength="500"></textarea>
                     <button class="generate-btn" onclick="generatePrompt()">
                         <span>✨</span>
                         <span id="generateBtnText">Generate Prompt</span>
                     </button>
                 </div>
 
-                <h3>Available Variables</h3>
-                <div class="variable-chips" id="variableChips">
-                    <div class="variable-chip" onclick="insertVariable('patient_name')">patient_name</div>
-                    <div class="variable-chip" onclick="insertVariable('phone')">phone</div>
-                    <div class="variable-chip" onclick="insertVariable('medication_name')">medication_name</div>
-                    <div class="variable-chip" onclick="insertVariable('medication_time')">medication_time</div>
-                </div>
-
                 <div class="form-group">
                     <label>Prompt Instructions</label>
-                    <textarea id="promptEditor" rows="12" placeholder="Write your agent's instructions here, or use the AI generator above..."></textarea>
+                    <textarea id="promptEditor" rows="12" placeholder="Write your agent's instructions here, like you're briefing a human caller..."></textarea>
                 </div>
 
                 <div class="kb-section">
@@ -1773,20 +1764,9 @@
                     </div>
 
                     <div id="transcriptBox" class="transcript-box hidden">
-                        <h4>Live Transcript</h4>
+                        <h4 style="margin-bottom: 12px; font-size: 15px; font-weight: 600; color: var(--grey-900);">Live Transcript</h4>
                         <div id="transcriptContent">
-                            <div class="transcript-entry">
-                                <div class="speaker agent">Agent:</div>
-                                <div>Hello! This is a medication reminder call. Am I speaking with John?</div>
-                            </div>
-                            <div class="transcript-entry">
-                                <div class="speaker user">User:</div>
-                                <div>Yes, this is John.</div>
-                            </div>
-                            <div class="transcript-entry">
-                                <div class="speaker agent">Agent:</div>
-                                <div>Great! I'm calling to remind you about your diabetes medication. Have you taken your morning dose today?</div>
-                            </div>
+                            <!-- Transcript will appear here during test call -->
                         </div>
                     </div>
                 </div>
@@ -1913,42 +1893,36 @@
         function handleCSVUpload(input) {
             if (input.files && input.files[0]) {
                 const file = input.files[0];
-                const fileName = file.name;
 
-                // Simulate CSV parsing
-                const sampleVariables = ['patient_name', 'phone', 'medication_name', 'medication_time', 'last_visit_date'];
-                agentData.variables = sampleVariables;
+                // Simulate CSV parsing - count patients
+                const patientCount = Math.floor(Math.random() * 200) + 100; // Random count between 100-299
 
-                // Update UI
-                document.getElementById('fileName').textContent = fileName;
+                // Update UI with confirmation message (v6.2: no variables shown)
                 document.querySelector('.csv-upload-area').classList.add('has-file');
                 document.getElementById('uploadPlaceholder').style.display = 'none';
                 document.getElementById('csvPreview').classList.remove('hidden');
-
-                const variablesContainer = document.getElementById('csvVariables');
-                variablesContainer.innerHTML = '';
-                sampleVariables.forEach(variable => {
-                    const chip = document.createElement('div');
-                    chip.className = 'csv-variable';
-                    chip.textContent = variable;
-                    variablesContainer.appendChild(chip);
-                });
-
-                // Update variable chips in Step 2
-                updateVariableChips(sampleVariables);
+                document.getElementById('csvConfirmation').textContent = `${patientCount} patients found. Phone numbers detected.`;
             }
         }
 
-        function updateVariableChips(variables) {
-            const container = document.getElementById('variableChips');
-            container.innerHTML = '';
-            variables.forEach(variable => {
-                const chip = document.createElement('div');
-                chip.className = 'variable-chip';
-                chip.textContent = variable;
-                chip.onclick = () => insertVariable(variable);
-                container.appendChild(chip);
-            });
+        function handleProgramSelection(select) {
+            const programValue = select.value;
+            const confirmationDiv = document.getElementById('programConfirmation');
+
+            if (programValue) {
+                // Simulate program data lookup with patient counts
+                const programData = {
+                    'diabetes-mgmt': { name: 'Diabetes Management', count: 312 },
+                    'hypertension': { name: 'Hypertension Care', count: 185 },
+                    'mental-health': { name: 'Mental Health Support', count: 97 }
+                };
+
+                const program = programData[programValue];
+                confirmationDiv.textContent = `${program.name} — ${program.count} active patients.`;
+                confirmationDiv.classList.remove('hidden');
+            } else {
+                confirmationDiv.classList.add('hidden');
+            }
         }
 
         function updateSpeedValue(value) {
@@ -2000,14 +1974,12 @@
                 const generatedPrompt = `You are a professional healthcare agent making an outbound call. Your role is to ${description}
 
 Key Instructions:
-1. Always verify patient identity using patient_name before proceeding
-2. Speak in a ${document.getElementById('agentTone').value} tone
-3. Listen carefully to the patient's responses and adapt accordingly
-4. If the patient expresses distress, side effects, or urgent concerns, acknowledge them and note for escalation
-5. Keep the conversation focused but allow the patient to express themselves
-6. End the call by thanking them for their time and summarizing next steps
-
-Remember to use the available variables naturally in conversation: ${agentData.variables.join(', ')}
+1. Always greet the patient warmly and verify their identity by name before proceeding
+2. Speak in a ${document.getElementById('agentTone').value} tone throughout the conversation
+3. Listen carefully to the patient's responses and adapt your approach accordingly
+4. If the patient expresses distress, side effects, or urgent concerns, acknowledge them empathetically and note for escalation
+5. Keep the conversation focused but allow the patient to express themselves fully
+6. End the call by thanking them for their time and clearly summarizing next steps
 
 Your goal is to complete this call efficiently while being empathetic and helpful.`;
 
@@ -2017,17 +1989,6 @@ Your goal is to complete this call efficiently while being empathetic and helpfu
                 btn.disabled = false;
                 btn.innerHTML = '<span>✨</span><span id="generateBtnText">Generate Prompt</span>';
             }, 2000);
-        }
-
-        function insertVariable(variable) {
-            const editor = document.getElementById('promptEditor');
-            const cursorPos = editor.selectionStart;
-            const textBefore = editor.value.substring(0, cursorPos);
-            const textAfter = editor.value.substring(cursorPos);
-
-            editor.value = textBefore + variable + textAfter;
-            editor.focus();
-            editor.setSelectionRange(cursorPos + variable.length, cursorPos + variable.length);
         }
 
         function uploadKB() {
@@ -2100,8 +2061,109 @@ Your goal is to complete this call efficiently while being empathetic and helpfu
                 return;
             }
 
-            alert(`Starting test call to ${phone}...`);
-            document.getElementById('transcriptBox').classList.remove('hidden');
+            // Show transcript box and clear previous content
+            const transcriptBox = document.getElementById('transcriptBox');
+            const transcriptContent = document.getElementById('transcriptContent');
+            transcriptBox.classList.remove('hidden');
+            transcriptContent.innerHTML = '<div style="color: var(--grey-600); font-style: italic;">Initiating call...</div>';
+
+            // Simulate live transcript updates
+            setTimeout(() => {
+                transcriptContent.innerHTML = `
+                    <div class="transcript-entry">
+                        <div class="speaker agent">Agent:</div>
+                        <div>Hello! This is a medication reminder call from your healthcare provider. Am I speaking with John?</div>
+                    </div>
+                `;
+            }, 2000);
+
+            setTimeout(() => {
+                transcriptContent.innerHTML += `
+                    <div class="transcript-entry">
+                        <div class="speaker user">User:</div>
+                        <div>Yes, this is John.</div>
+                    </div>
+                `;
+                transcriptBox.scrollTop = transcriptBox.scrollHeight;
+            }, 4000);
+
+            setTimeout(() => {
+                transcriptContent.innerHTML += `
+                    <div class="transcript-entry">
+                        <div class="speaker agent">Agent:</div>
+                        <div>Great! I'm calling to remind you about your diabetes medication. Have you taken your morning dose today?</div>
+                    </div>
+                `;
+                transcriptBox.scrollTop = transcriptBox.scrollHeight;
+            }, 6000);
+
+            setTimeout(() => {
+                transcriptContent.innerHTML += `
+                    <div class="transcript-entry">
+                        <div class="speaker user">User:</div>
+                        <div>No, I haven't taken it yet. I've been feeling a bit nauseous.</div>
+                    </div>
+                `;
+                transcriptBox.scrollTop = transcriptBox.scrollHeight;
+            }, 8000);
+
+            setTimeout(() => {
+                transcriptContent.innerHTML += `
+                    <div class="transcript-entry">
+                        <div class="speaker agent">Agent:</div>
+                        <div>I understand. Nausea can be uncomfortable. Have you experienced this side effect before, or is this new?</div>
+                    </div>
+                `;
+                transcriptBox.scrollTop = transcriptBox.scrollHeight;
+            }, 10000);
+
+            setTimeout(() => {
+                transcriptContent.innerHTML += `
+                    <div class="transcript-entry">
+                        <div class="speaker user">User:</div>
+                        <div>It started a few days ago. It's making it hard to take my medication on time.</div>
+                    </div>
+                `;
+                transcriptBox.scrollTop = transcriptBox.scrollHeight;
+            }, 12000);
+
+            setTimeout(() => {
+                transcriptContent.innerHTML += `
+                    <div class="transcript-entry">
+                        <div class="speaker agent">Agent:</div>
+                        <div>Thank you for sharing that, John. This is important information. I'm going to note this for your care provider to follow up with you. In the meantime, please try to take your medication if possible. Is there anything else you'd like me to know?</div>
+                    </div>
+                `;
+                transcriptBox.scrollTop = transcriptBox.scrollHeight;
+            }, 14000);
+
+            setTimeout(() => {
+                transcriptContent.innerHTML += `
+                    <div class="transcript-entry">
+                        <div class="speaker user">User:</div>
+                        <div>No, that's all. Thank you.</div>
+                    </div>
+                `;
+                transcriptBox.scrollTop = transcriptBox.scrollHeight;
+            }, 16000);
+
+            setTimeout(() => {
+                transcriptContent.innerHTML += `
+                    <div class="transcript-entry">
+                        <div class="speaker agent">Agent:</div>
+                        <div>You're welcome, John. Take care, and someone from your care team will reach out soon about the nausea. Goodbye!</div>
+                    </div>
+                    <div style="margin-top: 16px; padding: 12px; background: #ECFDF5; border-radius: 8px; border: 1px solid #10B981;">
+                        <div style="font-weight: 600; color: #10B981; margin-bottom: 8px;">✓ Call Completed — Extraction Results:</div>
+                        <div style="font-size: 13px; color: var(--grey-700); line-height: 1.6;">
+                            <div style="margin-bottom: 6px;"><strong>Medication Taken:</strong> No</div>
+                            <div style="margin-bottom: 6px;"><strong>Barriers Mentioned:</strong> Nausea, difficulty taking medication on time</div>
+                            <div style="margin-bottom: 6px;"><strong>Escalation Required:</strong> Yes (Side effect reported)</div>
+                        </div>
+                    </div>
+                `;
+                transcriptBox.scrollTop = transcriptBox.scrollHeight;
+            }, 18000);
         }
 
         function activateAgent() {
